@@ -1,0 +1,17 @@
+.data/
+
+### Editor ###
+*.sw[p|o]
+
+### Rust ###
+debug/
+target/
+Cargo.lock
+**/*.rs.bk
+
+### Perf ###
+perf.data*
+perf.hist*
+
+### Coverage ###
+*.profraw
