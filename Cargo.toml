@@ -1,6 +1,8 @@
 [package]
 name = "open-pql"
 version = "0.0.1"
+description = "Poker Query Language"
+license = "MIT"
 edition = "2021"
 
 [lib]
@@ -20,7 +22,8 @@ lazy_static = "1.5.0"
 derive_more = { version = "1", features = ["full"] }
 
 [dependencies]
-fn_macro = { path = "fn_macro" }
+#fn_macro = { path = "fn_macro" }
+open_pql_macro = "0.0.1"
 bincode = "1.3.3"
 derive_more = { version = "1", features = ["full"] }
 fastrand = "2.1.1"

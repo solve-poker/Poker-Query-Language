@@ -1,6 +1,8 @@
 [package]
-name = "fn_macro"
-version = "0.1.0"
+name = "open_pql_macro"
+description = "Internal crate used by open_pql"
+license = "MIT"
+version = "0.0.1"
 edition = "2021"
 
 [lib]

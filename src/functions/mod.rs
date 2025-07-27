@@ -3,9 +3,9 @@ use std::{
     str::{Chars, FromStr},
 };
 
-use fn_macro::{pqlfn, pqlfn_fromstr};
 use itertools::Itertools;
 use lazy_static::lazy_static;
+use open_pql_macro::{pqlfn, pqlfn_fromstr};
 use rustc_hash::FxHashMap;
 use vm::{VmBuffer, VmStack, VmStackValue, VmStore, VmStoreVarIdx, VmValue, *};
 

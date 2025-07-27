@@ -1,4 +1,4 @@
-extern crate fn_macro;
+extern crate open_pql_macro;
 
 use std::io;
 
