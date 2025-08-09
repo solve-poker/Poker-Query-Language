@@ -1,0 +1,45 @@
+[package]
+name = "open-pql"
+version = "0.0.2"
+description = "Poker Query Language"
+license = "MIT"
+edition.workspace = true
+
+[lib]
+name = "open_pql"
+path = "src/lib.rs"
+
+[[bin]]
+name = "open-pql-cli"
+path = "src/main.rs"
+
+[build-dependencies]
+derive_more.workspace = true
+itertools.workspace = true
+lalrpop.workspace = true
+rustc-hash.workspace = true
+speedy.workspace = true
+
+[dependencies]
+derive_more.workspace = true
+fastrand.workspace = true
+itertools.workspace = true
+lalrpop-util.workspace = true
+open_pql_macro.workspace = true
+regex.workspace = true
+rustc-hash.workspace = true
+serde.workspace = true
+smallvec.workspace = true
+speedy.workspace = true
+tailcall.workspace = true
+
+[dev-dependencies]
+quickcheck.workspace = true
+quickcheck_macros.workspace = true
+
+[features]
+benchmark = []
+x86 = []
+
+[lints]
+workspace = true
