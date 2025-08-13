@@ -68,7 +68,7 @@ impl Constrain {
     }
 
     pub fn from_list(cs: &List) -> Self {
-        let mut c64: Card64 = Card64::empty();
+        let mut c64: Card64 = Card64::default();
 
         for c in &cs.0 {
             match c {

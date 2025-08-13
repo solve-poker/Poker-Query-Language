@@ -1,0 +1,19 @@
+[package]
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+name = "cargo-opql"
+version = "0.0.3"
+description = "A Rust command-line tool for parsing and querying PQL (Process Query Language) files"
+license = "MIT"
+
+[[bin]]
+name = "opql"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.0", features = ["derive"] }
+open-pql.workspace = true
+
+[lints]
+workspace = true

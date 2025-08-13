@@ -45,7 +45,7 @@ mod tests {
     use super::*;
     use crate::*;
 
-    fn s(s: &str) -> ast::Str {
+    fn s(s: &str) -> ast::Str<'_> {
         StrParser::new().parse(s).unwrap()
     }
 

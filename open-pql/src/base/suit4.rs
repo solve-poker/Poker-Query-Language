@@ -1,4 +1,6 @@
-use super::*;
+use super::{
+    BitAnd, BitOr, Card64, N_SUITS, PQLCardCount, SUIT_NAMES, Suit, fmt,
+};
 
 #[cfg(any(test, feature = "benchmark"))]
 #[macro_export]
@@ -15,70 +17,50 @@ macro_rules! s4 {
 }
 
 /// Suit Masks
+///
+/// A compact bit-set representation for storing multiple suits using a single u8.
+/// Each bit represents whether a specific suit is present in the set.
+/// Supports efficient set operations like union, intersection, and membership testing.
+///
 /// # Memory Layout:
 /// ```text
 /// [8, 0]:   xxxxCDHS // x: unused
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::{Suit::*, Suit4};
+///
+/// let mut suits = Suit4::default();
+/// suits.set(S);
+/// suits.set(H);
+///
+/// assert!(suits.contains_suit(S));
+/// assert_eq!(suits.count(), 2);
 /// ```
 #[derive(Copy, Clone, PartialEq, Eq, BitAnd, BitOr, Default)]
 pub struct Suit4(u8);
 
 impl Suit4 {
-    /// Constructs [Suit4] from [u8]
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use open_pql::{Suit, Suit4};
-    ///
-    /// let i: u8 = 0b0011;
-    /// let suits: Suit4 = Suit4::from_u8(i);
-    ///
-    /// assert_eq!(suits, Suit4::from([Suit::S, Suit::H].as_ref()));
-    /// ```
+    /// Constructs [Suit4] from u8 representation [xxxxxxSS]
     #[must_use]
     #[inline]
-    pub const fn from_u8(v: u8) -> Self {
+    pub(crate) const fn from_u8(v: u8) -> Self {
         Self(v)
     }
 
     /// Returns the inner [u8]
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use open_pql::Suit4;
-    ///
-    /// let i: u8 = 0b0011;
-    /// let suits: Suit4 = Suit4::from_u8(i);
-    ///
-    /// assert_eq!(i, suits.to_u8());
-    /// ```
+    #[allow(unused)]
     #[must_use]
     #[inline]
-    pub const fn to_u8(self) -> u8 {
+    pub(crate) const fn to_u8(self) -> u8 {
         self.0
     }
 
     #[inline]
     const fn from_suit(s: Suit) -> Self {
         Self(1 << s as u8)
-    }
-
-    /// Constructs an empty [Suit4]
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use open_pql::Suit4;
-    ///
-    /// let suits: Suit4 = Suit4::empty();
-    ///
-    /// assert_eq!(suits, Suit4::from([].as_ref()));
-    /// ```
-    #[must_use]
-    #[inline]
-    pub const fn empty() -> Self {
-        Self(0)
     }
 
     /// Checks whether all suit masks are unset
@@ -88,7 +70,7 @@ impl Suit4 {
     /// ```
     /// use open_pql::{Suit, Suit4};
     ///
-    /// let empty: Suit4 = Suit4::empty();
+    /// let empty: Suit4 = Suit4::default();
     /// let not_empty: Suit4 = Suit4::from(Suit::D);
     ///
     /// assert!(empty.is_empty());
@@ -105,7 +87,7 @@ impl Suit4 {
     /// ```
     /// use open_pql::{Suit, Suit4};
     ///
-    /// let mut suits: Suit4 = Suit4::empty();
+    /// let mut suits: Suit4 = Suit4::default();
     /// suits.set(Suit::D);
     ///
     /// assert_eq!(suits, Suit4::from(Suit::D));
@@ -125,7 +107,7 @@ impl Suit4 {
     /// let mut suits: Suit4 = Suit4::from(Suit::D);
     /// suits.unset(Suit::D);
     ///
-    /// assert_eq!(suits, Suit4::empty());
+    /// assert_eq!(suits, Suit4::default());
     /// ```
     #[inline]
     pub const fn unset(&mut self, s: Suit) {
@@ -167,13 +149,6 @@ impl Suit4 {
     pub const fn count(&self) -> PQLCardCount {
         self.0.count_ones().to_le_bytes()[0]
     }
-
-    /// Checks if the collection is empty
-    #[must_use]
-    #[inline]
-    pub const fn is_empty_alt(self) -> bool {
-        self.0 == 0
-    }
 }
 
 impl From<Suit> for Suit4 {
@@ -184,7 +159,7 @@ impl From<Suit> for Suit4 {
 
 impl From<&[Suit]> for Suit4 {
     fn from(ss: &[Suit]) -> Self {
-        let mut res = Self::empty();
+        let mut res = Self::default();
 
         for s in ss {
             res.set(*s);
@@ -235,19 +210,20 @@ impl From<Card64> for Suit4 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::*;
 
     #[test]
     fn test_empty() {
-        assert_eq!(Suit4::empty(), Suit4(0));
         assert_eq!(Suit4::default(), Suit4(0));
-        assert!(Suit4::empty().is_empty());
+        assert_eq!(Suit4::default(), Suit4(0));
+        assert!(Suit4::default().is_empty());
         assert!(Suit4::default().is_empty());
         assert!(!Suit4(1).is_empty());
     }
 
     #[quickcheck]
     fn test_set_and_contains(s: Suit) {
-        let mut suits = Suit4::empty();
+        let mut suits = Suit4::default();
 
         suits.set(s);
 
@@ -312,7 +288,7 @@ mod tests {
 
     #[quickcheck]
     fn test_from_card64(cards: Vec<Card>) -> TestResult {
-        let mut suits = Suit4::empty();
+        let mut suits = Suit4::default();
 
         for i in 0..cards.len() {
             suits.set(cards[i].suit);

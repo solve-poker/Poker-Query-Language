@@ -1,3 +1,5 @@
+#![allow(clippy::wildcard_imports)]
+
 use std::{cmp::Ordering, collections::VecDeque, ops::*};
 
 use derive_more::derive::{Display, From, TryInto};

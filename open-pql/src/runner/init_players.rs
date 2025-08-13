@@ -38,7 +38,7 @@ mod tests {
     use super::*;
     use crate::*;
 
-    fn f(s: &str) -> ast::FromClause {
+    fn f(s: &str) -> ast::FromClause<'_> {
         FromClauseParser::new().parse(s).unwrap()
     }
 

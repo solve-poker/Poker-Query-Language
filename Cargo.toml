@@ -1,16 +1,18 @@
 [workspace]
 resolver = "3"
-members = ["open-pql", "open-pql-macro"]
+members = ["open-pql", "open-pql-macro", "opql"]
 
 [workspace.package]
 edition = "2024"
+homepage = "https://github.com/solve-poker/open-pql"
+keywords = ["GTO", "PQL", "holdem", "poker", "shortdeck"]
 
 [profile.release]
-opt-level = 3
-lto = true
 codegen-units = 1
-panic = "abort"
 debug = false
+lto = true
+opt-level = 3
+panic = "abort"
 
 [workspace.dependencies]
 derive_more = { version = "2", features = ["full"] }
@@ -18,7 +20,8 @@ fastrand = "2.3.0"
 itertools = "0.14.0"
 lalrpop = { version = "0.22.2", features = ["lexer"] }
 lalrpop-util = { version = "0.22.2", features = ["lexer"] }
-open_pql_macro = "0.0.2"
+open-pql = { path = "./open-pql" }
+open_pql_macro = { path = "./open-pql-macro" }
 proc-macro2 = "1.0"
 quickcheck = { version = "1.0.3", features = [] }
 quickcheck_macros = "1.1.0"
@@ -32,10 +35,10 @@ syn = { version = "2.0", features = ["full"] }
 tailcall = "1.0.1"
 
 [workspace.lints.clippy]
+absolute_paths = { level = "warn", priority = 10 }
+missing_errors_doc = { level = "allow", priority = 10 }
+module_name_repetitions = { level = "allow", priority = 10 }
+must_use_candidate = { level = "allow", priority = 10 }
+needless_range_loop = { level = "allow", priority = 10 }
 nursery = "warn"
 pedantic = "warn"
-needless_range_loop = { level = "allow", priority = 10 }
-absolute_paths = { level = "warn", priority = 10 }
-module_name_repetitions = { level = "allow", priority = 10 }
-missing_errors_doc = { level = "allow", priority = 10 }
-must_use_candidate = { level = "allow", priority = 10 }

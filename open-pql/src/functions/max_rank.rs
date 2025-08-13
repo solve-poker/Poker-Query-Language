@@ -12,8 +12,6 @@ mod tests {
 
     #[quickcheck]
     fn test_max_rank(ranks: Rank16) -> TestResult {
-        TestResult::from_bool(
-            ranks.max_rank() == max_rank(ranks).map(Rank::from),
-        )
+        TestResult::from_bool(ranks.max_rank() == max_rank(ranks))
     }
 }

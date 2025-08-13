@@ -52,7 +52,7 @@ where
 mod tests {
     use super::{super::super::parser::*, *};
 
-    fn p(s: &str) -> FromClause {
+    fn p(s: &str) -> FromClause<'_> {
         FromClauseParser::new().parse(s).unwrap()
     }
 

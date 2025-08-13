@@ -11,7 +11,7 @@ pub struct Num<'i> {
 mod tests {
     use super::{super::super::parser::*, *};
 
-    fn i(s: &str) -> Num {
+    fn i(s: &str) -> Num<'_> {
         NumParser::new().parse(s).unwrap()
     }
 

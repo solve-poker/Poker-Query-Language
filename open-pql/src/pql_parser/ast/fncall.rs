@@ -12,7 +12,7 @@ pub struct FnCall<'i> {
 mod tests {
     use super::{super::super::parser::*, *};
 
-    fn f(s: &str) -> FnCall {
+    fn f(s: &str) -> FnCall<'_> {
         FnCallParser::new().parse(s).unwrap()
     }
 

@@ -35,7 +35,7 @@ impl<'i> Stmt<'i> {
 mod tests {
     use super::{super::super::parser::*, *};
 
-    fn s(s: &str) -> Stmt {
+    fn s(s: &str) -> Stmt<'_> {
         StmtParser::new().parse(s).unwrap()
     }
 

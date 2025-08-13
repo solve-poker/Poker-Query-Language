@@ -1,3 +1,5 @@
+#![allow(clippy::wildcard_imports)]
+
 use std::{collections::hash_map::Entry, string::String};
 
 use derive_more::derive::{Display, From};

@@ -48,7 +48,7 @@ pub mod tests {
     use super::*;
     use crate::*;
 
-    fn e(s: &str) -> ast::Expr {
+    fn e(s: &str) -> ast::Expr<'_> {
         ExprParser::new().parse(s).unwrap()
     }
 

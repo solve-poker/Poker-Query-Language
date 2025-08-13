@@ -10,7 +10,7 @@ pub struct Ident<'i> {
 mod tests {
     use super::{super::super::parser::*, *};
 
-    fn i(s: &str) -> Ident {
+    fn i(s: &str) -> Ident<'_> {
         IdentParser::new().parse(s).unwrap()
     }
 

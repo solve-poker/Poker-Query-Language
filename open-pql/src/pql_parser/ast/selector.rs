@@ -37,7 +37,7 @@ impl<'i> Selector<'i> {
 mod tests {
     use super::{super::super::parser::*, *};
 
-    fn s(s: &str) -> Selector {
+    fn s(s: &str) -> Selector<'_> {
         SelectorParser::new().parse(s).unwrap()
     }
 

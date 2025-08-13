@@ -271,7 +271,7 @@ pub mod tests {
 
     #[test]
     fn test_init() {
-        fn s(s: &str) -> Selector {
+        fn s(s: &str) -> Selector<'_> {
             SelectorParser::new().parse(s).unwrap()
         }
 

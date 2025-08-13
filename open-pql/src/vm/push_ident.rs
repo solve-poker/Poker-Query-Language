@@ -79,7 +79,7 @@ mod tests {
     use super::*;
     use crate::*;
 
-    fn i(s: &str) -> ast::Ident {
+    fn i(s: &str) -> ast::Ident<'_> {
         IdentParser::new().parse(s).unwrap()
     }
 

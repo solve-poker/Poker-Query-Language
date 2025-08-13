@@ -2,7 +2,7 @@ use super::*;
 
 #[pqlfn(arg, rtn, eval)]
 pub fn board_in_range(range: &mut PQLBoardRange, board: Board) -> PQLBoolean {
-    range.is_satisfied(&<[_; 5]>::from(board))
+    range.is_satisfied(&board.to_vec())
 }
 
 #[cfg(test)]

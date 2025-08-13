@@ -44,7 +44,7 @@ impl Expr<'_> {
 mod tests {
     use super::{super::super::parser::*, *};
 
-    fn e(s: &str) -> Expr {
+    fn e(s: &str) -> Expr<'_> {
         ExprParser::new().parse(s).unwrap()
     }
 

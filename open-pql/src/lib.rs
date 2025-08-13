@@ -1,15 +1,20 @@
-#![allow(clippy::wildcard_imports)]
 #![cfg_attr(test, allow(clippy::needless_pass_by_value))]
+#![cfg_attr(test, allow(clippy::trivially_copy_pass_by_ref))]
+#![cfg_attr(test, allow(clippy::wildcard_imports))]
+// #![feature(coverage_attribute)]
 
 #[cfg(test)]
 #[macro_use(quickcheck)]
 extern crate quickcheck_macros;
 
+#[cfg(test)]
+use std::hash::Hasher;
 use std::{
     cmp::Ordering,
     fmt,
-    hash::Hasher,
-    ops::{Add, AddAssign, *},
+    ops::{
+        Add, AddAssign, BitAnd, BitAndAssign, BitOr, BitOrAssign, FnMut, FnOnce,
+    },
     str::FromStr,
 };
 
@@ -59,17 +64,6 @@ pub const fn eval_omaha9(player: Card64, board: Card64) -> PQLHiRating {
     PQLHiRating::new(eval::omaha9::eval(player.to_u64(), board.to_u64()))
 }
 
-#[derive(
-    Debug, Clone, Copy, Default, PartialEq, Eq, From, Into, AsRef, AsMut,
-)]
-pub struct DeadCards(Card64);
-
-impl From<&[Card]> for DeadCards {
-    fn from(cs: &[Card]) -> Self {
-        Card64::from(cs).into()
-    }
-}
-
 #[cfg(test)]
 pub use crate::tests::{CardN, *};
 
@@ -91,9 +85,9 @@ pub mod tests {
             let mut rng = fastrand::Rng::new();
 
             let v = if S {
-                rng.choose_multiple(Card::ARR_ALL_SHORT.into_iter(), N)
+                rng.choose_multiple(Card::ARR_ALL_SHORT, N)
             } else {
-                rng.choose_multiple(Card::ARR_ALL.into_iter(), N)
+                rng.choose_multiple(Card::ARR_ALL, N)
             };
 
             <[_; N]>::try_from(v).unwrap().into()
