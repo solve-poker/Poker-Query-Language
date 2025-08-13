@@ -40,7 +40,7 @@ pub mod tests {
     use super::*;
     use crate::*;
 
-    fn f(s: &str) -> ast::FnCall {
+    fn f(s: &str) -> ast::FnCall<'_> {
         FnCallParser::new().parse(s).unwrap()
     }
 

@@ -1,8 +1,63 @@
 use super::{Card, Card64, HandN, Hash, N_FLOP, fmt};
 
+/// Creates a flop (3 community cards) from a string representation.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::flop;
+///
+/// let community_flop = flop!("As Kh Qd");
+/// ```
+#[cfg(any(test, feature = "benchmark"))]
+#[macro_export]
+macro_rules! flop {
+    ($s:expr) => {
+        $crate::Flop::from(
+            <[$crate::Card; 3]>::try_from($crate::Card::new_vec($s)).unwrap(),
+        )
+    };
+}
+
+/// Creates a board (community cards) from a string representation.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::board;
+///
+/// let community_board = board!("As Kh Qd Jc Ts");
+/// ```
+#[cfg(any(test, feature = "benchmark"))]
+#[macro_export]
+macro_rules! board {
+    ($s:expr) => {
+        $crate::Board::from(
+            $crate::Card::new_vec($s).as_ref() as &[$crate::Card]
+        )
+    };
+}
+
 pub type Flop = HandN<3>;
 
 /// Represents a poker board (flop, turn, river)
+///
+/// A poker board consists of community cards dealt during a game:
+/// - Flop: The first three community cards (optional)
+/// - Turn: The fourth community card (optional, requires flop)
+/// - River: The fifth community card (optional, requires turn)
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::{Board, Card, Rank::*, Suit::*};
+///
+/// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+/// let board = Board::from_slice(&cards);
+///
+/// assert_eq!(board.len(), 3);
+/// assert!(!board.is_empty());
+/// ```
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Default)]
 pub struct Board {
     pub flop: Option<Flop>,
@@ -39,35 +94,10 @@ impl Board {
         }
     }
 
-    /// Gets a card at the specified index
-    pub fn get(&self, i: usize) -> Option<Card> {
-        match i {
-            0..=2 => self.flop.map(|f| f[i]),
-            3 => self.turn,
-            4 => self.river,
-            _ => None,
-        }
-    }
-
     /// Returns an iterator over all cards on the board
     pub fn iter(&self) -> impl Iterator<Item = Card> + '_ {
         let flop_iter = self.flop.iter().flat_map(Flop::iter);
         flop_iter.chain(self.turn).chain(self.river)
-    }
-
-    /// Converts the board to a Card64 representation
-    pub fn to_card64(&self) -> Card64 {
-        let mut result = Card64::default();
-        if let Some(flop) = self.flop {
-            result |= Card64::from(flop.as_slice());
-        }
-        if let Some(turn) = self.turn {
-            result |= Card64::from(turn);
-        }
-        if let Some(river) = self.river {
-            result |= Card64::from(river);
-        }
-        result
     }
 
     /// Returns all cards on the board as a vector
@@ -90,7 +120,8 @@ impl Board {
         Some(card) == self.turn || Some(card) == self.river
     }
 
-    pub const fn swap_turn(&self, card: Card) -> Self {
+    #[must_use]
+    pub(crate) const fn swap_turn(&self, card: Card) -> Self {
         Self {
             flop: self.flop,
             turn: Some(card),
@@ -98,7 +129,8 @@ impl Board {
         }
     }
 
-    pub const fn swap_river(&self, card: Card) -> Self {
+    #[must_use]
+    pub(crate) const fn swap_river(&self, card: Card) -> Self {
         Self {
             flop: self.flop,
             turn: self.turn,
@@ -125,7 +157,17 @@ impl fmt::Debug for Board {
 
 impl From<Board> for Card64 {
     fn from(board: Board) -> Self {
-        board.to_card64()
+        let mut result = Self::default();
+        if let Some(flop) = board.flop {
+            result |= Self::from(flop.as_slice());
+        }
+        if let Some(turn) = board.turn {
+            result |= Self::from(turn);
+        }
+        if let Some(river) = board.river {
+            result |= Self::from(river);
+        }
+        result
     }
 }
 
@@ -135,18 +177,6 @@ impl From<(Card, Card, Card, Card, Card)> for Board {
             flop: Some(Flop::from_slice(&[cs.0, cs.1, cs.2])),
             turn: Some(cs.3),
             river: Some(cs.4),
-        }
-    }
-}
-
-impl From<Board> for [Card; 5] {
-    fn from(board: Board) -> Self {
-        if let (Some(flop), Some(turn), Some(river)) =
-            (board.flop, board.turn, board.river)
-        {
-            [flop[0], flop[1], flop[2], turn, river]
-        } else {
-            panic!()
         }
     }
 }
@@ -207,7 +237,7 @@ mod tests {
         assert_eq!(empty_board.len(), 0);
 
         // No Flop
-        let flop_cards = cards!("AsKhQd");
+        let flop_cards = cards!("QdKhAs");
         for j in 0..=2 {
             assert_eq!(Board::from_slice(&flop_cards[0..j]).len(), 0);
         }
@@ -216,11 +246,9 @@ mod tests {
         let flop_board = Board::from_slice(&flop_cards);
         assert!(!flop_board.is_empty());
         assert_eq!(flop_board.len(), 3);
-        assert_eq!(flop_board.get(0), Some(flop_cards[2]));
-        assert_eq!(flop_board.get(1), Some(flop_cards[1]));
-        assert_eq!(flop_board.get(2), Some(flop_cards[0]));
-        assert_eq!(flop_board.get(3), None);
-        assert_eq!(flop_board.get(4), None);
+        assert_eq!(flop_board.flop, Some(flop!("QdKhAs")));
+        assert_eq!(flop_board.turn, None);
+        assert_eq!(flop_board.river, None);
 
         // Flop + Turn
         let turn_card = Card::new(Rank::RJ, Suit::C);
@@ -228,8 +256,8 @@ mod tests {
         flop_turn_cards.push(turn_card);
         let flop_turn_board = Board::from_slice(&flop_turn_cards);
         assert_eq!(flop_turn_board.len(), 4);
-        assert_eq!(flop_turn_board.get(3), Some(turn_card));
-        assert_eq!(flop_turn_board.get(4), None);
+        assert_eq!(flop_turn_board.turn, Some(turn_card));
+        assert_eq!(flop_turn_board.river, None);
 
         // Full board (Flop + Turn + River)
         let river_card = Card::new(Rank::RT, Suit::S);
@@ -237,8 +265,7 @@ mod tests {
         full_cards.push(river_card);
         let full_board = Board::from_slice(&full_cards);
         assert_eq!(full_board.len(), 5);
-        assert_eq!(full_board.get(4), Some(river_card));
-        assert_eq!(full_board.get(5), None);
+        assert_eq!(full_board.river, Some(river_card));
     }
 
     #[test]
@@ -271,7 +298,7 @@ mod tests {
         // Test with different board sizes
         for i in N_FLOP..=5 {
             let board = Board::from_slice(&cards[0..i]);
-            let card64 = board.to_card64();
+            let card64 = Card64::from(board);
 
             // Verify each card is set in the Card64
             for j in 0..i {
@@ -280,6 +307,11 @@ mod tests {
 
             assert_eq!(card64.count() as usize, i);
         }
+    }
+
+    #[quickcheck]
+    fn test_board_contains_card(board: Board, card: Card) {
+        assert_eq!(board.to_vec().contains(&card), board.contains_card(card));
     }
 
     #[test]

@@ -31,19 +31,19 @@ pub fn parse(src: &str) -> Result<Box<Expr>, Error> {
 pub mod tests {
     use super::*;
 
-    pub fn parse_card(src: &str) -> ResultE<ast::RangeCard> {
+    pub fn parse_card(src: &str) -> ResultE<'_, ast::RangeCard> {
         parser::RangeCardParser::new().parse(src)
     }
 
-    pub fn parse_list(src: &str) -> ResultE<ast::List> {
+    pub fn parse_list(src: &str) -> ResultE<'_, ast::List> {
         parser::ListParser::new().parse(src)
     }
 
-    pub fn parse_span(src: &str) -> ResultE<ast::Span> {
+    pub fn parse_span(src: &str) -> ResultE<'_, ast::Span> {
         parser::SpanParser::new().parse(src)
     }
 
-    pub fn parse_term(src: &str) -> ResultE<ast::Term> {
+    pub fn parse_term(src: &str) -> ResultE<'_, ast::Term> {
         parser::TermParser::new().parse(src)
     }
 

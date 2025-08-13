@@ -77,9 +77,9 @@ mod tests {
                 r16!("Q"),
                 r16!("K"),
                 r16!("A"),
-                Rank16::empty(),
-                Rank16::empty(),
-                Rank16::empty(),
+                Rank16::default(),
+                Rank16::default(),
+                Rank16::default(),
             ];
 
             let arr: [u16; 16] = ranks.map(Rank16::to_u16);

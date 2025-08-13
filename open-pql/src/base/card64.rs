@@ -1,4 +1,9 @@
-use super::*;
+use super::{
+    BitAnd, BitAndAssign, BitOr, BitOrAssign, Card, CardIter, Hash, MASK64_2,
+    MASK64_ALL, Not, OFFSET_C, OFFSET_D, OFFSET_H, OFFSET_S, OFFSET_SUIT,
+    PQLCardCount, RANK_NAMES, Rank, Rank16, Rank16Iter, SUIT_NAMES, Suit, fmt,
+    prim, u16_to_rank_str,
+};
 
 #[cfg(any(test, feature = "benchmark"))]
 #[macro_export]
@@ -8,6 +13,12 @@ macro_rules! c64 {
     };
 }
 
+/// A 64-bit representation of a set of playing cards using bitwise operations.
+///
+/// Card64 efficiently stores multiple cards in a single u64 value, where each bit
+/// represents a specific card. This allows for fast set operations like union,
+/// intersection, and membership testing using bitwise operations.
+///
 /// Card Set
 /// # Memory Layout:
 /// ```text
@@ -68,23 +79,6 @@ impl Card64 {
     #[inline]
     pub const fn to_u64(self) -> u64 {
         self.0
-    }
-
-    /// Constructs an empty [Card64]
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use open_pql::{Card, Card64, Rank::*, Suit::*};
-    ///
-    /// let c64: Card64 = Card64::empty();
-    ///
-    /// assert_eq!(c64, Card64::from([].as_ref()));
-    /// ```
-    #[must_use]
-    #[inline]
-    pub const fn empty() -> Self {
-        Self(0)
     }
 
     /// Checks whether all rank masks are unset
@@ -167,7 +161,7 @@ impl Card64 {
     /// ```
     /// use open_pql::{Card, Card64, Rank::*, Suit::*};
     ///
-    /// let mut c64: Card64 = Card64::empty();
+    /// let mut c64: Card64 = Card64::default();
     /// c64.set(Card::new(R2, S));
     ///
     /// assert_eq!(c64, Card64::from(Card::new(R2, S)));
@@ -187,7 +181,7 @@ impl Card64 {
     /// let mut c64: Card64 = Card64::from(Card::new(R2, S));
     /// c64.unset(Card::new(R2, S));
     ///
-    /// assert_eq!(c64, Card64::empty());
+    /// assert_eq!(c64, Card64::default());
     /// ```
     #[inline]
     pub const fn unset(&mut self, c: Card) {
@@ -269,27 +263,10 @@ impl Card64 {
         1 << r << (s * OFFSET_SUIT)
     }
 
-    //pub(crate) fn set_cards(&mut self, cs: &[Card]) {
-    //    for c in cs {
-    //        self.set(*c);
-    //    }
-    //}
-
     /// Attempts to mark a card of rank r in the order S, H, D, C
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use open_pql::{Card, Card64, Rank::*, Suit::*};
-    ///
-    /// let mut c64: Card64 = Card64::from(Card::new(R2, S));
-    ///
-    /// c64.set_available_card_by_rank(R2);
-    ///
-    /// assert!(c64.contains_card(Card::new(R2, H)));
-    /// ```
+    #[allow(unused)]
     #[inline]
-    pub fn set_available_card_by_rank(&mut self, r: Rank) {
+    pub(crate) fn set_available_card_by_rank(&mut self, r: Rank) {
         for s in Suit::ARR_ALL {
             let c = Card::new(r, s);
 
@@ -300,29 +277,14 @@ impl Card64 {
     }
 
     /// Normalize u64 so that each u16 indicates rank count
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use open_pql::{Card, Card64, Rank::*, Suit::*};
-    ///
-    /// let mut c64: Card64 =
-    ///     Card64::from([Card::new(R2, D), Card::new(R2, C)].as_ref());
-    ///
-    /// c64.normalize();
-    ///
-    /// assert_eq!(
-    ///     Card64::from([Card::new(R2, S), Card::new(R2, H)].as_ref()),
-    ///     c64
-    /// );
-    /// ```
+    #[allow(unused)]
     #[inline]
-    pub const fn normalize(&mut self) {
+    pub(crate) const fn normalize(&mut self) {
         self.0 = u64::from_le_bytes(prim::normalize_u64(self.0));
     }
 
     #[inline]
-    pub const fn ranks_by_suit(self, s: Suit) -> Rank16 {
+    pub(crate) const fn ranks_by_suit(self, s: Suit) -> Rank16 {
         let bytes = self.0.to_le_bytes();
 
         match s {
@@ -341,6 +303,20 @@ impl Card64 {
         }
     }
 
+    /// Creates a Card64 with all four cards of each rank in the given Rank16.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Card64, Rank::*, Rank16};
+    ///
+    /// let ranks = Rank16::from([RA, RK].as_ref());
+    /// let c64 = Card64::from_ranks(ranks);
+    ///
+    /// assert_eq!(c64.count_by_rank(RA), 4);
+    /// assert_eq!(c64.count_by_rank(RK), 4);
+    /// assert_eq!(c64.count_by_rank(RQ), 0);
+    /// ```
     #[inline]
     #[must_use]
     pub const fn from_ranks(rs: Rank16) -> Self {
@@ -349,6 +325,20 @@ impl Card64 {
         Self(v << OFFSET_S | v << OFFSET_H | v << OFFSET_D | v << OFFSET_C)
     }
 
+    /// Returns a Rank16 containing all ranks that have at least one card marked.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Card, Card64, Rank::*, Suit::*};
+    ///
+    /// let c64 = Card64::from([Card::new(RA, S), Card::new(RK, H)].as_ref());
+    /// let ranks = c64.ranks();
+    ///
+    /// assert!(ranks.contains_rank(RA));
+    /// assert!(ranks.contains_rank(RK));
+    /// assert!(!ranks.contains_rank(RQ));
+    /// ```
     #[inline]
     #[must_use]
     pub const fn ranks(self) -> Rank16 {
@@ -360,71 +350,40 @@ impl Card64 {
         Rank16::from_u16(u16::from_le_bytes([lo, hi]))
     }
 
+    /// Returns an iterator over all cards in this set.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Card, Card64, Rank::*, Suit::*};
+    ///
+    /// let c64 = Card64::from([Card::new(RA, S), Card::new(RK, H)].as_ref());
+    /// let cards: Vec<Card> = c64.iter().collect();
+    ///
+    /// assert_eq!(cards.len(), 2);
+    /// ```
     pub const fn iter(self) -> CardIter {
         CardIter::new(self)
     }
 
-    pub const fn iter_ranks(self) -> RanksIter {
-        RanksIter::new(self)
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct RanksIter {
-    c64: Card64,
-    suit_idx: u8,
-}
-
-impl RanksIter {
-    pub const fn new(c64: Card64) -> Self {
-        Self { c64, suit_idx: 0 }
-    }
-}
-
-impl Iterator for RanksIter {
-    type Item = (Rank16, Suit);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let suit = match self.suit_idx {
-            0 => Suit::S,
-            1 => Suit::H,
-            2 => Suit::D,
-            3 => Suit::C,
-            _ => return None,
-        };
-
-        self.suit_idx += 1;
-
-        Some((self.c64.ranks_by_suit(suit), suit))
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct CardIter {
-    c64: Card64,
-    idx: u8,
-}
-
-impl CardIter {
-    pub const fn new(c64: Card64) -> Self {
-        Self { c64, idx: 0 }
-    }
-}
-
-impl Iterator for CardIter {
-    type Item = Card;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        while self.idx < N_CARDS {
-            let c = Card::ARR_ALL[self.idx as usize];
-            self.idx += 1;
-
-            if self.c64.contains_card(c) {
-                return Some(c);
-            }
-        }
-
-        None
+    /// Returns an iterator over the ranks in each suit.
+    ///
+    /// The iterator yields tuples of (Rank16, Suit) for each suit in the order S, H, D, C.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Card, Card64, Rank::*, Suit::*};
+    ///
+    /// let c64 = Card64::from([Card::new(RA, S), Card::new(RK, H)].as_ref());
+    /// let ranks: Vec<_> = c64.iter_ranks().collect();
+    ///
+    /// assert_eq!(ranks.len(), 4);
+    /// assert!(ranks[0].0.contains_rank(RA)); // Spades
+    /// assert!(ranks[1].0.contains_rank(RK)); // Hearts
+    /// ```
+    pub const fn iter_ranks(self) -> Rank16Iter {
+        Rank16Iter::new(self)
     }
 }
 
@@ -491,7 +450,7 @@ impl fmt::Debug for Card64 {
 
 impl From<&[Card]> for Card64 {
     fn from(cs: &[Card]) -> Self {
-        let mut res = Self::empty();
+        let mut res = Self::default();
 
         for c in cs {
             res.0 |= Self::u64_from_ranksuit_i8(c.rank as i8, c.suit as i8);
@@ -509,9 +468,8 @@ impl From<Card> for Card64 {
 
 #[cfg(test)]
 mod tests {
-    use quickcheck::{Arbitrary, TestResult};
-
     use super::*;
+    use crate::*;
 
     impl Arbitrary for Card64 {
         fn arbitrary(g: &mut quickcheck::Gen) -> Self {
@@ -523,8 +481,8 @@ mod tests {
 
     #[test]
     fn test_empty() {
-        assert_eq!(Card64::empty(), Card64(0));
-        assert!(Card64::empty().is_empty());
+        assert_eq!(Card64::default(), Card64(0));
+        assert!(Card64::default().is_empty());
         assert!(!Card64(1).is_empty());
     }
 
@@ -549,7 +507,7 @@ mod tests {
 
     #[quickcheck]
     fn test_set_and_contains_card(c1: Card, c2: Card) {
-        let mut c64 = Card64::empty();
+        let mut c64 = Card64::default();
         c64.set(c1);
         c64.set(c2);
 
@@ -568,14 +526,14 @@ mod tests {
     //    return TestResult::discard();
     //}
 
-    //let mut flop = Card64::empty();
+    //let mut flop = Card64::default();
 
     //flop.set_flop(b.0);
     //assert!(flop.contains_card(b.0 .0));
     //assert!(flop.contains_card(b.0 .1));
     //assert!(flop.contains_card(b.0 .2));
 
-    //let mut board = Card64::empty();
+    //let mut board = Card64::default();
 
     //board.set_board(b);
     //assert!(board.contains_card(b.0 .0));
@@ -591,10 +549,10 @@ mod tests {
 
     //#[quickcheck]
     //fn test_set_cards(cards: (Card, Card, Card, Card)) {
-    //    let mut lhs = Card64::empty();
+    //    let mut lhs = Card64::default();
     //    lhs.set_cards([cards.0, cards.1, cards.2, cards.3].as_ref());
 
-    //    let mut rhs = Card64::empty();
+    //    let mut rhs = Card64::default();
     //    rhs.set(cards.0);
     //    rhs.set(cards.1);
     //    rhs.set(cards.2);
@@ -633,9 +591,9 @@ mod tests {
 
         assert_eq!((a & b).is_empty(), c1 != c2);
 
-        a &= Card64::empty();
+        a &= Card64::default();
 
-        assert_eq!(a, Card64::empty());
+        assert_eq!(a, Card64::default());
     }
 
     #[quickcheck]
@@ -746,7 +704,7 @@ mod tests {
 
     #[test]
     fn test_iter() {
-        let empty = Card64::empty();
+        let empty = Card64::default();
         assert_eq!(empty.iter().count(), 0);
 
         let single = c64!("As");
@@ -762,12 +720,12 @@ mod tests {
         assert!(cards.contains(&cards!("2d")[0]));
 
         let all = Card64::all();
-        assert_eq!(all.iter().count(), N_CARDS as usize);
+        assert_eq!(all.iter().count(), constants::N_CARDS as usize);
     }
 
     #[test]
     fn test_iter_ranks() {
-        let empty = Card64::empty();
+        let empty = Card64::default();
         assert_eq!(empty.iter_ranks().count(), 4);
 
         let single = c64!("As");

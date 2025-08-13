@@ -1,5 +1,17 @@
-use super::*;
+use super::{
+    Display, FromStr, Hash, ParseError, Rank, RankIdx, Suit, SuitIdx, fmt,
+};
 
+/// Creates a vector of cards from a string representation.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::cards;
+///
+/// let cards = cards!("As Kh 2d");
+/// assert_eq!(cards.len(), 3);
+/// ```
 #[cfg(any(test, feature = "benchmark"))]
 #[macro_export]
 macro_rules! cards {
@@ -8,6 +20,15 @@ macro_rules! cards {
     };
 }
 
+/// Creates a single card from a string representation.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::card;
+///
+/// let ace_spades = card!("As");
+/// ```
 #[cfg(any(test, feature = "benchmark"))]
 #[macro_export]
 macro_rules! card {
@@ -16,27 +37,21 @@ macro_rules! card {
     };
 }
 
-#[cfg(any(test, feature = "benchmark"))]
-#[macro_export]
-macro_rules! flop {
-    ($s:expr) => {
-        $crate::Flop::from(
-            <[$crate::Card; 3]>::try_from($crate::Card::new_vec($s)).unwrap(),
-        )
-    };
-}
-
-#[cfg(any(test, feature = "benchmark"))]
-#[macro_export]
-macro_rules! board {
-    ($s:expr) => {
-        $crate::Board::from(
-            $crate::Card::new_vec($s).as_ref() as &[$crate::Card]
-        )
-    };
-}
-
 /// Single Card
+///
+/// Represents a single playing card with a rank and suit.
+/// Cards are ordered first by rank then by suit for consistent comparison.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::{Card, Rank::*, Suit::*};
+///
+/// let card = Card::new(RA, S);
+/// assert_eq!(card.rank, RA);
+/// assert_eq!(card.suit, S);
+/// assert_eq!(card.to_string(), "As");
+/// ```
 #[derive(Copy, Clone, Display, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[display("{rank}{suit}")]
 pub struct Card {
@@ -45,6 +60,8 @@ pub struct Card {
 }
 
 impl Card {
+    /// Array of all 52 playing cards in a standard deck.
+    /// Cards are ordered by rank (2-A) then by suit (S, H, D, C).
     pub const ARR_ALL: [Self; 52] = [
         Self::new(Rank::R2, Suit::S),
         Self::new(Rank::R2, Suit::H),
@@ -100,6 +117,8 @@ impl Card {
         Self::new(Rank::RA, Suit::C),
     ];
 
+    /// Array of 36 cards for short deck poker (6-A).
+    /// Excludes ranks 2-5, commonly used in some poker variants.
     pub const ARR_ALL_SHORT: [Self; 36] = [
         Self::new(Rank::R6, Suit::S),
         Self::new(Rank::R6, Suit::H),
@@ -139,44 +158,82 @@ impl Card {
         Self::new(Rank::RA, Suit::C),
     ];
 
+    /// Creates a new card with the specified rank and suit.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Card, Rank, Suit};
+    ///
+    /// let ace_spades = Card::new(Rank::RA, Suit::S);
+    /// ```
     #[must_use]
     #[inline]
     pub const fn new(r: Rank, s: Suit) -> Self {
         Self { rank: r, suit: s }
     }
 
+    /// Creates a card from rank and suit indices.
     #[must_use]
     #[inline]
-    pub fn from_indices(r: u8, s: u8) -> Self {
+    pub(crate) fn from_indices(r: RankIdx, s: SuitIdx) -> Self {
         Self {
-            rank: Rank::from_u8(r),
-            suit: Suit::from_u8(s),
+            rank: r.to_rank(),
+            suit: s.to_suit(),
         }
     }
 
-    pub const fn to_u8(self) -> u8 {
+    /// Converts the card to a single u8 representation [xxSSRRRR].
+    pub(crate) const fn to_u8(self) -> u8 {
         const SHIFT_SUIT: u8 = 4;
         (self.rank as u8) | ((self.suit as u8) << SHIFT_SUIT)
     }
 
-    pub fn from_u8(v: u8) -> Self {
+    /// Creates a card from a u8 [xxSSRRRR].
+    pub(crate) fn from_u8(v: u8) -> Self {
         const SHIFT_SUIT: u8 = 4;
-        Self::from_indices(v & 0b1111, v >> SHIFT_SUIT)
+        Self::from_indices(
+            RankIdx::new(v & 0b1111),
+            SuitIdx::new(v >> SHIFT_SUIT),
+        )
     }
 }
 
+/// Default implementation for Card.
+///
+/// Returns the Two of Spades as the default card.
 impl Default for Card {
     fn default() -> Self {
         Self::new(Rank::R2, Suit::S)
     }
 }
 
+/// Debug implementation for Card.
+///
+/// Uses the Display format for debug output.
 impl fmt::Debug for Card {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{self}")
     }
 }
 
+/// `FromStr` implementation for Card.
+///
+/// Parses a card from string format like "As" (Ace of Spades).
+/// Whitespace is ignored during parsing.
+///
+/// # Errors
+///
+/// Returns `ParseError::InvalidCard` if the string cannot be parsed as a valid card.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::Card;
+///
+/// let card: Card = "As".parse().unwrap();
+/// let card_with_spaces: Card = " A s ".parse().unwrap();
+/// ```
 impl FromStr for Card {
     type Err = ParseError;
 
@@ -216,12 +273,36 @@ where
 
 #[cfg(any(test, feature = "benchmark"))]
 impl Card {
+    /// Creates a card from a tuple of characters representing rank and suit.
+    ///
     /// # Panics
-    /// this is intended to be used in tests and benchmarks only.
+    ///
+    /// Panics if the characters cannot be converted to valid rank and suit.
+    /// This is intended to be used in tests and benchmarks only.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::Card;
+    ///
+    /// let card = Card::from_tuple(('A', 's'));
+    /// ```
     pub fn from_tuple((r, s): (char, char)) -> Self {
         Self::new(r.try_into().unwrap(), s.try_into().unwrap())
     }
 
+    /// Creates a vector of cards from a string representation.
+    ///
+    /// Parses pairs of characters as rank-suit combinations.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::Card;
+    ///
+    /// let cards = Card::new_vec("As Kh Qd");
+    /// assert_eq!(cards.len(), 3);
+    /// ```
     pub fn new_vec(s: &str) -> Vec<Self> {
         use itertools::Itertools;
 
@@ -236,6 +317,7 @@ impl Card {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::*;
 
     impl Arbitrary for Card {
         fn arbitrary(g: &mut quickcheck::Gen) -> Self {

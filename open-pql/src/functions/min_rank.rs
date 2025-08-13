@@ -12,8 +12,6 @@ mod tests {
 
     #[quickcheck]
     fn test_min_rank(ranks: Rank16) -> TestResult {
-        TestResult::from_bool(
-            ranks.min_rank() == min_rank(ranks).map(Rank::from),
-        )
+        TestResult::from_bool(ranks.min_rank() == min_rank(ranks))
     }
 }

@@ -1,5 +1,20 @@
 use super::{Card, HandN};
 
+/// Iterator for generating all possible combinations of N cards
+///
+/// Generates all unique combinations of N cards from either the full deck (52 cards)
+/// or the short deck (36 cards, 6-A only). The generic parameter SD determines
+/// which deck to use: true for short deck, false for full deck.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::{HandIter, HandN};
+///
+/// let mut iter = HandN::<2>::iter_all();
+/// let first_hand = iter.next().unwrap();
+/// assert_eq!(first_hand.len(), 2);
+/// ```
 #[derive(Debug, Clone)]
 pub struct HandIter<const SD: bool, const N: usize> {
     indices: [u8; N],
@@ -7,6 +22,10 @@ pub struct HandIter<const SD: bool, const N: usize> {
 }
 
 impl<const SD: bool, const N: usize> HandIter<SD, N> {
+    /// Returns the array of all cards for the current deck type
+    ///
+    /// Returns either all 52 cards or the 36-card short deck (6-A only)
+    /// depending on the SD generic parameter.
     const fn all_cards() -> &'static [Card] {
         if SD {
             Card::ARR_ALL_SHORT.as_slice()
@@ -18,6 +37,7 @@ impl<const SD: bool, const N: usize> HandIter<SD, N> {
 
 #[allow(clippy::cast_possible_truncation)]
 impl<const SD: bool, const N: usize> Default for HandIter<SD, N> {
+    /// Creates a new `HandIter` starting with the first combination
     fn default() -> Self {
         let mut indices = [0; N];
         for i in 0..N as u8 {
@@ -33,6 +53,11 @@ impl<const SD: bool, const N: usize> Default for HandIter<SD, N> {
 impl<const SD: bool, const N: usize> Iterator for HandIter<SD, N> {
     type Item = HandN<N>;
 
+    /// Generates the next unique combination of N cards
+    ///
+    /// Returns `Some(HandN<N>)` containing the next combination, or `None`
+    /// when all combinations have been generated. Uses a combination algorithm
+    /// to ensure each hand is unique and generated in lexicographic order.
     fn next(&mut self) -> Option<Self::Item> {
         if self.done {
             return None;
@@ -70,7 +95,9 @@ impl<const SD: bool, const N: usize> Iterator for HandIter<SD, N> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::*;
 
+    // #[coverage(off)]
     #[test]
     fn test_hand_iter_empty() {
         let mut iter = HandIter::<false, 0>::default();

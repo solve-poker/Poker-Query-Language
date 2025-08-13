@@ -27,7 +27,7 @@ pub fn to_five_cards(s: &str) -> Result<Card64, RuntimeError> {
 
     let mut chars = s.chars().filter(|c| !c.is_whitespace());
 
-    let mut c64 = Card64::empty();
+    let mut c64 = Card64::default();
 
     c64.set(next_card(s, &mut chars)?);
     c64.set(next_card(s, &mut chars)?);

@@ -1,3 +1,5 @@
+#![allow(clippy::wildcard_imports)]
+
 use std::{io, slice::Iter, sync::LazyLock};
 
 use derive_more::Debug;

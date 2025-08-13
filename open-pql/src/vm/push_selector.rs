@@ -97,7 +97,7 @@ pub mod tests {
     use super::*;
     use crate::*;
 
-    fn s(s: &str) -> Selector {
+    fn s(s: &str) -> Selector<'_> {
         SelectorParser::new().parse(s).unwrap()
     }
 

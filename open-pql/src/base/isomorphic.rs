@@ -1,14 +1,7 @@
-use super::{Board, Card, Flop, HandN, Suit};
-
-mod suit_mapping;
-pub use suit_mapping::*;
-
-/// Index of the turn card in a board array
-pub const IDX_TURN: usize = 3;
-/// Index of the river card in a board array
-pub const IDX_RIVER: usize = 4;
-/// Number of cards in a flop
-pub const N_FLOP: usize = 3;
+use super::{
+    Board, Card, Flop, HandN, IDX_RIVER, IDX_TURN, N_FLOP, Suit, SuitMapping,
+    Vec,
+};
 
 impl<const N: usize> HandN<N> {
     pub fn new_iso_with_mapping(
@@ -31,6 +24,12 @@ impl Board {
         mapping: &mut SuitMapping,
     ) -> Self {
         create_iso_board(cards, mapping)
+    }
+
+    pub fn new_iso(cards: &[Card]) -> (Self, SuitMapping) {
+        let mut mapping = SuitMapping::default();
+        let iso = Self::new_iso_with_mapping(cards, &mut mapping);
+        (iso, mapping)
     }
 }
 
@@ -103,13 +102,10 @@ mod tests {
 
     #[test]
     fn test_to_suitvar_char() {
-        // Test each suit mapping to its expected character
         assert_eq!(to_suitvar_char(Suit::S), 'w');
         assert_eq!(to_suitvar_char(Suit::H), 'x');
         assert_eq!(to_suitvar_char(Suit::D), 'y');
         assert_eq!(to_suitvar_char(Suit::C), 'z');
-        //Hand<6♠8♥9♦Q♦Q♣>,
-        //Hand<6♠8♥9♦Q♣Q♦>,
     }
 
     #[test]
@@ -132,5 +128,19 @@ mod tests {
 
         assert_eq!(res.len(), 7140);
         assert_eq!(iso_set.len(), 573);
+    }
+
+    #[test]
+    fn test_iso_board() {
+        fn assert_iso_eq(lhs: &str, rhs: &str) {
+            assert_eq!(
+                Board::new_iso(&cards!(lhs)).0,
+                Board::new_iso(&cards!(rhs)).0
+            );
+        }
+
+        assert_iso_eq("", "");
+        assert_iso_eq("AsKhQd", "AhKsQc");
+        assert_iso_eq("AsKhQdJdTd", "AhKsQcJcTc"); // TODO: maybe ignore turn/river order?
     }
 }

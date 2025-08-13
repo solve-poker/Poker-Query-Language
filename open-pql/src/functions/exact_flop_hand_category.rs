@@ -12,7 +12,6 @@ pub fn exact_flop_hand_category(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::*;
 
     #[quickcheck]
     fn test_exact_flop_hand_category(

@@ -20,15 +20,14 @@ mod tests {
 
     #[quickcheck]
     fn test_rate_hi_hand(hbg: HandBoardGame) -> TestResult {
-        let cards: [Card; 5] = hbg.board.into();
+        let cards = hbg.board.to_vec();
+        let c64 = Card64::from(hbg.board);
 
-        let s = cards.map(|c| c.to_string()).join("");
+        let s = cards.iter().map(std::string::ToString::to_string).join("");
 
         let rating = match hbg.game {
-            PQLGame::Holdem | PQLGame::Omaha => {
-                eval_holdem7((&cards as &[_]).into())
-            }
-            PQLGame::ShortDeck => eval_shortdeck7((&cards as &[_]).into()),
+            PQLGame::Holdem | PQLGame::Omaha => eval_holdem7(c64),
+            PQLGame::ShortDeck => eval_shortdeck7(c64),
         };
 
         TestResult::from_bool(rating == rate_hi_hand(&s, hbg.game).unwrap())

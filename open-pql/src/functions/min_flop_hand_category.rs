@@ -12,7 +12,6 @@ pub fn min_flop_hand_category(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::*;
 
     #[quickcheck]
     fn test_min_flop_hand_category(

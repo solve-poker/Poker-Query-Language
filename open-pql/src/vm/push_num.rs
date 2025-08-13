@@ -66,7 +66,7 @@ mod tests {
     use super::*;
     use crate::*;
 
-    fn n(s: &str) -> ast::Num {
+    fn n(s: &str) -> ast::Num<'_> {
         NumParser::new().parse(s).unwrap()
     }
 

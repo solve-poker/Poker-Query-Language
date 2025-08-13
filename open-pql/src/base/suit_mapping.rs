@@ -49,21 +49,12 @@ impl SuitMapping {
         self.map = [None; 4];
         self.next_suit = Suit::default();
     }
-
-    #[cfg(test)]
-    pub const fn no_map() -> Self {
-        let mut mapping = Self::new();
-        mapping.map_suit(Suit::S);
-        mapping.map_suit(Suit::H);
-        mapping.map_suit(Suit::D);
-        mapping.map_suit(Suit::C);
-        mapping
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::*;
 
     const W: Suit = Suit::S;
     const X: Suit = Suit::H;

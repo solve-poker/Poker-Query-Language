@@ -1,6 +1,23 @@
-use super::*;
+use super::{Display, FromStr, Hash, N_SUITS, ParseError, mem};
 
 /// Enum for Suits
+///
+/// Represents the four suits in a standard deck of playing cards.
+/// Suits are ordered Spades < Hearts < Diamonds < Clubs for consistent comparison.
+/// Each suit has a unique numeric value (0-3) and character representation.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::{Suit, Suit::*};
+///
+/// let suit = S; // Spades
+/// assert_eq!(suit.to_string(), "s");
+/// assert_eq!(suit as u8, 0);
+///
+/// let parsed: Suit = "h".parse().unwrap();
+/// assert_eq!(parsed, H);
+/// ```
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]
@@ -26,7 +43,7 @@ impl Suit {
         [Self::S, Self::H, Self::D, Self::C];
 
     /// Creates a suit from a u8 value (0-3)
-    pub fn from_u8(v: u8) -> Self {
+    pub(crate) fn from_u8(v: u8) -> Self {
         debug_assert!(v < N_SUITS, "invalid suit: {v}");
         unsafe { mem::transmute(v) }
     }
@@ -86,6 +103,7 @@ impl From<Suit> for char {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::*;
 
     impl Arbitrary for Suit {
         fn arbitrary(g: &mut quickcheck::Gen) -> Self {
@@ -158,5 +176,13 @@ mod tests {
         assert_eq!("h", &Suit::H.to_string());
         assert_eq!("d", &Suit::D.to_string());
         assert_eq!("c", &Suit::C.to_string());
+    }
+
+    #[test]
+    fn test_to_char() {
+        assert_eq!('s', char::from(Suit::S));
+        assert_eq!('h', char::from(Suit::H));
+        assert_eq!('d', char::from(Suit::D));
+        assert_eq!('c', char::from(Suit::C));
     }
 }

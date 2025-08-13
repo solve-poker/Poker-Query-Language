@@ -1,4 +1,7 @@
-use super::*;
+use super::{
+    BitAnd, BitAndAssign, BitOr, BitOrAssign, Card, Card64, Hash, MASK16_RANKS,
+    N_RANKS, Not, PQLCardCount, RANK_NAMES, Rank, Suit, U16_LEADING_ONE, fmt,
+};
 
 #[cfg(any(test, feature = "benchmark"))]
 #[macro_export]
@@ -15,9 +18,27 @@ macro_rules! r16 {
 }
 
 /// Rank Set
+///
+/// A compact bit-set representation for storing multiple ranks using a single u16.
+/// Each bit represents whether a specific rank is present in the set.
+/// Supports efficient set operations like union, intersection, and membership testing.
+///
 /// # Memory Layout:
 /// ```text
 /// [15, 0]:   xxxAKQJT 98765432  // x: unused
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::{Rank::*, Rank16};
+///
+/// let mut ranks = Rank16::default();
+/// ranks.set(RA);
+/// ranks.set(RK);
+///
+/// assert!(ranks.contains_rank(RA));
+/// assert_eq!(ranks.count(), 2);
 /// ```
 #[derive(
     Copy,
@@ -77,24 +98,6 @@ impl Rank16 {
         Self(1 << r as u8)
     }
 
-    /// Constructs an empty [Rank16]
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use open_pql::{Card, Rank16};
-    ///
-    /// let ranks: Rank16 = Rank16::empty();
-    /// let cards: [Card; 0] = [];
-    ///
-    /// assert_eq!(ranks, Rank16::from(cards.as_ref()));
-    /// ```
-    #[must_use]
-    #[inline]
-    pub const fn empty() -> Self {
-        Self(0)
-    }
-
     /// Checks whether all rank masks are unset
     ///
     /// # Examples
@@ -119,7 +122,7 @@ impl Rank16 {
     /// ```
     /// use open_pql::{Rank, Rank16};
     ///
-    /// let mut ranks: Rank16 = Rank16::empty();
+    /// let mut ranks: Rank16 = Rank16::default();
     /// ranks.set(Rank::RA);
     ///
     /// assert_eq!(ranks, Rank16::from(Rank::RA));
@@ -139,7 +142,7 @@ impl Rank16 {
     /// let mut ranks: Rank16 = Rank16::from(Rank::RA);
     /// ranks.unset(Rank::RA);
     ///
-    /// assert_eq!(ranks, Rank16::empty());
+    /// assert_eq!(ranks, Rank16::default());
     /// ```
     #[inline]
     pub const fn unset(&mut self, r: Rank) {
@@ -275,7 +278,7 @@ impl From<Rank> for Rank16 {
 
 impl From<&[Rank]> for Rank16 {
     fn from(rs: &[Rank]) -> Self {
-        let mut res = Self::empty();
+        let mut res = Self::default();
 
         for r in rs {
             res.set(*r);
@@ -287,7 +290,7 @@ impl From<&[Rank]> for Rank16 {
 
 impl From<&[Card]> for Rank16 {
     fn from(cs: &[Card]) -> Self {
-        let mut res = Self::empty();
+        let mut res = Self::default();
 
         for c in cs {
             res.set(c.rank);
@@ -329,10 +332,8 @@ impl fmt::Debug for Rank16 {
 
 #[cfg(test)]
 mod tests {
-    use constants::MASK16_RANKS;
-    use quickcheck::{Arbitrary, TestResult};
-
     use super::*;
+    use crate::*;
 
     impl Arbitrary for Rank16 {
         fn arbitrary(g: &mut quickcheck::Gen) -> Self {
@@ -344,14 +345,14 @@ mod tests {
 
     #[test]
     fn test_empty() {
-        assert_eq!(Rank16::empty(), Rank16(0));
-        assert!(Rank16::empty().is_empty());
+        assert_eq!(Rank16::default(), Rank16(0));
+        assert!(Rank16::default().is_empty());
         assert!(!Rank16(1).is_empty());
     }
 
     #[quickcheck]
     fn test_set_and_contains(r: Rank) {
-        let mut ranks = Rank16::empty();
+        let mut ranks = Rank16::default();
 
         ranks.set(r);
 
@@ -447,8 +448,8 @@ mod tests {
 
         assert_eq!(min_i, min_r as usize);
         assert_eq!(max_i, max_r as usize);
-        assert_eq!(None, Rank16::empty().min_rank());
-        assert_eq!(None, Rank16::empty().max_rank());
+        assert_eq!(None, Rank16::default().min_rank());
+        assert_eq!(None, Rank16::default().max_rank());
     }
 
     #[test]
@@ -473,7 +474,7 @@ mod tests {
 
     #[quickcheck]
     fn test_from_card64(cards: Vec<Card>) -> TestResult {
-        let mut ranks = Rank16::empty();
+        let mut ranks = Rank16::default();
 
         for i in 0..cards.len() {
             ranks.set(cards[i].rank);

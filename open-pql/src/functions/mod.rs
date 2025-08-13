@@ -1,3 +1,5 @@
+#![allow(clippy::wildcard_imports)]
+
 use std::{
     iter::Filter,
     str::{Chars, FromStr},

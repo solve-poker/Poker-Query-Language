@@ -1,3 +1,5 @@
+#![allow(clippy::wildcard_imports)]
+
 use super::{
     prim::math::combinatorics::{
         combination_of_2_index_to_ranks, combination_of_3_index_to_ranks,
@@ -11,6 +13,7 @@ mod pql_board_range;
 mod pql_boolean;
 mod pql_card;
 mod pql_card_count;
+mod pql_dead_cards;
 mod pql_double;
 mod pql_equity;
 mod pql_flop_hand_category;
@@ -40,6 +43,7 @@ pub use pql_board_range::PQLBoardRange;
 pub use pql_boolean::PQLBoolean;
 pub use pql_card::PQLCard;
 pub use pql_card_count::PQLCardCount;
+pub use pql_dead_cards::*;
 pub use pql_double::PQLDouble;
 pub use pql_equity::PQLEquity;
 pub use pql_flop_hand_category::*;

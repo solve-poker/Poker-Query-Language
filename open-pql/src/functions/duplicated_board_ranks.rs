@@ -19,7 +19,7 @@ mod tests {
         street: PQLStreet,
     ) -> TestResult {
         let c64: Card64 = (board, street).into();
-        let mut ranks = Rank16::empty();
+        let mut ranks = Rank16::default();
 
         for rank in Rank::ARR_ALL {
             if c64.count_by_rank(rank) > 1 {

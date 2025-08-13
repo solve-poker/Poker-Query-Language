@@ -1,6 +1,23 @@
-use super::*;
+use super::{Display, FromStr, Hash, N_RANKS, ParseError, mem};
 
 /// Enum for Ranks
+///
+/// Represents the rank (value) of a playing card from 2 to Ace.
+/// Ranks are ordered from lowest (2) to highest (Ace) for poker hand evaluation.
+/// Each rank has a unique numeric value (0-12) and character representation.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::{Rank, Rank::*};
+///
+/// let rank = RA; // Ace
+/// assert_eq!(rank.to_string(), "A");
+/// assert_eq!(rank as u8, 12);
+///
+/// let parsed: Rank = "K".parse().unwrap();
+/// assert_eq!(parsed, RK);
+/// ```
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]
@@ -79,7 +96,7 @@ impl Rank {
     ];
 
     /// Creates a rank from a u8 value (0-12)
-    pub fn from_u8(v: u8) -> Self {
+    pub(crate) fn from_u8(v: u8) -> Self {
         debug_assert!(v < N_RANKS, "invalid rank: {v}");
         unsafe { mem::transmute(v) }
     }
@@ -124,12 +141,6 @@ impl From<Rank> for char {
     }
 }
 
-impl From<&Rank> for char {
-    fn from(r: &Rank) -> Self {
-        Self::from(*r)
-    }
-}
-
 impl TryFrom<char> for Rank {
     type Error = ParseError;
 
@@ -171,6 +182,7 @@ impl FromStr for Rank {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::*;
 
     impl Arbitrary for Rank {
         fn arbitrary(g: &mut quickcheck::Gen) -> Self {
@@ -300,5 +312,13 @@ mod tests {
         assert_eq!("Q", &Rank::RQ.to_string());
         assert_eq!("K", &Rank::RK.to_string());
         assert_eq!("A", &Rank::RA.to_string());
+    }
+
+    #[test]
+    fn test_to_char() {
+        let cs = "23456789TJQKA";
+        for (i, &r) in Rank::ARR_ALL.iter().enumerate() {
+            assert_eq!(cs.chars().nth(i).unwrap(), char::from(r));
+        }
     }
 }

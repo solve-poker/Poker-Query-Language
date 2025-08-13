@@ -1,7 +1,7 @@
 use super::*;
 #[pqlfn(arg, rtn, eval)]
 pub fn hand_ranks(hand: &Hand, _street: PQLStreet) -> PQLRankSet {
-    let mut ranks = Rank16::empty();
+    let mut ranks = Rank16::default();
 
     for c in hand {
         ranks.set(c.rank);

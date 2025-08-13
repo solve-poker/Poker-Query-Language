@@ -10,7 +10,7 @@ pub struct Str<'i> {
 mod tests {
     use super::{super::super::parser::*, *};
 
-    fn s(s: &str) -> Str {
+    fn s(s: &str) -> Str<'_> {
         StrParser::new().parse(s).unwrap()
     }
 

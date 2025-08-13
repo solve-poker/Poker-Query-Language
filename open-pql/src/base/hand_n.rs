@@ -4,6 +4,24 @@ use super::{
 };
 
 /// A hand of N cards
+///
+/// Represents a fixed-size collection of N cards that are automatically sorted
+/// upon creation. Cards are maintained in sorted order for consistent comparison
+/// and hashing. This type is used for poker hands, flops, and other fixed-size
+/// card collections.
+///
+/// # Examples
+///
+/// ```
+/// use open_pql::{Card, HandN, Rank::*, Suit::*};
+///
+/// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+/// let hand: HandN<3> = HandN::from_slice(&cards);
+///
+/// assert_eq!(hand.len(), 3);
+/// assert!(!hand.is_empty());
+/// assert_eq!(hand[0], Card::new(RQ, D)); // Cards are sorted
+/// ```
 #[derive(Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, From, Into)]
 pub struct HandN<const N: usize>(pub(crate) [Card; N]);
 
@@ -66,12 +84,13 @@ impl<const N: usize> HandN<N> {
     }
 }
 
+#[allow(unused)]
 impl HandN<2> {
-    pub const fn to_u16(&self) -> u16 {
+    pub(crate) const fn to_u16(&self) -> u16 {
         (self.0[0].to_u8() as u16) | (self.0[1].to_u8() as u16) << 8
     }
 
-    pub fn from_u16(v: u16) -> Self {
+    pub(crate) fn from_u16(v: u16) -> Self {
         let [c0, c1] = v.to_le_bytes();
         Self::from_slice(&[Card::from_u8(c0), Card::from_u8(c1)])
     }
@@ -182,8 +201,6 @@ mod tests {
 
         let _hand: HandN<3> = HandN::from_slice(&cards);
     }
-
-    // ... existing tests ...
 
     #[test]
     fn test_hand_iter() {
@@ -309,5 +326,26 @@ mod tests {
         for (i, card) in expected_order.iter().enumerate() {
             assert_eq!(hand[i], *card);
         }
+    }
+
+    #[quickcheck]
+    fn test_hand_to_card64(cards: CardN<7>) {
+        let cs: Vec<_> = cards.into_iter().collect();
+        let c64 = Card64::from(cs.as_slice());
+        let hand = HandN::<7>::from_slice(&cs);
+
+        assert_eq!(c64, Card64::from(hand));
+    }
+
+    #[test]
+    fn test_hand_to_vec() {
+        let cs = cards!("AsKhQd");
+        assert_eq!(HandN::<3>::from_slice(&cs).to_vec(), cards!("QdKhAs"));
+    }
+
+    #[test]
+    fn test_hand_display() {
+        let hand = HandN::<2>::from_slice(&cards!("AsKh"));
+        assert_eq!(format!("{hand}"), "KhAs");
     }
 }

@@ -458,7 +458,7 @@ mod tests {
 
         for h in hand.into_iter().combinations(2) {
             for b in board.clone().into_iter().combinations(3) {
-                let mut cs = Card64::empty();
+                let mut cs = Card64::default();
 
                 cs.set(h[0]);
                 cs.set(h[1]);
