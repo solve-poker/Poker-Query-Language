@@ -27,8 +27,6 @@ lalrpop-util.workspace = true
 open_pql_macro.workspace = true
 regex.workspace = true
 rustc-hash.workspace = true
-serde.workspace = true
-smallvec.workspace = true
 speedy.workspace = true
 tailcall.workspace = true
 

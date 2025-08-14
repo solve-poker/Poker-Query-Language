@@ -165,6 +165,7 @@ impl Card64 {
     /// c64.set(Card::new(R2, S));
     ///
     /// assert_eq!(c64, Card64::from(Card::new(R2, S)));
+    /// assert!(c64.contains_card(Card::new(R2, S)));
     /// ```
     #[inline]
     pub const fn set(&mut self, c: Card) {
@@ -225,8 +226,11 @@ impl Card64 {
     /// use open_pql::{Card, Card64, Rank::*, Suit::*};
     ///
     /// let c64: Card64 = Card64::all();
-    ///
     /// assert_eq!(c64.count_by_rank(RA), 4);
+    ///
+    /// let c64_single: Card64 = Card64::from(Card::new(RA, S));
+    /// assert_eq!(c64_single.count_by_rank(RA), 1);
+    /// assert_eq!(c64_single.count_by_rank(RK), 0);
     /// ```
     pub const fn count_by_rank(self, r: Rank) -> PQLCardCount {
         (self.0 & MASK64_2 << r as u8).count_ones().to_le_bytes()[0]
@@ -240,8 +244,12 @@ impl Card64 {
     /// use open_pql::{Card, Card64, Rank::*, Suit::*};
     ///
     /// let c64: Card64 = Card64::all();
-    ///
     /// assert_eq!(c64.count_by_suit(D), 13);
+    ///
+    /// let c64_mixed: Card64 =
+    ///     Card64::from([Card::new(RA, S), Card::new(RK, S)].as_ref());
+    /// assert_eq!(c64_mixed.count_by_suit(S), 2);
+    /// assert_eq!(c64_mixed.count_by_suit(H), 0);
     /// ```
     pub const fn count_by_suit(self, s: Suit) -> PQLCardCount {
         #[inline]
@@ -467,6 +475,7 @@ impl From<Card> for Card64 {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;

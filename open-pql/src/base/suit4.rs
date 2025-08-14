@@ -169,6 +169,7 @@ impl From<&[Suit]> for Suit4 {
     }
 }
 
+/// Converts a u8 bitmask to a string representation of suits
 pub fn u8_to_suit_str(v: u8) -> String {
     let to_c = |i: u8| {
         if v & 1 << i == 0 {
@@ -208,6 +209,7 @@ impl From<Card64> for Suit4 {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;

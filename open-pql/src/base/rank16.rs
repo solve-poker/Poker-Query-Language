@@ -229,7 +229,19 @@ impl Rank16 {
         }
     }
 
-    /// Returns n-th Rank in the set
+    /// Returns n-th Rank in the set (1-indexed, starting from highest rank)
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Rank::*, Rank16};
+    ///
+    /// let ranks = Rank16::from([RA, RK, R2].as_ref());
+    /// assert_eq!(ranks.nth_rank(1), Some(RA)); // 1st highest
+    /// assert_eq!(ranks.nth_rank(2), Some(RK)); // 2nd highest  
+    /// assert_eq!(ranks.nth_rank(3), Some(R2)); // 3rd highest
+    /// assert_eq!(ranks.nth_rank(4), None); // None for invalid
+    /// ```
     #[must_use]
     #[inline]
     pub fn nth_rank(self, mut n: u8) -> Option<Rank> {
@@ -249,6 +261,19 @@ impl Rank16 {
     }
 
     /// Returns all higher ranks than the max rank in the set
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Rank::*, Rank16};
+    ///
+    /// let ranks = Rank16::from([R5, R7].as_ref());
+    /// let higher = Rank16::higher_of(ranks);
+    /// assert!(higher.contains_rank(R8));
+    /// assert!(higher.contains_rank(RA));
+    /// assert!(!higher.contains_rank(R7));
+    /// assert!(!higher.contains_rank(R5));
+    /// ```
     #[must_use]
     #[inline]
     pub const fn higher_of(r: Self) -> Self {
@@ -309,6 +334,7 @@ impl From<Card64> for Rank16 {
     }
 }
 
+/// Converts a u16 bitmask to a string representation of ranks
 pub fn u16_to_rank_str(v: u16) -> String {
     let to_c = |i: u8| {
         if v & 1 << i == 0 {
@@ -331,6 +357,7 @@ impl fmt::Debug for Rank16 {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;

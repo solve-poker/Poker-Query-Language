@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["open-pql", "open-pql-macro", "opql"]
+members = ["open-pql", "open-pql-macro", "opql", "open-pql-wasm"]
 
 [workspace.package]
 edition = "2024"
@@ -28,8 +28,6 @@ quickcheck_macros = "1.1.0"
 quote = "1.0"
 regex = "1.11.1"
 rustc-hash = "2.1.1"
-serde = "1.0.219"
-smallvec = "1.15.1"
 speedy = "0.8.7"
 syn = { version = "2.0", features = ["full"] }
 tailcall = "1.0.1"
@@ -42,3 +40,8 @@ must_use_candidate = { level = "allow", priority = 10 }
 needless_range_loop = { level = "allow", priority = 10 }
 nursery = "warn"
 pedantic = "warn"
+
+[workspace.lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = [
+  'cfg(coverage,coverage_nightly)',
+] }

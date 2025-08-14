@@ -36,6 +36,16 @@ impl<const N: usize> HandN<N> {
     }
 
     /// Creates a hand from a slice of cards
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Card, HandN, Rank::*, Suit::*};
+    ///
+    /// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+    /// let hand: HandN<3> = HandN::from_slice(&cards);
+    /// assert_eq!(hand.len(), 3);
+    /// ```
     pub fn from_slice(cs: &[Card]) -> Self {
         debug_assert!(
             cs.len() >= N,
@@ -52,10 +62,21 @@ impl<const N: usize> HandN<N> {
     }
 
     /// Returns the underlying card array
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Card, HandN, Rank::*, Suit::*};
+    ///
+    /// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+    /// let hand: HandN<3> = HandN::from_slice(&cards);
+    /// assert_eq!(hand.as_slice().len(), 3);
+    /// ```
     pub const fn as_slice(&self) -> &[Card] {
         &self.0
     }
 
+    /// Converts the hand to a vector of cards
     pub fn to_vec(&self) -> Vec<Card> {
         self.0.to_vec()
     }
@@ -75,10 +96,12 @@ impl<const N: usize> HandN<N> {
         N == 0
     }
 
+    /// Returns an iterator over all possible hands of N cards from the short deck (6-A only)
     pub fn iter_all_short() -> HandIter<true, N> {
         HandIter::default()
     }
 
+    /// Returns an iterator over all possible hands of N cards from the full deck (52 cards)
     pub fn iter_all() -> HandIter<false, N> {
         HandIter::default()
     }
@@ -86,11 +109,11 @@ impl<const N: usize> HandN<N> {
 
 #[allow(unused)]
 impl HandN<2> {
-    pub(crate) const fn to_u16(&self) -> u16 {
+    pub const fn to_u16(self) -> u16 {
         (self.0[0].to_u8() as u16) | (self.0[1].to_u8() as u16) << 8
     }
 
-    pub(crate) fn from_u16(v: u16) -> Self {
+    pub fn from_u16(v: u16) -> Self {
         let [c0, c1] = v.to_le_bytes();
         Self::from_slice(&[Card::from_u8(c0), Card::from_u8(c1)])
     }
@@ -140,6 +163,7 @@ impl<'a, const N: usize> IntoIterator for &'a HandN<N> {
 }
 
 impl<const N: usize> fmt::Debug for HandN<N> {
+    #[cfg_attr(coverage_nightly, coverage(off))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Hand<")?;
         for c in &self.0 {
@@ -150,6 +174,7 @@ impl<const N: usize> fmt::Debug for HandN<N> {
 }
 
 impl<const N: usize> fmt::Display for HandN<N> {
+    #[cfg_attr(coverage_nightly, coverage(off))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for card in &self.0 {
             write!(f, "{card}")?;
@@ -176,6 +201,7 @@ impl From<(Card, Card, Card)> for HandN<3> {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;

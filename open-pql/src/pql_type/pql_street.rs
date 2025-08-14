@@ -1,3 +1,6 @@
+// TODO: remove later
+#![allow(clippy::fallible_impl_from)]
+
 use super::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, Copy, PartialOrd, Ord, Default)]

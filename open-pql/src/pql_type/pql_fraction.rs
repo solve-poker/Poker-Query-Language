@@ -1,3 +1,6 @@
+// TODO: remove later
+#![allow(clippy::missing_panics_doc)]
+
 use super::*;
 
 type Inner = u16;

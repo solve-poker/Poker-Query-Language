@@ -1,3 +1,6 @@
+// TODO: remove later
+#![allow(clippy::fallible_impl_from)]
+
 use super::*;
 
 pub type PlayerHands = Vec<PlayerHand>;

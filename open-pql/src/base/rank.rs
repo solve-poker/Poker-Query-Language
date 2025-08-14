@@ -22,7 +22,7 @@ use super::{Display, FromStr, Hash, N_RANKS, ParseError, mem};
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]
 pub enum Rank {
-    /// Duece
+    /// Deuce
     #[default]
     #[display("2")]
     R2 = 0,
@@ -101,6 +101,18 @@ impl Rank {
         unsafe { mem::transmute(v) }
     }
 
+    /// Creates a rank from a character, returning None for invalid characters
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Rank, Rank::*};
+    ///
+    /// assert_eq!(Rank::from_char('A'), Some(RA));
+    /// assert_eq!(Rank::from_char('K'), Some(RK));
+    /// assert_eq!(Rank::from_char('2'), Some(R2));
+    /// assert_eq!(Rank::from_char('X'), None);
+    /// ```
     pub const fn from_char(c: char) -> Option<Self> {
         match c {
             '2' => Some(Self::R2),
@@ -180,6 +192,7 @@ impl FromStr for Rank {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;
@@ -320,5 +333,11 @@ mod tests {
         for (i, &r) in Rank::ARR_ALL.iter().enumerate() {
             assert_eq!(cs.chars().nth(i).unwrap(), char::from(r));
         }
+    }
+
+    #[should_panic(expected = "invalid rank")]
+    #[test]
+    fn test_from_u8() {
+        Rank::from_u8(14);
     }
 }

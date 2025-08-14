@@ -1,7 +1,7 @@
 #![cfg_attr(test, allow(clippy::needless_pass_by_value))]
 #![cfg_attr(test, allow(clippy::trivially_copy_pass_by_ref))]
 #![cfg_attr(test, allow(clippy::wildcard_imports))]
-// #![feature(coverage_attribute)]
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 #[cfg(test)]
 #[macro_use(quickcheck)]

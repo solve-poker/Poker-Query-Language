@@ -4,6 +4,7 @@ use super::{
 };
 
 impl<const N: usize> HandN<N> {
+    /// Creates an isomorphic hand using an existing suit mapping
     pub fn new_iso_with_mapping(
         cards: &[Card],
         mapping: &mut SuitMapping,
@@ -11,6 +12,7 @@ impl<const N: usize> HandN<N> {
         Self::new(create_iso_array(cards, mapping))
     }
 
+    /// Creates an isomorphic hand with a new suit mapping
     pub fn new_iso(cards: &[Card]) -> (Self, SuitMapping) {
         let mut mapping = SuitMapping::default();
         let iso = Self::new_iso_with_mapping(cards, &mut mapping);
@@ -19,6 +21,7 @@ impl<const N: usize> HandN<N> {
 }
 
 impl Board {
+    /// Creates an isomorphic board using an existing suit mapping
     pub fn new_iso_with_mapping(
         cards: &[Card],
         mapping: &mut SuitMapping,
@@ -26,6 +29,7 @@ impl Board {
         create_iso_board(cards, mapping)
     }
 
+    /// Creates an isomorphic board with a new suit mapping
     pub fn new_iso(cards: &[Card]) -> (Self, SuitMapping) {
         let mut mapping = SuitMapping::default();
         let iso = Self::new_iso_with_mapping(cards, &mut mapping);
@@ -94,6 +98,7 @@ pub const fn to_suitvar_char(s: Suit) -> char {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use std::collections::{HashMap, HashSet};
 
