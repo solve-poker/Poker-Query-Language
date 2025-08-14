@@ -67,6 +67,16 @@ pub struct Board {
 
 impl Board {
     /// Creates a board from a slice of cards
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Board, Card, Rank::*, Suit::*};
+    ///
+    /// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+    /// let board = Board::from_slice(&cards);
+    /// assert_eq!(board.len(), 3);
+    /// ```
     pub fn from_slice(cards: &[Card]) -> Self {
         let flop = if cards.len() >= N_FLOP {
             Some(Flop::from_slice(&cards[0..3]))
@@ -87,6 +97,16 @@ impl Board {
     }
 
     /// Returns the number of cards on the board
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Board, Card, Rank::*, Suit::*};
+    ///
+    /// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+    /// let board = Board::from_slice(&cards);
+    /// assert_eq!(board.len(), 3);
+    /// ```
     pub fn len(&self) -> usize {
         match self.flop {
             Some(_) => 3 + self.turn.iter().count() + self.river.iter().count(),
@@ -95,21 +115,67 @@ impl Board {
     }
 
     /// Returns an iterator over all cards on the board
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Board, Card, Rank::*, Suit::*};
+    ///
+    /// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+    /// let board = Board::from_slice(&cards);
+    /// let collected: Vec<Card> = board.iter().collect();
+    /// assert_eq!(collected.len(), 3);
+    /// ```
     pub fn iter(&self) -> impl Iterator<Item = Card> + '_ {
         let flop_iter = self.flop.iter().flat_map(Flop::iter);
         flop_iter.chain(self.turn).chain(self.river)
     }
 
     /// Returns all cards on the board as a vector
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Board, Card, Rank::*, Suit::*};
+    ///
+    /// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+    /// let board = Board::from_slice(&cards);
+    /// let vec_cards = board.to_vec();
+    /// assert_eq!(vec_cards.len(), 3);
+    /// ```
     pub fn to_vec(&self) -> Vec<Card> {
         self.iter().collect()
     }
 
     /// Clears the board
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Board, Card, Rank::*, Suit::*};
+    ///
+    /// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+    /// let mut board = Board::from_slice(&cards);
+    /// assert!(!board.is_empty());
+    /// board.clear();
+    /// assert!(board.is_empty());
+    /// ```
     pub fn clear(&mut self) {
         *self = Self::default();
     }
 
+    /// Returns true if the board contains the specified card
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Board, Card, Rank::*, Suit::*};
+    ///
+    /// let cards = [Card::new(RA, S), Card::new(RK, H), Card::new(RQ, D)];
+    /// let board = Board::from_slice(&cards);
+    /// assert!(board.contains_card(Card::new(RA, S)));
+    /// assert!(!board.contains_card(Card::new(RJ, C)));
+    /// ```
     pub fn contains_card(&self, card: Card) -> bool {
         if let Some(flop) = self.flop
             && flop.as_slice().contains(&card)
@@ -146,6 +212,7 @@ impl From<&[Card]> for Board {
 }
 
 impl fmt::Debug for Board {
+    #[cfg_attr(coverage_nightly, coverage(off))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Board<")?;
         for c in self.iter() {
@@ -191,6 +258,7 @@ impl From<Flop> for Board {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;
@@ -295,18 +363,28 @@ mod tests {
     fn test_board_card64_conversion() {
         let cards = cards!("AsKhQdJcTs");
 
-        // Test with different board sizes
         for i in N_FLOP..=5 {
             let board = Board::from_slice(&cards[0..i]);
             let card64 = Card64::from(board);
 
-            // Verify each card is set in the Card64
             for j in 0..i {
                 assert!(card64.contains_card(cards[j]));
             }
 
             assert_eq!(card64.count() as usize, i);
         }
+
+        let c64 = Card64::from(Board {
+            turn: Some(cards[0]),
+            ..Default::default()
+        });
+        assert_eq!(c64, Card64::from(&cards[0..1]));
+
+        let c64 = Card64::from(Board {
+            river: Some(cards[0]),
+            ..Default::default()
+        });
+        assert_eq!(c64, Card64::from(&cards[0..1]));
     }
 
     #[quickcheck]

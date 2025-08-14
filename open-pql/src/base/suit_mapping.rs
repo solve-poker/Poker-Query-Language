@@ -17,6 +17,17 @@ impl SuitMapping {
     }
 
     /// Maps a suit to its isomorphic equivalent, creating a new mapping if needed
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Suit::*, SuitMapping};
+    ///
+    /// let mut mapping = SuitMapping::new();
+    /// assert_eq!(mapping.map_suit(H), S); // First suit maps to S
+    /// assert_eq!(mapping.map_suit(D), H); // Second suit maps to H  
+    /// assert_eq!(mapping.map_suit(H), S); // Same suit returns same mapping
+    /// ```
     pub const fn map_suit(&mut self, suit: Suit) -> Suit {
         let idx = suit as usize;
         if let Some(iso_suit) = self.map[idx] {
@@ -35,16 +46,54 @@ impl SuitMapping {
     }
 
     /// Returns the number of suits that have been mapped
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Suit::*, SuitMapping};
+    ///
+    /// let mut mapping = SuitMapping::new();
+    /// assert_eq!(mapping.len(), 0);
+    /// mapping.map_suit(H);
+    /// assert_eq!(mapping.len(), 1);
+    /// mapping.map_suit(D);
+    /// assert_eq!(mapping.len(), 2);
+    /// ```
     pub fn len(&self) -> usize {
         self.map.iter().filter(|&&s| s.is_some()).count()
     }
 
     /// Returns true if no suits have been mapped
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Suit::*, SuitMapping};
+    ///
+    /// let mut mapping = SuitMapping::new();
+    /// assert!(mapping.is_empty());
+    /// mapping.map_suit(H);
+    /// assert!(!mapping.is_empty());
+    /// ```
     pub fn is_empty(&self) -> bool {
         self.map.iter().all(|&s| s.is_none())
     }
 
     /// Clears all mappings
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Suit::*, SuitMapping};
+    ///
+    /// let mut mapping = SuitMapping::new();
+    /// mapping.map_suit(H);
+    /// mapping.map_suit(D);
+    /// assert_eq!(mapping.len(), 2);
+    /// mapping.clear();
+    /// assert_eq!(mapping.len(), 0);
+    /// assert!(mapping.is_empty());
+    /// ```
     pub fn clear(&mut self) {
         self.map = [None; 4];
         self.next_suit = Suit::default();
@@ -52,6 +101,7 @@ impl SuitMapping {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;

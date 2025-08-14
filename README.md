@@ -2,6 +2,8 @@
 
 > ⚠️ **Work in Progress**: This project is currently under active development and is not yet ready for production use.
 
+> 🌐 **Try it online**: An interactive demo is available at https://pql-playground.solve.poker/
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.70+-blue.svg)](https://www.rust-lang.org)
 
@@ -43,6 +45,20 @@ opql -c "select avg(boardsuitcount(river)) from hero='As9s', villain='*', board=
 opql -c "select equity from hero='AhKh', villain='QQ+', board='Ah9s2c', game='holdem'"
 ```
 
+### WebAssembly Demo
+
+Try Open PQL in your browser with the WebAssembly demo:
+
+```bash
+# Install trunk (if not already installed)
+cargo install trunk
+
+# Run the WASM demo
+trunk serve --config ./open-pql-wasm/Trunk.toml
+
+# Open http://localhost:8080 in your browser
+```
+
 ### Library Usage (WIP)
 
 ```rust
@@ -56,11 +72,12 @@ let equity = calculate_equity(&hand, &board)?;
 
 ## Architecture
 
-This workspace contains three main crates:
+This workspace contains four main crates:
 
 - **`open-pql`**: Core library with poker logic and PQL implementation
-- **`open-pql-macro`**: Procedural macros for compile-time optimizations
+- **`open-pql-macro`**: Procedural macros for compile-time optimizations  
 - **`opql`**: Command-line interface for interactive PQL queries
+- **`open-pql-wasm`**: WebAssembly interface for browser-based PQL execution
 
 ## Development
 

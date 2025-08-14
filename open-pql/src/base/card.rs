@@ -174,6 +174,17 @@ impl Card {
     }
 
     /// Creates a card from rank and suit indices.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Card, Rank, Suit};
+    ///
+    /// // This is an internal method used by the library
+    /// let card = Card::new(Rank::RA, Suit::S);
+    /// assert_eq!(card.rank, Rank::RA);
+    /// assert_eq!(card.suit, Suit::S);
+    /// ```
     #[must_use]
     #[inline]
     pub(crate) fn from_indices(r: RankIdx, s: SuitIdx) -> Self {
@@ -184,13 +195,13 @@ impl Card {
     }
 
     /// Converts the card to a single u8 representation [xxSSRRRR].
-    pub(crate) const fn to_u8(self) -> u8 {
+    pub const fn to_u8(self) -> u8 {
         const SHIFT_SUIT: u8 = 4;
         (self.rank as u8) | ((self.suit as u8) << SHIFT_SUIT)
     }
 
     /// Creates a card from a u8 [xxSSRRRR].
-    pub(crate) fn from_u8(v: u8) -> Self {
+    pub fn from_u8(v: u8) -> Self {
         const SHIFT_SUIT: u8 = 4;
         Self::from_indices(
             RankIdx::new(v & 0b1111),
@@ -283,9 +294,11 @@ impl Card {
     /// # Examples
     ///
     /// ```
-    /// use open_pql::Card;
+    /// use open_pql::{Card, Rank, Suit};
     ///
     /// let card = Card::from_tuple(('A', 's'));
+    /// assert_eq!(card.rank, Rank::RA);
+    /// assert_eq!(card.suit, Suit::S);
     /// ```
     pub fn from_tuple((r, s): (char, char)) -> Self {
         Self::new(r.try_into().unwrap(), s.try_into().unwrap())
@@ -315,6 +328,7 @@ impl Card {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;

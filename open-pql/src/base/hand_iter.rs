@@ -93,11 +93,11 @@ impl<const SD: bool, const N: usize> Iterator for HandIter<SD, N> {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;
 
-    // #[coverage(off)]
     #[test]
     fn test_hand_iter_empty() {
         let mut iter = HandIter::<false, 0>::default();
@@ -115,6 +115,14 @@ mod tests {
             assert_eq!(iter.next(), Some([Card::ARR_ALL[i]].into()));
         }
         assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_hand_iter_holdem() {
+        let iter = HandN::<2>::iter_all();
+
+        let expected = 52 * 51 / 2;
+        assert_eq!(iter.count(), expected);
     }
 
     #[test]

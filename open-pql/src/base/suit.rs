@@ -48,7 +48,19 @@ impl Suit {
         unsafe { mem::transmute(v) }
     }
 
-    /// Creates a suit from a character
+    /// Creates a suit from a character, returning None for invalid characters
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use open_pql::{Suit, Suit::*};
+    ///
+    /// assert_eq!(Suit::from_char('s'), Some(S));
+    /// assert_eq!(Suit::from_char('H'), Some(H));
+    /// assert_eq!(Suit::from_char('d'), Some(D));
+    /// assert_eq!(Suit::from_char('C'), Some(C));
+    /// assert_eq!(Suit::from_char('X'), None);
+    /// ```
     pub const fn from_char(c: char) -> Option<Self> {
         match c {
             'S' | 's' => Some(Self::S),
@@ -101,6 +113,7 @@ impl From<Suit> for char {
 }
 
 #[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;
