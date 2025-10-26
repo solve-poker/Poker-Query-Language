@@ -1,10 +1,12 @@
 [package]
-name = "openpql-range-parser"
-description = "Range Parser"
-version = "0.1.0"
+description = "Poker Range Notation Parser"
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
+license = "MIT"
+name = "openpql-range-parser"
+repository = "https://github.com/solve-poker/Poker-Query-Language"
+version = "0.1.0"
 
 [dependencies]
 derive_more = { workspace = true, features = ["display"] }
