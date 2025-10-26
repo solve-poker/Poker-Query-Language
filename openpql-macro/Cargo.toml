@@ -1,0 +1,19 @@
+[package]
+description = "Internal crate used by openpql"
+name = "openpql-macro"
+version = "0.1.0"
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+
+[lib]
+proc-macro = true
+path = "fn_macro.rs"
+
+[dependencies]
+proc-macro2.workspace = true
+quote.workspace = true
+syn.workspace = true
+
+[lints]
+workspace = true

@@ -2,10 +2,13 @@
 set -euo pipefail
 
 commands=(
-  "cargo build"
-  "cargo build --release"
-  "cargo test"
+  "cargo build --all-features"
+  "cargo build --release --all-features"
+  "cargo nextest run"
   "cargo clippy"
+  "cargo bench --no-run"
+  "cargo +nightly llvm-cov"
+  "cargo doc"
 )
 
 pids=()

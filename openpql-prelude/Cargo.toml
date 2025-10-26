@@ -1,0 +1,50 @@
+[package]
+name = "openpql-prelude"
+description = "Basic library for card handling and evaluation of Hold'em Short Deck poker."
+version = "0.1.0"
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+
+[lib]
+name = "openpql_prelude"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+derive_more = { workspace = true, features = [
+  "index",
+  "into_iterator",
+  "from",
+  "into",
+  "display",
+  "std",
+  "add",
+  "add_assign",
+] }
+fastrand = { workspace = true, optional = true }
+pyo3 = { workspace = true, optional = true, features = ["extension-module"] }
+quickcheck = { workspace = true, optional = true }
+rand = { workspace = true, optional = true }
+rustc-hash = { workspace = true, optional = true }
+
+[dev-dependencies]
+criterion.workspace = true
+fastrand.workspace = true
+itertools.workspace = true
+quickcheck.workspace = true
+quickcheck_macros.workspace = true
+regex.workspace = true
+rustc-hash.workspace = true
+
+[features]
+default = ["rand"]
+python = ["pyo3"]
+quickcheck = ["dep:quickcheck", "fastrand", "rustc-hash"]
+rand = ["dep:rand"]
+
+[lints]
+workspace = true
+
+[[bench]]
+name = "omaha"
+harness = false

@@ -1,0 +1,30 @@
+[package]
+name = "openpql-range-parser"
+description = "Range Parser"
+version = "0.1.0"
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+
+[dependencies]
+derive_more = { workspace = true, features = ["display"] }
+itertools.workspace = true
+lalrpop-util.workspace = true
+openpql-prelude = { workspace = true }
+smallvec.workspace = true
+
+[build-dependencies]
+lalrpop.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+quickcheck.workspace = true
+quickcheck_macros.workspace = true
+openpql-prelude = { workspace = true, features = ["quickcheck"] }
+
+[lints]
+workspace = true
+
+[[bench]]
+name = "range"
+harness = false
