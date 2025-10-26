@@ -1,10 +1,12 @@
 [package]
-name = "openpql-pql-parser"
-description = "PQL Parser"
-version = "0.1.0"
+description = "A parser implementation for Poker Query Language (PQL)"
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
+license = "MIT"
+name = "openpql-pql-parser"
+repository = "https://github.com/solve-poker/Poker-Query-Language"
+version = "0.1.0"
 
 [dependencies]
 derive_more = { workspace = true, features = ['display'] }

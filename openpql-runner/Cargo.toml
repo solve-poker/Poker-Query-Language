@@ -1,9 +1,12 @@
 [package]
-name = "openpql-runner"
-version = "0.1.0"
+description = "A high-performance Rust implementation of Poker Query Language (PQL), enabling SQL-like queries for poker analysis and calculations. This project is a spiritual successor to the original Java implementation developed by Odds Oracle."
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
+license = "MIT"
+name = "openpql-runner"
+repository = "https://github.com/solve-poker/Poker-Query-Language"
+version = "0.1.0"
 
 [lib]
 name = "opql"

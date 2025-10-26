@@ -1,10 +1,12 @@
 [package]
-name = "openpql-prelude"
 description = "Basic library for card handling and evaluation of Hold'em Short Deck poker."
-version = "0.1.0"
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
+license = "MIT"
+name = "openpql-prelude"
+repository = "https://github.com/solve-poker/Poker-Query-Language"
+version = "0.1.0"
 
 [lib]
 name = "openpql_prelude"
