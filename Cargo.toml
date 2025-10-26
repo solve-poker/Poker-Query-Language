@@ -1,6 +1,11 @@
 [workspace]
 resolver = "3"
-members = ["open-pql", "open-pql-macro", "opql", "open-pql-wasm"]
+members = [
+  "openpql-pql-parser",
+  "openpql-prelude",
+  "openpql-range-parser",
+  "openpql-runner",
+]
 
 [workspace.package]
 edition = "2024"
@@ -15,19 +20,28 @@ opt-level = 3
 panic = "abort"
 
 [workspace.dependencies]
+approx = "0.5.1"
+bitflags = "2.10.0"
+clap = { version = "4.5.50", features = ["derive"] }
+criterion = "0.7.0"
 derive_more = { version = "2", features = ["full"] }
 fastrand = "2.3.0"
 itertools = "0.14.0"
 lalrpop = { version = "0.22.2", features = ["lexer"] }
 lalrpop-util = { version = "0.22.2", features = ["lexer"] }
-open-pql = { path = "./open-pql" }
-open_pql_macro = { path = "./open-pql-macro" }
+openpql-macro = { path = "./openpql-macro" }
+openpql-pql-parser = { path = "./openpql-pql-parser" }
+openpql-prelude = { path = "./openpql-prelude" }
+openpql-range-parser = { path = "./openpql-range-parser" }
 proc-macro2 = "1.0"
+pyo3 = "0.26.0"
 quickcheck = { version = "1.0.3", features = [] }
 quickcheck_macros = "1.1.0"
 quote = "1.0"
-regex = "1.11.1"
+rand = "0.9.2"
+regex = "1.12.2"
 rustc-hash = "2.1.1"
+smallvec = "1.15.1"
 speedy = "0.8.7"
 syn = { version = "2.0", features = ["full"] }
 tailcall = "1.0.1"
@@ -38,6 +52,7 @@ missing_errors_doc = { level = "allow", priority = 10 }
 module_name_repetitions = { level = "allow", priority = 10 }
 must_use_candidate = { level = "allow", priority = 10 }
 needless_range_loop = { level = "allow", priority = 10 }
+enum_variant_names = { level = "allow", priority = 10 }
 nursery = "warn"
 pedantic = "warn"
 

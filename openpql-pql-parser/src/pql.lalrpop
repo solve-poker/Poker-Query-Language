@@ -1,0 +1,103 @@
+use super::{
+    ast::{
+        BinOp, Expr, FnCall, FromClause, FromItem, Ident, Num, Selector,
+        Stmt, Str,
+    },
+    strip_str, Error,
+};
+
+grammar;
+
+extern {
+  type Error = Error;
+}
+
+pub(crate) PQL: Vec<Stmt<'input>> = {
+    <head: Stmt> <rest: (";" <Stmt>)*> ";"? =>
+      [head].into_iter().chain(rest.into_iter()).collect::<Vec<_>>()
+};
+
+pub(crate) Stmt: Stmt<'input> = {
+    "select" <s: CommaSep<Selector>> <f: FromClause> =>? Stmt::new(s, f),
+};
+
+pub(crate) Selector: Selector<'input> = {
+    <i: Ident> "(" <e: Expr> ")" =>? Selector::new(&i, e, None),
+    <i: Ident> "(" <e: Expr> ")" "as" <a: Ident> =>? Selector::new(&i, e, Some(a)),
+}
+
+pub(crate) FromClause: FromClause<'input> = {
+    "from" <l: @L><kvs: CommaSep<FromItem>><r: @R> =>? FromClause::new(kvs, (l, r)),
+}
+
+FromItem: FromItem<'input> = {
+    <k: Ident> "=" <v: Str> => (k, v).into(),
+}
+
+pub(crate) Expr: Expr<'input> = {
+    <ExprBinOp> => <>,
+}
+
+ExprBinOp: Expr<'input> = {
+    <ExprCmp> => <>,
+}
+
+ExprCmp: Expr<'input> = {
+    <l: ExprAdd> "="  <r: ExprCmp> => Expr::binop(BinOp::Eq, l, r),
+    <l: ExprAdd> "<"  <r: ExprCmp> => Expr::binop(BinOp::Lt, l, r),
+    <l: ExprAdd> "<=" <r: ExprCmp> => Expr::binop(BinOp::Le, l, r),
+    <l: ExprAdd> ">"  <r: ExprCmp> => Expr::binop(BinOp::Gt, l, r),
+    <l: ExprAdd> ">=" <r: ExprCmp> => Expr::binop(BinOp::Ge, l, r),
+    <ExprAdd> => <>,
+}
+
+ExprAdd: Expr<'input> = {
+    <l: ExprMul> "+"  <r: ExprAdd> => Expr::binop(BinOp::Add, l, r),
+    <l: ExprMul> "-"  <r: ExprAdd> => Expr::binop(BinOp::Sub, l, r),
+    <ExprMul> => <>,
+}
+
+ExprMul: Expr<'input> = {
+    <l: Atom> "*"  <r: ExprMul> => Expr::binop(BinOp::Mul, l, r),
+    <l: Atom> "/"  <r: ExprMul> => Expr::binop(BinOp::Div, l, r),
+    <Atom> => <>,
+}
+
+Atom: Expr<'input> = {
+    Ident => <>.into(),
+    Num => <>.into(),
+    Str => <>.into(),
+    FnCall => <>.into(),
+}
+
+pub(crate) FnCall: FnCall<'input> = {
+    <l: @L><i: Ident> "(" <es: CommaSep<Expr>> ")"<r: @R> => (i, es, (l, r)).into(),
+    <l: @L><i: Ident> "(" ")"<r: @R> => (i, vec![], (l, r)).into(),
+}
+
+pub(crate) Str: Str<'input> = {
+    <l: @L> <s: r#""(\\.|[^"\\])*""#> <r: @R> => (strip_str(s), (l, r)).into(),
+    <l: @L> <s: r"'(\\.|[^'\\])*'"> <r: @R> => (strip_str(s), (l, r)).into(),
+}
+
+pub(crate) Num: Num = {
+    <l: @L> <s: r#"-?\d+"#> <r: @R> =>? (s, (l, r), false).try_into(),
+    <l: @L> <s: r#"-?(\d+)?\.\d+"#> <r: @R> =>? (s, (l, r), true).try_into(),
+}
+
+pub(crate) Ident: Ident<'input> = {
+    <l: @L> <s: r"[_a-zA-Z][_0-9a-zA-Z]*"> <r: @R> => (s, (l, r)).into()
+}
+
+CommaSep<T>: Vec<T> = {
+    <head: T> <rest: ("," <T>)*> ","? =>
+      [head].into_iter().chain(rest.into_iter()).collect::<Vec<_>>()
+}
+
+match {
+  r"(?i)from" => "from",
+  r"(?i)select" => "select",
+  r"(?i)as" => "as",
+} else {
+  _
+}

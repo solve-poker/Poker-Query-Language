@@ -1,0 +1,38 @@
+[package]
+name = "openpql-runner"
+version = "0.1.0"
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+
+[lib]
+name = "opql"
+path = "src/lib.rs"
+
+[[bin]]
+name = "opql"
+path = "src/cli/main.rs"
+required-features = ["cli"]
+
+[dependencies]
+bitflags.workspace = true
+clap = { workspace = true, optional = true }
+derive_more = { workspace = true, features = ["display", "std"] }
+openpql-macro.workspace = true
+openpql-pql-parser = { workspace = true }
+openpql-prelude = { workspace = true }
+openpql-range-parser.workspace = true
+rand.workspace = true
+smallvec.workspace = true
+
+[dev-dependencies]
+quickcheck.workspace = true
+quickcheck_macros.workspace = true
+openpql-prelude = { workspace = true, features = ["quickcheck"] }
+itertools.workspace = true
+
+[features]
+cli = ["clap"]
+
+[lints]
+workspace = true

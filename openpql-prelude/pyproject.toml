@@ -1,0 +1,25 @@
+[project]
+name = "openpql_prelude"
+version = "0.1.0"
+requires-python = ">=3.9"
+classifiers = [
+  "Programming Language :: Rust",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "maturin>=1.9.5",
+  "maturin-import-hook>=0.3.0",
+  "pytest>=8.4.2",
+  "pytest-cov>=7.0.0",
+]
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[dependency-groups]
+dev = ["pylsp-rope>=0.1.17", "pyright>=1.1.406", "rope>=1.14.0", "ruff>=0.13.3"]
+
+[tool.maturin]
+features = ["python"]
