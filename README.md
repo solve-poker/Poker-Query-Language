@@ -1,11 +1,13 @@
 # Open PQL (Poker Query Language)
 
+> Made with ♥️
+
 > ⚠️ **Work in Progress**: This project is currently under active development and is not yet ready for production use.
 
 > 🌐 **Try it online**: An interactive demo is available at https://pql-playground.solve.poker/
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Rust](https://img.shields.io/badge/rust-1.70+-blue.svg)](https://www.rust-lang.org)
+[![Rust](https://img.shields.io/badge/rust-1.85+-blue.svg)](https://www.rust-lang.org)
 
 A high-performance Rust implementation of Poker Query Language (PQL), enabling SQL-like queries for poker analysis and calculations. This project is a spiritual successor to the original Java implementation developed by Odds Oracle.
 
@@ -30,7 +32,7 @@ Add Open PQL to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-open-pql = "0.0.3"
+openpql-runner = "0.1.0"
 ```
 
 ### CLI Usage
@@ -39,10 +41,10 @@ The `opql` command-line tool provides direct access to PQL functionality:
 
 ```bash
 # Calculate average board suit count
-opql -c "select avg(boardsuitcount(river)) from hero='As9s', villain='*', board='2s3sJh', game='holdem'"
+opql --run "select avg(boardsuitcount(river)) from hero='As9s', villain='*', board='2s3sJh', game='holdem'"
 
 # Analyze equity in specific scenarios
-opql -c "select equity from hero='AhKh', villain='QQ+', board='Ah9s2c', game='holdem'"
+opql --run "select equity from hero='AhKh', villain='QQ+', board='Ah9s2c', game='holdem'"
 ```
 
 ### WebAssembly Demo
@@ -59,58 +61,18 @@ trunk serve --config ./open-pql-wasm/Trunk.toml
 # Open http://localhost:8080 in your browser
 ```
 
-### Library Usage (WIP)
-
-```rust
-use open_pql::*;
-
-// Example: Basic poker hand evaluation
-let hand = parse_hand("AsKs")?;
-let board = parse_board("AhKh2c")?;
-let equity = calculate_equity(&hand, &board)?;
-```
-
 ## Architecture
 
-This workspace contains four main crates:
+This workspace contains the following crates:
 
-- **`open-pql`**: Core library with poker logic and PQL implementation
-- **`open-pql-macro`**: Procedural macros for compile-time optimizations  
-- **`opql`**: Command-line interface for interactive PQL queries
-- **`open-pql-wasm`**: WebAssembly interface for browser-based PQL execution
-
-## Development
-
-### Building
-
-```bash
-# Build all workspace members
-cargo build --workspace
-
-# Build with optimizations
-cargo build --workspace --release
-```
-
-### Testing
-
-```bash
-# Run all tests
-cargo test --workspace
-
-# Run with coverage
-./scripts/coverage.sh
-```
-
-### Benchmarking
-
-```bash
-# Run benchmarks
-cargo bench --features benchmark
-```
+- **`openpql-prelude`**: Core poker library for card handling and evaluation of Hold'em and Short Deck poker
+- **`openpql-range-parser`**: Parser for poker range notation (e.g., "AA-TT", "89+")
+- **`openpql-pql-parser`**: Parser implementation for Poker Query Language (PQL) syntax
+- **`openpql-runner`**: Main library and CLI tool (`opql`) for executing PQL queries
+- **`openpql-macro`**: Internal procedural macros
 
 ## Documentation
 
-- **API Documentation**: [docs.rs/open-pql](https://docs.rs/open-pql)
 - **PQL Guide & Tutorial**: [pql-docs.solve.poker](https://pql-docs.solve.poker)
 
 ## License
@@ -120,5 +82,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 Special thanks to the original Odds Oracle (propokertools.com) team for pioneering the PQL concept and providing inspiration for this Rust implementation.
-
-
