@@ -27,6 +27,7 @@ fastrand = { workspace = true, optional = true }
 pyo3 = { workspace = true, optional = true, features = ["extension-module"] }
 quickcheck = { workspace = true, optional = true }
 rand = { workspace = true, optional = true }
+rayon = { workspace = true, optional = true }
 rustc-hash = { workspace = true, optional = true }
 
 [dev-dependencies]
@@ -43,6 +44,7 @@ default = ["rand"]
 python = ["pyo3"]
 quickcheck = ["dep:quickcheck", "fastrand", "rustc-hash"]
 rand = ["dep:rand"]
+rayon = ["dep:rayon"]
 
 [lints]
 workspace = true

@@ -54,6 +54,8 @@ type Card64Inner = u64;
 
 #[cfg(any(test, feature = "quickcheck"))]
 mod card_n;
+#[cfg(feature = "rayon")]
+mod hand_par_iter;
 
 #[cfg(any(test, feature = "quickcheck"))]
 pub use card_n::CardN;
