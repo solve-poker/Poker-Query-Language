@@ -12,6 +12,7 @@ use derive_more::{
     Index, Into,
 };
 
+mod buffer;
 mod card;
 mod error;
 mod eval_flop;
@@ -23,6 +24,7 @@ mod rating;
 #[cfg(feature = "rand")]
 mod rng;
 
+pub use buffer::BufferWrite;
 pub use card::{
     Board, Card, Card64, CardCount, CardIdx, CardIter, Flop, HandIter, HandN,
     Rank, Rank16, RankIdx, Suit, Suit4, SuitIdx, SuitMapping,

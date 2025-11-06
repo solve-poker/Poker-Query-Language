@@ -1,4 +1,4 @@
-use super::{Board, Card, Flop, HandN, Suit, SuitMapping};
+use super::{Board, Card, CardCount, Flop, HandN, Suit, SuitMapping};
 
 impl<const N: usize> HandN<N> {
     /// Creates a suit-isomorphic hand using the provided suit mapping.
@@ -34,7 +34,7 @@ impl Board {
     }
 }
 
-type SuitCount = [usize; Suit::N_SUITS as usize];
+type SuitCount = [CardCount; Suit::N_SUITS as usize];
 
 fn count_suits(cards: &[Card]) -> SuitCount {
     let mut res = SuitCount::default();
@@ -55,7 +55,9 @@ fn create_iso_array<const N: usize>(
     let mut cards: [_; N] = slice[..N].try_into().unwrap();
     let suit_count = count_suits(cards.as_slice());
 
-    cards.sort_unstable_by_key(|&card| (suit_count[card.suit as usize], card));
+    cards.sort_unstable_by_key(|&card| {
+        (Suit::N_SUITS - suit_count[card.suit as usize], card)
+    });
 
     for card in &mut cards {
         card.suit = mapping.map_suit(card.suit);
