@@ -1,69 +1,89 @@
-use super::{Card, Card64, Vec};
+use super::{Card, Card64, CardMask};
+use crate::{RankIdx, SuitIdx};
 
 #[derive(Clone, Debug, Default)]
 pub struct CardGen {
-    init: Vec<Card>,
-    used: Vec<Card>,
-    unused: Vec<Card>,
+    mask: CardMask,   // 可用牌掩码 == 初始可用牌掩码
+    pub used: Card64, // 已用牌集
 }
+
+const EMPTY_MASK_U64: u64 = 0u64;
+const OFFSET_SUIT: u32 = 16;
 
 impl CardGen {
     pub fn new<const SD: bool>(dead_cards: Card64) -> Self {
-        let mut unused = vec![];
-
-        for card in Card64::all::<SD>().iter() {
-            if !dead_cards.contains_card(card) {
-                unused.push(card);
-            }
-        }
-
+        let all = Card64::all::<SD>();
+        let mask = CardMask::from(all & !dead_cards);
         Self {
-            init: unused.clone(),
-            used: vec![],
-            unused,
+            mask,
+            used: Card64::default(),
         }
     }
 
     pub fn deal(&mut self, rng: &mut impl rand::Rng) -> Option<Card> {
-        let n = self.unused.len();
-        if n == 0 {
+        let remaining = self.mask ^ self.used.0;
+        if remaining == EMPTY_MASK_U64 {
             return None;
         }
-
-        let idx = rng.random_range(0..n);
-        let card = self.unused.remove(idx);
-        self.used.push(card);
-
-        Some(card)
+        let pos = random_set_bit_pos_64(remaining, rng)?;
+        let bit = 1u64 << pos;
+        self.used.0 |= bit;
+        Some(card_from_bit_position(pos))
     }
 
     pub fn unset(&mut self, c64: Card64) {
-        for c in c64.iter() {
-            self.unset_card(c);
-        }
+        self.used &= !c64;
     }
 
     pub fn unset_card(&mut self, card: Card) {
-        debug_assert!(!self.unused.contains(&card));
-
-        self.used.retain(|&c| c != card);
-        self.unused.push(card);
+        let c64 = Card64::from(card);
+        if self.used.contains_card(card) {
+            self.unset(c64);
+        }
     }
 
     pub fn reset(&mut self) {
-        self.unused = self.init.clone();
+        self.used = Card64::default();
     }
+}
+
+fn random_set_bit_pos_64(mask: u64, rng: &mut impl rand::Rng) -> Option<u32> {
+    let n = mask.count_ones();
+    if n == 0 {
+        return None;
+    }
+
+    let idx = rng.random_range(0..n);
+    let mut remaining = mask;
+    let mut pos = 0;
+
+    for _ in 0..=idx {
+        let tz = remaining.trailing_zeros();
+        remaining &= remaining - 1;
+        pos = tz;
+    }
+    Some(pos)
+}
+
+type Idx = i8;
+
+#[allow(clippy::cast_possible_truncation)]
+const fn card_from_bit_position(pos: u32) -> Card {
+    let suit_idx = (pos / OFFSET_SUIT) as Idx;
+    let rank_idx = (pos % OFFSET_SUIT) as Idx;
+    Card::new(
+        RankIdx(rank_idx).to_rank().unwrap(),
+        SuitIdx(suit_idx).to_suit().unwrap(),
+    )
 }
 
 #[cfg(test)]
 #[cfg_attr(coverage_nightly, coverage(off))]
 pub mod tests {
     use super::*;
-
     fn mk_exhausted_card_gen() -> CardGen {
         let mut g = CardGen::new::<false>(Card64::default());
-        (g.used, g.unused) = (g.unused, g.used);
-
+        g.used = g.mask.into();
         g
     }
 
