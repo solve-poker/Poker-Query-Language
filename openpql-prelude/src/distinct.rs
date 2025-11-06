@@ -4,8 +4,6 @@ use derive_more::{Deref, Index, IntoIterator};
 use quickcheck::{Arbitrary, Gen};
 use rustc_hash::FxHashSet;
 
-use super::Vec;
-
 #[derive(Clone, Debug, Index, IntoIterator, Deref)]
 pub struct Distinct<const N: usize, T>(pub Vec<T>);
 
