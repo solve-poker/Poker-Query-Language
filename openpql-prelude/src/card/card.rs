@@ -1,3 +1,9 @@
+#[cfg(feature = "serde")]
+use serde::{
+    Deserialize, Deserializer, Serialize, Serializer,
+    de::{self, Visitor},
+};
+
 use super::{
     Card64, CardCount, Display, FromStr, Hash, ParseError, Rank, Suit,
 };
@@ -138,6 +144,75 @@ impl FromStr for Card {
     }
 }
 
+#[cfg(feature = "serde")]
+impl Serialize for Card {
+    #[allow(clippy::cast_sign_loss)]
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        if serializer.is_human_readable() {
+            serializer.serialize_str(&self.to_string())
+        } else {
+            use super::card_idx::CardIdx;
+
+            serializer.serialize_u8(CardIdx::from(*self).0 as u8)
+        }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for Card {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        use std::fmt;
+
+        struct CardVisitor;
+
+        impl Visitor<'_> for CardVisitor {
+            type Value = Card;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("card index interger or card string")
+            }
+
+            fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                self.visit_u8(value.cast_unsigned())
+            }
+
+            fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                use super::card_idx::CardIdx;
+
+                CardIdx(value.cast_signed()).to_card().map_or_else(
+                    || Err(E::custom("invalid card")),
+                    |card| Ok(card),
+                )
+            }
+
+            fn visit_str<E>(self, text: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                text.parse::<Card>().map_err(E::custom)
+            }
+        }
+
+        if deserializer.is_human_readable() {
+            deserializer.deserialize_str(CardVisitor)
+        } else {
+            deserializer.deserialize_u8(CardVisitor)
+        }
+    }
+}
+
 #[cfg(any(test, feature = "quickcheck"))]
 impl quickcheck::Arbitrary for Card {
     fn arbitrary(g: &mut quickcheck::Gen) -> Self {
@@ -202,5 +277,26 @@ mod tests {
         sorted.sort_unstable();
 
         assert_eq!(sorted, Card::ARR_ALL);
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    #[quickcheck]
+    fn test_card_ser_de(card: Card) {
+        assert_tokens(&card.compact(), &[Token::U8(to_i(card))]);
+        assert_tokens(&card.readable(), &[Token::Str(to_s(card))]);
+    }
+
+    #[test]
+    fn test_card_invalid() {
+        assert_de_tokens_error::<Compact<Card>>(
+            &[Token::I8(-1)],
+            "invalid card",
+        );
     }
 }

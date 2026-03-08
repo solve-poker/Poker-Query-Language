@@ -29,6 +29,7 @@ quickcheck = { workspace = true, optional = true }
 rand = { workspace = true, optional = true }
 rayon = { workspace = true, optional = true }
 rustc-hash = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
 
 [dev-dependencies]
 criterion.workspace = true
@@ -38,10 +39,12 @@ quickcheck.workspace = true
 quickcheck_macros.workspace = true
 regex.workspace = true
 rustc-hash.workspace = true
+serde_test.workspace = true
 
 [features]
 default = ["rand"]
 python = ["pyo3"]
+serde = ["dep:serde"]
 quickcheck = ["dep:quickcheck", "fastrand", "rustc-hash"]
 rand = ["dep:rand"]
 rayon = ["dep:rayon"]

@@ -66,6 +66,12 @@ pub mod tests {
     pub use quickcheck::{Arbitrary, TestResult};
     pub use regex::Regex;
     pub use rustc_hash::{FxHashMap, FxHashSet};
+    #[cfg(feature = "serde")]
+    pub use serde_test::{
+        Compact, Configure, Token, assert_de_tokens_error, assert_tokens,
+    };
+    #[cfg(feature = "serde")]
+    pub use serde_utils::{to_i, to_s};
 
     pub use super::{
         CardN,
@@ -74,4 +80,16 @@ pub mod tests {
             tests::{mk_ranking_sd, mk_rating},
         },
     };
+
+    pub mod serde_utils {
+        use super::super::{Card, CardIdx};
+
+        pub fn to_s(card: Card) -> &'static str {
+            Box::leak(card.to_string().into_boxed_str())
+        }
+
+        pub fn to_i(card: Card) -> u8 {
+            CardIdx::from(card).0.cast_unsigned()
+        }
+    }
 }
