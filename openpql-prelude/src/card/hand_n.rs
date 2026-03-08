@@ -1,3 +1,9 @@
+#[cfg(feature = "serde")]
+use serde::{
+    Deserialize, Deserializer, Serialize, Serializer,
+    de::{self, Visitor},
+};
+
 use super::{Card, Card64, Deref, HandIter, Hash, Index, Into, fmt};
 
 /// Fixed-size hand representation.
@@ -65,6 +71,64 @@ impl<const N: usize> From<HandN<N>> for Card64 {
     }
 }
 
+#[cfg(feature = "serde")]
+impl<const N: usize> Serialize for HandN<N> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        use serde::ser::SerializeTuple;
+        let mut seq = serializer.serialize_tuple(N)?;
+        for card in &self.0 {
+            seq.serialize_element(card)?;
+        }
+        seq.end()
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de, const N: usize> Deserialize<'de> for HandN<N> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        use std::{fmt, marker::PhantomData};
+
+        struct HandNVisitor<const N: usize>(PhantomData<[Card; N]>);
+
+        impl<'de, const N: usize> Visitor<'de> for HandNVisitor<N> {
+            type Value = HandN<N>;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                write!(formatter, "a hand of {N} cards")
+            }
+
+            fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+            where
+                A: de::SeqAccess<'de>,
+            {
+                let mut array = [Card::default(); N];
+                let mut i = 0;
+
+                while let Some(card) = seq.next_element::<Card>()? {
+                    array[i] = card;
+                    i += 1;
+                }
+
+                if i != N {
+                    return Err(de::Error::custom(format!(
+                        "expected {N} cards, got {i}",
+                    )));
+                }
+
+                Ok(HandN(array))
+            }
+        }
+
+        deserializer.deserialize_tuple(N, HandNVisitor(PhantomData))
+    }
+}
+
 #[cfg(test)]
 #[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
@@ -127,5 +191,41 @@ mod tests {
         let hand = HandN::<7>::from_slice(&cs);
 
         assert_eq!(c64, Card64::from(hand));
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    #[quickcheck]
+    fn test_hand_ser_de(cards: CardN<3>) {
+        let mut cards = cards.to_vec();
+        cards.sort_unstable();
+        let hand: HandN<3> = HandN::from_slice(&cards);
+
+        assert_tokens(
+            &hand.readable(),
+            &[
+                Token::Tuple { len: 3 },
+                Token::Str(to_s(cards[0])),
+                Token::Str(to_s(cards[1])),
+                Token::Str(to_s(cards[2])),
+                Token::TupleEnd,
+            ],
+        );
+
+        assert_tokens(
+            &hand.compact(),
+            &[
+                Token::Tuple { len: 3 },
+                Token::U8(to_i(cards[0])),
+                Token::U8(to_i(cards[1])),
+                Token::U8(to_i(cards[2])),
+                Token::TupleEnd,
+            ],
+        );
     }
 }
