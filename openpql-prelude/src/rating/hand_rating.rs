@@ -61,6 +61,7 @@ use super::{
 /// `HighCard`:
 /// [15, 0]:   000rrrrr rrrrrrrr // r: bit flags of 5 cards
 /// ```
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub struct HandRating(pub(crate) RatingInner);
 

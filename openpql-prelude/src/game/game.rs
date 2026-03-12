@@ -4,6 +4,7 @@ use super::{
     eval_shortdeck,
 };
 
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Game {
     #[default]

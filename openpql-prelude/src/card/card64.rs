@@ -23,6 +23,7 @@ macro_rules! c64 {
 /// [31, 16]:  xxxAKQJT 98765432  // Heart
 /// [15, 0]:   xxxAKQJT 98765432  // Spade, x: unused
 /// ```
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy,
     Clone,

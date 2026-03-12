@@ -3,6 +3,7 @@ use super::Suit;
 /// Suit mapping for isomorphic transformations.
 ///
 /// Tracks and applies suit transformations during isomorphic hand generation.
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Clone, Debug, Default)]
 pub struct SuitMapping {
     map: [Option<Suit>; Suit::N_SUITS as usize],

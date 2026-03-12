@@ -6,6 +6,7 @@ use crate::python::*;
 ///
 /// Represents card ranks from 2 to Ace, with parsing support and conversion utilities.
 #[cfg_attr(feature = "python", pyclass(eq, ord, str, frozen, hash))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]

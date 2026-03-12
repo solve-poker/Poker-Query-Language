@@ -9,6 +9,7 @@ use super::{Display, FromStr, HandRating, N_HANDTYPE, ParseError, cmp};
 /// # Ordering
 /// The variants are ordered from weakest (`HighCard`) to strongest (`StraightFlush`),
 /// matching standard poker hand rankings.
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Default, Display)]
 pub enum HandType {
     /// No matching cards (default/weakest hand type)

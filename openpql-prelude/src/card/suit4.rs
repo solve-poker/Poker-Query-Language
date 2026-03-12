@@ -24,6 +24,7 @@ macro_rules! s4 {
 /// ```text
 /// [8, 0]:   xxxxcdhs // x: unused
 /// ```
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy, Clone, derive_more::Debug, PartialEq, Eq, BitAnd, BitOr, Default,
 )]

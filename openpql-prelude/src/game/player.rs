@@ -2,6 +2,7 @@ use super::{Add, AddAssign, Display, Into};
 
 pub type PlayerIdx = u8;
 
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Debug,
     Clone,

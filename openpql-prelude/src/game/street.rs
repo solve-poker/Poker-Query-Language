@@ -1,5 +1,6 @@
 use super::{Board, Card64, CardCount, Display, FromStr, ParseError};
 
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Debug, Clone, PartialEq, Eq, Copy, PartialOrd, Ord, Default, Display,
 )]

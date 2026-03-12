@@ -3,6 +3,8 @@ use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
     de::{self, Visitor},
 };
+#[cfg(feature = "speedy")]
+use speedy::{Context, Readable, Reader, Writable, Writer};
 
 use super::{Card, Card64, Deref, HandIter, Hash, Index, Into, fmt};
 
@@ -126,6 +128,36 @@ impl<'de, const N: usize> Deserialize<'de> for HandN<N> {
         }
 
         deserializer.deserialize_tuple(N, HandNVisitor(PhantomData))
+    }
+}
+
+#[cfg(feature = "speedy")]
+impl<'a, C: Context, const N: usize> Readable<'a, C> for HandN<N>
+where
+    Card: Readable<'a, C>,
+{
+    fn read_from<R: Reader<'a, C>>(reader: &mut R) -> Result<Self, C::Error> {
+        let mut cards = [Card::default(); N];
+        for card in &mut cards {
+            *card = reader.read_value()?;
+        }
+        Ok(Self(cards))
+    }
+}
+
+#[cfg(feature = "speedy")]
+impl<C: Context, const N: usize> Writable<C> for HandN<N>
+where
+    Card: Writable<C>,
+{
+    fn write_to<W: Writer<C> + ?Sized>(
+        &self,
+        writer: &mut W,
+    ) -> Result<(), C::Error> {
+        for card in &self.0 {
+            writer.write_value(card)?;
+        }
+        Ok(())
     }
 }
 

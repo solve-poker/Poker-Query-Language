@@ -10,6 +10,7 @@ macro_rules! board {
 /// Board representation for poker games.
 ///
 /// Represents community cards (flop, turn, river) with a macro for convenient creation.
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Copy, Clone, derive_more::Debug, PartialEq, Eq, Hash, Default)]
 #[debug("Board<{}>", self)]
 pub struct Board {

@@ -3,6 +3,7 @@ use super::{Display, Hash, Idx, Rank};
 /// Rank index representation.
 ///
 /// Converts ranks to numeric indices (0-12).
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]

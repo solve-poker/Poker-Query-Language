@@ -25,6 +25,7 @@ macro_rules! r16 {
 /// ```text
 /// [15, 0]:   xxxAKQJT 98765432  // x: unused
 /// ```
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy,
     Clone,

@@ -3,6 +3,7 @@ use super::{Display, Error};
 use crate::python::*;
 
 // Error type for `FromStr`
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Debug, Clone, PartialEq, Eq, Display)]
 pub enum ParseError {
     InvalidRank(String),

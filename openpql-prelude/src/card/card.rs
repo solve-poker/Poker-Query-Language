@@ -31,6 +31,7 @@ macro_rules! cards {
 /// Playing card representation.
 ///
 /// Represents a single playing card with a rank and suit, with macros for convenient creation.
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Clone, Copy, Debug, Display, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[display("{rank}{suit}")]
 pub struct Card {

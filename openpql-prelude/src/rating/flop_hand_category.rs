@@ -1,5 +1,6 @@
 use super::{Display, FromStr, N_FLOP_CATEGORY, ParseError, cmp};
 
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Display)]
 pub enum FlopHandCategory {
     #[default]

@@ -4,6 +4,7 @@ use super::{CardCount, Display, FromStr, Hash, Idx, ParseError};
 ///
 /// Represents the four card suits (spades, hearts, diamonds, clubs),
 /// with parsing support and conversion utilities.
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]

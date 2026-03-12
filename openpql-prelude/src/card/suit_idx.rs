@@ -3,6 +3,7 @@ use super::{Display, Hash, Idx, Suit};
 /// Suit index representation.
 ///
 /// Converts suits to numeric indices (0-3).
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]

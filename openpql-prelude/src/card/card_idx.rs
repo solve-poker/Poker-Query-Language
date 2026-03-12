@@ -3,6 +3,7 @@ use super::{Card, Idx, RankIdx, SuitIdx};
 /// Card index representation.
 ///
 /// Converts cards to unique numeric indices (0-51).
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct CardIdx(pub(crate) Idx);
 
