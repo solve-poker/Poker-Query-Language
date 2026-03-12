@@ -56,7 +56,7 @@ fn create_iso_array<const N: usize>(
     let suit_count = count_suits(cards.as_slice());
 
     cards.sort_unstable_by_key(|&card| {
-        (Suit::N_SUITS - suit_count[card.suit as usize], card)
+        (Card::N_CARDS - suit_count[card.suit as usize], card)
     });
 
     for card in &mut cards {

@@ -45,11 +45,12 @@ serde_test.workspace = true
 [features]
 default = ["rand"]
 python = ["pyo3"]
-serde = ["dep:serde"]
 quickcheck = ["dep:quickcheck", "fastrand", "rustc-hash"]
 rand = ["dep:rand"]
-speedy = ["dep:speedy"]
 rayon = ["dep:rayon"]
+serde = ["dep:serde"]
+speedy = ["dep:speedy"]
+full = ["quickcheck", "rand", "rayon", "serde", "speedy"]
 
 [lints]
 workspace = true
