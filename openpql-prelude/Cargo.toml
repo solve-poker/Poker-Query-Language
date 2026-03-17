@@ -6,7 +6,7 @@ keywords.workspace = true
 license = "MIT"
 name = "openpql-prelude"
 repository = "https://github.com/solve-poker/Poker-Query-Language"
-version = "0.1.0"
+version = "0.1.2"
 
 [lib]
 name = "openpql_prelude"
