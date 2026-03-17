@@ -4,7 +4,7 @@
 
 use std::{
     cmp, error::Error, fmt, hash::Hash, mem::transmute, ops, ops::Not,
-    str::FromStr, vec::Vec,
+    str::FromStr,
 };
 
 use derive_more::{

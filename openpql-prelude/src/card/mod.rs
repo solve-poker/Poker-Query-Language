@@ -47,7 +47,7 @@ pub use suit_mapping::*;
 pub use suit4::*;
 
 pub type CardCount = u8;
-type Idx = i8;
+pub type Idx = i8;
 type Suit4Inner = u8;
 type Rank16Inner = u16;
 type Card64Inner = u64;

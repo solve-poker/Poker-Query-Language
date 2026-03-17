@@ -39,7 +39,7 @@ macro_rules! c64 {
 pub struct Card64(pub(crate) Card64Inner);
 
 impl Card64 {
-    const OFFSET_SUIT: Idx = 16;
+    pub(crate) const OFFSET_SUIT: Idx = 16;
 
     pub(crate) const EMPTY: Self = Self(0);
 

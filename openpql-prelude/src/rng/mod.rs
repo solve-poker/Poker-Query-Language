@@ -1,4 +1,4 @@
-use super::{Card, Card64, Vec};
+use super::{Card, Card64};
 
 mod card_gen;
 

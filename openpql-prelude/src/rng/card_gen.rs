@@ -1,40 +1,45 @@
-use super::{Card, Card64, Vec};
+use super::{Card, Card64};
+use crate::{RankIdx, SuitIdx, card::Idx};
 
 #[derive(Clone, Debug, Default)]
 pub struct CardGen {
-    init: Vec<Card>,
-    used: Vec<Card>,
-    unused: Vec<Card>,
+    init: Card64,
+    used: Card64,
+    unused: Card64,
 }
 
 impl CardGen {
     pub fn new<const SD: bool>(dead_cards: Card64) -> Self {
-        let mut unused = vec![];
-
-        for card in Card64::all::<SD>().iter() {
-            if !dead_cards.contains_card(card) {
-                unused.push(card);
-            }
-        }
+        let all = Card64::all::<SD>() & !(dead_cards);
 
         Self {
-            init: unused.clone(),
-            used: vec![],
-            unused,
+            init: all,
+            used: Card64::default(),
+            unused: all,
         }
     }
 
+    /// # Panics
+    /// no panics since `Card64::all::<SD>()` guarantees valid values
+    #[allow(clippy::cast_possible_truncation)]
     pub fn deal(&mut self, rng: &mut impl rand::Rng) -> Option<Card> {
-        let n = self.unused.len();
-        if n == 0 {
-            return None;
+        if let Some(bit_idx) = random_set_bit_pos_64(self.unused.into(), rng) {
+            let bit_idx = bit_idx as Idx;
+
+            let suit_idx = bit_idx / Card64::OFFSET_SUIT;
+            let rank_idx = bit_idx % Card64::OFFSET_SUIT;
+            let card = Card::new(
+                RankIdx(rank_idx).to_rank().unwrap(),
+                SuitIdx(suit_idx).to_suit().unwrap(),
+            );
+
+            self.unused.unset(card);
+            self.used.set(card);
+
+            Some(card)
+        } else {
+            None
         }
-
-        let idx = rng.random_range(0..n);
-        let card = self.unused.remove(idx);
-        self.used.push(card);
-
-        Some(card)
     }
 
     pub fn unset(&mut self, c64: Card64) {
@@ -44,15 +49,33 @@ impl CardGen {
     }
 
     pub fn unset_card(&mut self, card: Card) {
-        debug_assert!(!self.unused.contains(&card));
+        debug_assert!(!self.unused.contains_card(card));
 
-        self.used.retain(|&c| c != card);
-        self.unused.push(card);
+        self.used.unset(card);
+        self.unused.set(card);
     }
 
-    pub fn reset(&mut self) {
-        self.unused = self.init.clone();
+    pub const fn reset(&mut self) {
+        self.unused = self.init;
     }
+}
+
+fn random_set_bit_pos_64(mask: u64, rng: &mut impl rand::Rng) -> Option<u32> {
+    let n = mask.count_ones();
+    if n == 0 {
+        return None;
+    }
+
+    let idx = rng.random_range(0..n);
+    let mut remaining = mask;
+    let mut pos = 0;
+
+    for _ in 0..=idx {
+        let tz = remaining.trailing_zeros();
+        remaining &= remaining - 1;
+        pos = tz;
+    }
+    Some(pos)
 }
 
 #[cfg(test)]
