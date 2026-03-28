@@ -9,6 +9,7 @@ mod hand_rating_view;
 mod hand_type;
 mod idx_three_ranks;
 mod idx_two_ranks;
+mod payoff;
 
 pub use flop_hand_category::*;
 pub use hand_rating::HandRating;
@@ -16,6 +17,7 @@ pub use hand_rating_view::*;
 pub use hand_type::HandType;
 use idx_three_ranks::IdxThreeRanks;
 use idx_two_ranks::IdxTwoRanks;
+pub use payoff::calculate_payoffs;
 
 #[cfg(test)]
 pub mod tests {

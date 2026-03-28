@@ -34,7 +34,7 @@ use eval_flop::{eval_flop_holdem, eval_flop_omaha};
 use eval_rating::{eval_holdem, eval_omaha, eval_shortdeck};
 pub use game::{Game, Player, PlayerIdx, Street};
 use rating::HandRatingView;
-pub use rating::{FlopHandCategory, HandRating, HandType};
+pub use rating::{FlopHandCategory, HandRating, HandType, calculate_payoffs};
 #[cfg(feature = "rand")]
 pub use rng::CardGen;
 

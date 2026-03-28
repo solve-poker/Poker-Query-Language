@@ -20,6 +20,7 @@ opt-level = 3
 panic = "abort"
 
 [workspace.dependencies]
+approx = "0.5.1"
 bitflags = "2.10.0"
 clap = { version = "4.5.50", features = ["derive"] }
 criterion = "0.7.0"
