@@ -1,11 +1,8 @@
 use super::{CardCount, Display, FromStr, Hash, Idx, ParseError};
-#[cfg(feature = "python")]
-use crate::python::*;
 
 /// Card rank representation.
 ///
 /// Represents card ranks from 2 to Ace, with parsing support and conversion utilities.
-#[cfg_attr(feature = "python", pyclass(eq, ord, str, frozen, hash))]
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
@@ -145,15 +142,6 @@ impl FromStr for Rank {
             return Ok(r);
         }
         Err(ParseError::InvalidRank(s.into()))
-    }
-}
-
-#[cfg(feature = "python")]
-#[pymethods]
-impl Rank {
-    #[staticmethod]
-    fn from_str(s: &str) -> PyResult<Self> {
-        Ok(s.parse::<Self>()?)
     }
 }
 

@@ -1,6 +1,4 @@
 use super::{Display, Error};
-#[cfg(feature = "python")]
-use crate::python::*;
 
 // Error type for `FromStr`
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
@@ -18,10 +16,3 @@ pub enum ParseError {
 }
 
 impl Error for ParseError {}
-
-#[cfg(feature = "python")]
-impl From<ParseError> for PyErr {
-    fn from(err: ParseError) -> Self {
-        Self::new::<PyValueError, _>(err.to_string())
-    }
-}

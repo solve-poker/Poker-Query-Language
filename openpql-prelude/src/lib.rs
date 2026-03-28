@@ -1,6 +1,5 @@
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 #![cfg_attr(test, allow(clippy::needless_pass_by_value))]
-#![cfg_attr(any(test, feature = "python"), allow(clippy::wildcard_imports))]
 
 use std::{
     cmp, error::Error, fmt, hash::Hash, mem::transmute, ops, ops::Not,
@@ -18,8 +17,6 @@ mod error;
 mod eval_flop;
 mod eval_rating;
 mod game;
-#[cfg(feature = "python")]
-mod python;
 mod rating;
 #[cfg(feature = "rand")]
 mod rng;

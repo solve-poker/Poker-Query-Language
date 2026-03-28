@@ -16,7 +16,6 @@ Core library for card handling and evaluation of Hold'em and Short Deck poker.
 - **Game Variants**: Support for Texas Hold'em, Short Deck (6+), and Omaha
 - **Range Operations**: Hand range parsing and manipulation (openpql-range-parser)
 - **Equity Calculations**: Efficient equity computations
-- **Python Bindings**: Optional Python FFI through PyO3 (with `python` feature)
 - **Property Testing**: QuickCheck integration for robust testing
 
 ## Installation
@@ -31,7 +30,6 @@ openpql-prelude = "0.1.0"
 ### Optional Features
 
 - `rand` (default): Random number generation for Monte Carlo simulations
-- `python`: Python bindings via PyO3
 - `quickcheck`: QuickCheck property testing support
 
 ## Supported Game Variants

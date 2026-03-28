@@ -24,7 +24,6 @@ derive_more = { workspace = true, features = [
   "add_assign",
 ] }
 fastrand = { workspace = true, optional = true }
-pyo3 = { workspace = true, optional = true, features = ["extension-module"] }
 quickcheck = { workspace = true, optional = true }
 rand = { workspace = true, optional = true }
 rayon = { workspace = true, optional = true }
@@ -45,7 +44,6 @@ serde_test.workspace = true
 
 [features]
 default = ["rand"]
-python = ["pyo3"]
 quickcheck = ["dep:quickcheck", "fastrand", "rustc-hash"]
 rand = ["dep:rand"]
 rayon = ["dep:rayon"]
