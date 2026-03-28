@@ -23,6 +23,7 @@ mod python;
 mod rating;
 #[cfg(feature = "rand")]
 mod rng;
+pub mod tree;
 
 pub use buffer::BufferWrite;
 pub use card::{
