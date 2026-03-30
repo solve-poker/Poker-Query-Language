@@ -1,4 +1,5 @@
 use super::{Card, Card64, Flop, Hash, fmt};
+use crate::{CardCount, Suit, Suit4};
 
 #[macro_export]
 macro_rules! board {
@@ -68,6 +69,19 @@ impl Board {
         }
     }
 
+    pub fn to_vec(&self) -> Vec<Card> {
+        match (self.flop, self.turn, self.river) {
+            (Some(flop), Some(turn), Some(river)) => {
+                vec![flop[0], flop[1], flop[2], turn, river]
+            }
+            (Some(flop), Some(turn), _) => {
+                vec![flop[0], flop[1], flop[2], turn]
+            }
+            (Some(flop), _, _) => flop.to_vec(),
+            _ => vec![],
+        }
+    }
+
     /// Returns an iterator over all cards on the board.
     pub fn iter(&self) -> impl Iterator<Item = Card> + '_ {
         self.flop
@@ -94,6 +108,76 @@ impl Board {
         }
 
         inner_eq(self.turn, card) || inner_eq(self.river, card)
+    }
+
+    /// Returns the suits that can still produce a flush by the river.
+    pub const fn flush_suits(&self) -> Suit4 {
+        match (self.flop, self.turn, self.river) {
+            (Some(flop), None, None) => {
+                let mut suits = Suit4(0);
+
+                suits.set(flop.0[0].suit);
+                suits.set(flop.0[1].suit);
+                suits.set(flop.0[2].suit);
+                suits
+            }
+            (Some(flop), Some(turn), None) => {
+                let (s1, s2, s3, s4) =
+                    (flop.0[0].suit, flop.0[1].suit, flop.0[2].suit, turn.suit);
+                let mut suits = Suit4(0);
+
+                if (s1.eq(s2)) || (s1.eq(s3)) || (s1.eq(s4)) {
+                    suits.set(s1);
+                }
+
+                if (s2.eq(s3)) || (s2.eq(s4)) {
+                    suits.set(s2);
+                }
+
+                if s3.eq(s4) {
+                    suits.set(s3);
+                }
+
+                suits
+            }
+            (Some(flop), Some(turn), Some(river)) => {
+                #[inline]
+                pub const fn count(l: Suit, r: Suit) -> CardCount {
+                    if l.eq(r) { 1 } else { 0 }
+                }
+                const N_OTHER: CardCount = 2;
+                let (s1, s2, s3, s4, s5) = (
+                    flop.0[0].suit,
+                    flop.0[1].suit,
+                    flop.0[2].suit,
+                    turn.suit,
+                    river.suit,
+                );
+
+                if count(s1, s2) + count(s1, s3) + count(s1, s4) + count(s1, s5)
+                    >= N_OTHER
+                {
+                    Suit4::from_suit(s1)
+                } else if count(s2, s1)
+                    + count(s2, s3)
+                    + count(s2, s4)
+                    + count(s2, s5)
+                    >= N_OTHER
+                {
+                    Suit4::from_suit(s2)
+                } else if count(s3, s1)
+                    + count(s3, s2)
+                    + count(s3, s4)
+                    + count(s3, s5)
+                    >= N_OTHER
+                {
+                    Suit4::from_suit(s3)
+                } else {
+                    Suit4(0)
+                }
+            }
+            _ => Suit4::ALL,
+        }
     }
 
     pub(crate) const fn to_c64_flop(self) -> Card64 {
@@ -140,8 +224,9 @@ impl From<Board> for Card64 {
 impl quickcheck::Arbitrary for Board {
     fn arbitrary(g: &mut quickcheck::Gen) -> Self {
         let cards = crate::CardN::<{ Self::N_RIVER }>::arbitrary(g);
+        let street = crate::Street::arbitrary(g);
 
-        Self::from_slice(cards.as_ref())
+        Self::from_slice(&cards.as_ref()[..street.board_card_count() as usize])
     }
 }
 
@@ -181,6 +266,47 @@ mod tests {
     fn test_board_contains_card(board: Board, card: Card) {
         assert_eq!(board.iter().any(|x| x == card), board.contains_card(card));
         assert!(!Board::default().contains_card(card));
+    }
+
+    #[quickcheck]
+    fn test_flush_suits(board: Board) {
+        const N_FLUSH: CardCount = 3;
+
+        let street = Street::from(board);
+        let n_future_cards = 5 - street.board_card_count();
+        let cs = Card64::from((board, street));
+
+        assert_eq!(
+            board.flush_suits(),
+            Suit::ARR_ALL
+                .into_iter()
+                .filter(|&suit| {
+                    cs.count_by_suit(suit) + n_future_cards >= N_FLUSH
+                })
+                .collect()
+        );
+    }
+
+    #[quickcheck]
+    fn test_to_vec(board: Board) {
+        let expected = match Street::from(board) {
+            Street::Preflop => vec![],
+            Street::Flop => board.flop.unwrap().to_vec(),
+            Street::Turn => board
+                .flop
+                .unwrap()
+                .into_iter()
+                .chain([board.turn.unwrap()])
+                .collect(),
+            Street::River => board
+                .flop
+                .unwrap()
+                .into_iter()
+                .chain([board.turn.unwrap(), board.river.unwrap()])
+                .collect(),
+        };
+
+        assert_eq!(board.to_vec(), expected);
     }
 
     #[test]

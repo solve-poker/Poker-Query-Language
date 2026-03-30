@@ -23,6 +23,18 @@ impl Street {
             Self::River => Board::N_RIVER,
         }) as CardCount
     }
+
+    pub(crate) const fn from_board(board: Board) -> Self {
+        if board.flop.is_none() {
+            Self::Preflop
+        } else if board.turn.is_none() {
+            Self::Flop
+        } else if board.river.is_none() {
+            Self::Turn
+        } else {
+            Self::River
+        }
+    }
 }
 
 impl FromStr for Street {
@@ -50,6 +62,12 @@ impl From<(Board, Street)> for Card64 {
                 board.to_c64_flop() | board.to_c64_turn() | board.to_c64_river()
             }
         }
+    }
+}
+
+impl From<Board> for Street {
+    fn from(board: Board) -> Self {
+        Self::from_board(board)
     }
 }
 

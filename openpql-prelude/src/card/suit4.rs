@@ -1,6 +1,7 @@
 use super::{
     BitAnd, BitOr, Card64, CardCount, Idx, Suit, Suit4Inner, fmt, ops,
 };
+use crate::Card;
 
 #[macro_export]
 macro_rules! s4 {
@@ -10,7 +11,7 @@ macro_rules! s4 {
                 .filter(|c| !c.is_whitespace())
                 .map(|c| $crate::Suit::from_char(c).unwrap())
                 .collect::<Vec<_>>()
-                .as_ref(),
+                .as_ref() as &[$crate::Suit],
         )
     };
 }
@@ -66,6 +67,12 @@ impl Suit4 {
     pub const fn count(&self) -> CardCount {
         self.0.count_ones().to_le_bytes()[0]
     }
+
+    #[must_use]
+    #[inline]
+    pub(crate) const fn from_suit(suit: Suit) -> Self {
+        Self(1 << suit as CardCount)
+    }
 }
 
 impl fmt::Display for Suit4 {
@@ -107,6 +114,12 @@ impl From<&[Suit]> for Suit4 {
 impl ops::BitOrAssign<Suit> for Suit4 {
     fn bitor_assign(&mut self, rhs: Suit) {
         self.set(rhs);
+    }
+}
+
+impl From<&[Card]> for Suit4 {
+    fn from(cs: &[Card]) -> Self {
+        cs.iter().map(|c| c.suit).collect()
     }
 }
 
@@ -221,11 +234,25 @@ mod tests {
         let suits = Suit4::from(s1);
 
         assert!(suits.contains_suit(s1));
+        assert_eq!(suits, Suit4::from_suit(s1));
 
         let suits = Suit4::from([s1, s2].as_ref());
 
         assert!(suits.contains_suit(s1));
         assert!(suits.contains_suit(s2));
+    }
+
+    #[quickcheck]
+    fn test_from_cards(cards: Vec<Card>) {
+        let mut suits = Suit4::default();
+
+        for i in 0..cards.len() {
+            suits.set(cards[i].suit);
+
+            let _c64: Card64 = cards[0..=i].into();
+
+            assert_eq!(Suit4::from(&cards[0..=i]), suits);
+        }
     }
 
     #[quickcheck]

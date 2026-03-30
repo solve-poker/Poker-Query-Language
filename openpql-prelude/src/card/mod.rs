@@ -13,6 +13,7 @@ use super::{
 };
 
 mod board;
+mod canonical;
 #[allow(clippy::module_inception)]
 mod card;
 mod card64;
@@ -31,6 +32,7 @@ mod suit_idx;
 mod suit_mapping;
 
 pub use board::*;
+pub use canonical::*;
 pub use card::*;
 pub use card_idx::*;
 pub use card_iter::*;

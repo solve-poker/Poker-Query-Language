@@ -1,6 +1,6 @@
 // TODO refactor this file
 
-use super::*;
+use super::HandRating;
 
 type PlayerCount = u8;
 type Chip = u16;

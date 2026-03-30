@@ -24,8 +24,8 @@ pub mod tree;
 
 pub use buffer::BufferWrite;
 pub use card::{
-    Board, Card, Card64, CardCount, CardIdx, CardIter, Flop, HandIter, HandN,
-    Rank, Rank16, RankIdx, Suit, Suit4, SuitIdx, SuitMapping,
+    Board, CanonicalCard, CanonicalHand, Card, Card64, CardCount, CardIdx, CardIter, Flop,
+    HandIter, HandN, Rank, Rank16, RankIdx, Suit, Suit4, SuitIdx, SuitMapping,
 };
 pub use error::ParseError;
 use eval_flop::{eval_flop_holdem, eval_flop_omaha};
