@@ -1,12 +1,14 @@
 use std::ops;
 
 mod bet;
+mod history;
 mod player_index;
 mod predicate;
 mod street;
 mod validate;
 
 pub use bet::*;
+pub use history::*;
 pub use player_index::*;
 pub use predicate::*;
 pub use street::*;
