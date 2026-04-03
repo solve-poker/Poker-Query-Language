@@ -1,5 +1,6 @@
-use super::{Card, Card64};
-use crate::{RankIdx, SuitIdx, card::Idx};
+use rand::RngExt;
+
+use crate::{Card, Card64, RankIdx, SuitIdx, card::Idx};
 
 #[derive(Clone, Debug, Default)]
 pub struct CardGen {

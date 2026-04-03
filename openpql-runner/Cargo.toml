@@ -11,6 +11,7 @@ version = "0.1.0"
 [lib]
 name = "opql"
 path = "src/lib.rs"
+doctest = false
 
 [[bin]]
 name = "opql"

@@ -139,7 +139,7 @@ pub mod tests {
                 PQLCard::all::<SD>()
                     .iter()
                     .copied()
-                    .choose_multiple(rng, n)
+                    .sample(rng, n)
                     .into_iter()
                     .collect()
             }

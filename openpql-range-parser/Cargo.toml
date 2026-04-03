@@ -30,3 +30,6 @@ workspace = true
 [[bench]]
 name = "range"
 harness = false
+
+[lib]
+doctest = false

@@ -11,6 +11,7 @@ version = "0.1.2"
 [lib]
 name = "openpql_prelude"
 crate-type = ["cdylib", "rlib"]
+doctest = false
 
 [dependencies]
 derive_more = { workspace = true, features = [
