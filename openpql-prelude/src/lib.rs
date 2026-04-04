@@ -11,7 +11,6 @@ use derive_more::{
     Index, Into,
 };
 
-mod buffer;
 mod card;
 mod error;
 mod eval_flop;
@@ -22,7 +21,6 @@ mod rating;
 mod rng;
 pub mod tree;
 
-pub use buffer::BufferWrite;
 pub use card::{
     Board, CanonicalCard, CanonicalHand, Card, Card64, CardCount, CardIdx,
     CardIter, Flop, HandIter, HandN, Rank, Rank16, RankIdx, Suit, Suit4,
@@ -56,6 +54,7 @@ extern crate quickcheck_macros;
 #[cfg(test)]
 use tests::*;
 
+#[cfg_attr(coverage_nightly, coverage(off))]
 #[cfg(test)]
 pub mod tests {
     pub use std::{hash::Hasher, str::FromStr};
