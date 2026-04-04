@@ -4,6 +4,6 @@ fn main() {
     lalrpop::Configuration::new()
         .use_cargo_dir_conventions()
         .emit_report(true)
-        .process_file(source)
+        .process()
         .unwrap();
 }

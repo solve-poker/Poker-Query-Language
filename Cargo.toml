@@ -23,12 +23,12 @@ panic = "abort"
 approx = "0.5.1"
 bitflags = "2.11.0"
 clap = { version = "4.6.0", features = ["derive"] }
-criterion = "0.7.0"
+criterion = "0.8.2"
 derive_more = { version = "2", features = ["full"] }
 fastrand = "2.3.0"
 itertools = "0.14.0"
-lalrpop = { version = "0.22.2", features = ["lexer"] }
-lalrpop-util = { version = "0.22.2", features = ["lexer"] }
+lalrpop = { version = "0.23.1", features = ["lexer"] }
+lalrpop-util = { version = "0.23.1", features = ["lexer"] }
 openpql-macro = { path = "openpql-macro" }
 openpql-pql-parser = { path = "openpql-pql-parser" }
 openpql-prelude = { path = "openpql-prelude" }
