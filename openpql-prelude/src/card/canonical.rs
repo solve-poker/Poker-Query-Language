@@ -6,7 +6,7 @@
 //! * turn -> at most 2 drawing suits
 //! * river -> at most 1 flush suit
 
-use std::{array, fmt};
+use std::fmt;
 
 use crate::{Board, Card, HandN, Rank, Street, Suit, Suit4};
 
@@ -34,10 +34,19 @@ impl fmt::Debug for CanonicalCard {
 /// Cards sorted (same order as [`HandN`]) with suit encoded per card as
 /// `Option<Suit>`: `Some(s)` when flush-relevant, `None` otherwise.
 /// Suited preflop hands normalise to `Suit::S` (e.g. `AhKh` == `AdKd`).
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct CanonicalHand<const N: usize>(pub(crate) [CanonicalCard; N]);
+#[derive(
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    derive_more::From,
+    derive_more::Into,
+)]
+pub struct CanonicalHand(pub(crate) Vec<CanonicalCard>);
 
-impl<const N: usize> fmt::Debug for CanonicalHand<N> {
+impl fmt::Debug for CanonicalHand {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for card in &self.0 {
             write!(f, "{card:?}")?;
@@ -46,50 +55,42 @@ impl<const N: usize> fmt::Debug for CanonicalHand<N> {
     }
 }
 
-impl<const N: usize> CanonicalHand<N> {
+impl CanonicalHand {
     /// Derive the canonical hand given the current board.
     ///
     /// A card's suit is relevant when the total number of cards of that suit
     /// (board + hand + remaining board cards) can reach a flush.  With an
     /// empty board this delegates to preflop logic.
-    pub fn new(board: Board, hand: HandN<N>) -> Self {
+    pub fn new(board: Board, hand: &[Card]) -> Self {
         match Street::from(board) {
-            Street::Preflop => Self::preflop(hand),
-            _ => Self::postflop(board, hand),
+            Street::Preflop => Self::preflop(&sort(hand)),
+            _ => Self::postflop(board, &sort(hand)),
         }
     }
 
-    fn preflop(hand: HandN<N>) -> Self {
-        fn cast<const N: usize, const M: usize>(hand: HandN<N>) -> HandN<M> {
-            HandN::<M>::from_slice(hand.as_slice())
+    fn preflop(hand: &[Card]) -> Self {
+        match hand {
+            [_, _] => preflop2(hand),
+            [_, _, _, _] => preflop4(hand),
+            _ => unreachable!(),
         }
-
-        let cards: Vec<CanonicalCard> = if N == N_HOLDEM {
-            preflop2(cast(hand)).0.to_vec()
-        } else if N == N_OMAHA {
-            preflop4(cast(hand)).0.to_vec()
-        } else {
-            unimplemented!()
-        };
-
-        let arr: [CanonicalCard; N] =
-            cards.try_into().unwrap_or_else(|_| unreachable!());
-        Self(arr)
     }
 
-    fn postflop(board: Board, hand: HandN<N>) -> Self {
+    fn postflop(board: Board, hand: &[Card]) -> Self {
         let suits = board.flush_suits();
-        Self(array::from_fn(|i| {
-            let c = hand[i];
-            CanonicalCard {
+
+        hand.iter()
+            .copied()
+            .map(|c| CanonicalCard {
                 rank: c.rank,
                 suit: if suits.contains_suit(c.suit) {
                     Some(c.suit)
                 } else {
                     None
                 },
-            }
-        }))
+            })
+            .collect::<Vec<_>>()
+            .into()
     }
 }
 
@@ -97,10 +98,10 @@ impl<const N: usize> CanonicalHand<N> {
 ///
 /// All cards are treated as suited when they share the same suit (normalised
 /// to `Suit::S`); otherwise all suits are marked irrelevant.
-fn preflop2(hand: HandN<N_HOLDEM>) -> CanonicalHand<N_HOLDEM> {
-    let [c1, c2] = hand.0;
+fn preflop2(hand: &[Card]) -> CanonicalHand {
+    let (c1, c2) = (hand[0], hand[1]);
     if c1.suit == c2.suit {
-        CanonicalHand([
+        CanonicalHand(vec![
             CanonicalCard {
                 rank: c1.rank,
                 suit: Some(Suit::S),
@@ -111,30 +112,33 @@ fn preflop2(hand: HandN<N_HOLDEM>) -> CanonicalHand<N_HOLDEM> {
             },
         ])
     } else {
-        CanonicalHand([
+        CanonicalHand(vec![
             CanonicalCard {
                 rank: c1.rank,
-                suit: None,
+                suit: Some(Suit::S),
             },
             CanonicalCard {
                 rank: c2.rank,
-                suit: None,
+                suit: Some(Suit::H),
             },
         ])
     }
 }
 
 // TODO: refactor this
-fn preflop4(hand: HandN<N_OMAHA>) -> CanonicalHand<N_OMAHA> {
+fn preflop4(hand: &[Card]) -> CanonicalHand {
     const N_SUITED: usize = 2;
-    let mut res: [CanonicalCard; N_OMAHA] = hand.0.map(|c| CanonicalCard {
-        rank: c.rank,
-        suit: None,
-    });
+    let (c1, c2, c3, c4) = (hand[0], hand[1], hand[2], hand[3]);
+
+    let mut res: [CanonicalCard; N_OMAHA] =
+        [c1, c2, c3, c4].map(|c| CanonicalCard {
+            rank: c.rank,
+            suit: None,
+        });
 
     let suits = Suit::ARR_ALL
         .into_iter()
-        .filter(|&suit| count_suit(suit, &hand.0) >= N_SUITED)
+        .filter(|&suit| count_suit(suit, hand) >= N_SUITED)
         .collect::<Suit4>();
 
     if suits.count() == 1 {
@@ -144,7 +148,6 @@ fn preflop4(hand: HandN<N_OMAHA>) -> CanonicalHand<N_OMAHA> {
             }
         }
     } else if suits.count() == 2 {
-        let [c1, c2, c3, c4] = hand.0;
         if c1.suit == c2.suit {
             res = [
                 CanonicalCard {
@@ -205,11 +208,19 @@ fn preflop4(hand: HandN<N_OMAHA>) -> CanonicalHand<N_OMAHA> {
         }
     }
 
-    CanonicalHand(res)
+    CanonicalHand(res.to_vec())
 }
 
 fn count_suit(suit: Suit, cs: &[Card]) -> usize {
     cs.iter().filter(|c| c.suit == suit).count()
+}
+
+fn sort(hand: &[Card]) -> Vec<Card> {
+    match hand {
+        [_, _] => HandN::<N_HOLDEM>::from_slice(hand).to_vec(),
+        [_, _, _, _] => HandN::<N_OMAHA>::from_slice(hand).to_vec(),
+        _ => unimplemented!("CanonicalHand only supports hand of 2 or 4 cards"),
+    }
 }
 
 #[cfg(test)]
@@ -222,38 +233,25 @@ mod tests {
     use super::*;
     use crate::{Card64, CardN, cards};
 
-    fn assert_canonical_hand<const N: usize>(
-        hand: CanonicalHand<N>,
-        expected: &str,
-    ) {
+    fn assert_canonical_hand(hand: CanonicalHand, expected: &str) {
         assert_eq!(format!("{hand:?}"), expected);
-    }
-
-    fn new_hand<const N: usize>(cs: &str) -> HandN<N> {
-        HandN::from_slice(cards!(cs).as_slice())
     }
 
     #[test]
     fn test_canonical_hand_preflop() {
         let pf = Board::default();
+        assert_canonical_hand(CanonicalHand::new(pf, &cards!("AdKd")), "KsAs");
+        assert_canonical_hand(CanonicalHand::new(pf, &cards!("AsKd")), "KsAh");
         assert_canonical_hand(
-            CanonicalHand::<2>::new(pf, new_hand("AdKd")),
-            "KsAs",
-        );
-        assert_canonical_hand(
-            CanonicalHand::<2>::new(pf, new_hand::<2>("AsKd")),
-            "K*A*",
-        );
-        assert_canonical_hand(
-            CanonicalHand::<4>::new(pf, new_hand::<4>("AsKs7h2h")),
+            CanonicalHand::new(pf, &cards!("AsKs7h2h")),
             "2s7sKhAh",
         );
         assert_canonical_hand(
-            CanonicalHand::<4>::new(pf, new_hand::<4>("AdKh7h2d")),
+            CanonicalHand::new(pf, &cards!("AdKh7h2d")),
             "2s7hKhAs",
         );
         assert_canonical_hand(
-            CanonicalHand::<4>::new(pf, new_hand::<4>("AdKd7d2h")),
+            CanonicalHand::new(pf, &cards!("AdKd7d2h")),
             "2*7sKsAs",
         );
     }
@@ -270,7 +268,7 @@ mod tests {
         }
 
         let sorted_hand = HandN::<N_OMAHA>::from_slice(cs.as_slice());
-        let hand = CanonicalHand::<N_OMAHA>::new(board, sorted_hand);
+        let hand = CanonicalHand::new(board, sorted_hand.as_slice());
         let suits = board.flush_suits();
 
         for i in 0..N_OMAHA {
@@ -291,19 +289,22 @@ mod tests {
         new_rank: Rank,
         idx: usize,
     ) {
-        fn assert_eq_check(l: &CanonicalHand<4>, r: &CanonicalHand<4>) {
+        fn assert_eq_check(l: &CanonicalHand, r: &CanonicalHand) {
             assert_eq!(l == r, format!("{l:?}") == format!("{r:?}"));
         }
 
         let hand = HandN::<4>::from_slice(cs.as_slice());
-        let left = CanonicalHand(array::from_fn(|i| CanonicalCard {
-            rank: hand[i].rank,
-            suit: if suit_relevant[i] {
-                Some(hand[i].suit)
-            } else {
-                None
-            },
-        }));
+        let left = CanonicalHand(
+            array::from_fn::<_, 4, _>(|i| CanonicalCard {
+                rank: hand[i].rank,
+                suit: if suit_relevant[i] {
+                    Some(hand[i].suit)
+                } else {
+                    None
+                },
+            })
+            .to_vec(),
+        );
         let idx = idx % 4;
 
         // 1) alter suit at random position
