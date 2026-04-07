@@ -15,7 +15,16 @@ macro_rules! history {
 
 /// A sequence of actions representing a path through the game tree.
 #[derive(
-    Clone, Default, PartialEq, Eq, Hash, derive_more::From, Deref, DerefMut,
+    Clone,
+    Default,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    derive_more::From,
+    Deref,
+    DerefMut,
 )]
 #[repr(transparent)]
 pub struct History(Vec<Action>);
@@ -186,6 +195,13 @@ mod tests {
     #[test]
     fn test_root() {
         assert_eq!(History::root(), vec![Action::Chance].into());
+    }
+
+    #[test]
+    fn test_ord() {
+        assert!(history!(c) < history!(10));
+        assert!(history!(10) < history!(20));
+        assert!(history!(c, 10, 100) < history!(c, 20, 50));
     }
 
     #[test]

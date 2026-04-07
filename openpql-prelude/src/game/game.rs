@@ -5,6 +5,7 @@ use super::{
 };
 
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Game {
     #[default]
@@ -147,6 +148,39 @@ mod tests {
             Game::Omaha
                 .eval_flop_category(c64!("7c 8c 2s 3s"), board!("7s 8h Tc")),
             FlopHandCategory::BottomTwo,
+        );
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    #[quickcheck]
+    fn test_game_ser_de() {
+        assert_tokens(
+            &Game::ShortDeck,
+            &[Token::UnitVariant {
+                name: "Game",
+                variant: "ShortDeck",
+            }],
+        );
+
+        assert_tokens(
+            &Game::Holdem,
+            &[Token::UnitVariant {
+                name: "Game",
+                variant: "Holdem",
+            }],
+        );
+
+        assert_tokens(
+            &Game::Omaha,
+            &[Token::UnitVariant {
+                name: "Game",
+                variant: "Omaha",
+            }],
         );
     }
 }
