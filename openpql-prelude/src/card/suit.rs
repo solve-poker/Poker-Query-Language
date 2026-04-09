@@ -5,12 +5,14 @@ use super::{CardCount, Display, FromStr, Hash, Idx, ParseError};
 /// Represents the four card suits (spades, hearts, diamonds, clubs),
 /// with parsing support and conversion utilities.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "lowercase"))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]
 pub enum Suit {
-    #[display("s")]
     #[default]
+    #[display("s")]
     S = 0,
     #[display("h")]
     H,
@@ -144,5 +146,30 @@ mod tests {
         assert_eq!(Suit::H.to_char(), 'h');
         assert_eq!(Suit::D.to_char(), 'd');
         assert_eq!(Suit::C.to_char(), 'c');
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    fn assert_suit(suit: Suit, s: &'static str) {
+        assert_tokens(
+            &suit.compact(),
+            &[Token::UnitVariant {
+                name: "Suit",
+                variant: s,
+            }],
+        );
+    }
+
+    #[quickcheck]
+    fn test_suit_ser_de() {
+        assert_suit(Suit::S, "s");
+        assert_suit(Suit::H, "h");
+        assert_suit(Suit::D, "d");
+        assert_suit(Suit::C, "c");
     }
 }

@@ -1,6 +1,8 @@
+use std::str::FromStr;
+
 use derive_more::Display;
 
-use crate::tree::Chip;
+use crate::tree::{Chip, TreeParseError};
 
 /// Simple Action type for building poker game history.
 /// Note: Dealt cards are treated as separate from the game history.
@@ -23,6 +25,64 @@ pub enum Action {
     #[display("Bet({_0})")]
     #[debug("{_0}")]
     PlayerBet(Chip),
+}
+
+const fn is_chance_str(s: &str) -> bool {
+    s.eq_ignore_ascii_case("c") || s.eq_ignore_ascii_case("chance")
+}
+
+impl FromStr for Action {
+    type Err = TreeParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let s = s.trim();
+        if is_chance_str(s) {
+            return Ok(Self::Chance);
+        }
+
+        if let Ok(chip) = s.parse::<Chip>() {
+            return Ok(Self::PlayerBet(chip));
+        }
+
+        Err(TreeParseError::InvalidAction(s.into()))
+    }
+}
+
+#[cfg(feature = "serde")]
+impl serde::Serialize for Action {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self {
+            Self::Chance => serializer.serialize_str("C"),
+            Self::PlayerBet(v) => serializer.serialize_u16(*v),
+        }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for Action {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error;
+        #[derive(serde::Deserialize)]
+        #[serde(untagged)]
+        enum Helper {
+            Str(String),
+            Num(Chip),
+        }
+
+        match Helper::deserialize(deserializer)? {
+            Helper::Str(s) if is_chance_str(&s) => Ok(Self::Chance),
+            Helper::Str(s) => {
+                Err(Error::custom(format!("unknown action: {s}")))
+            }
+            Helper::Num(v) => Ok(Self::PlayerBet(v)),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -62,5 +122,22 @@ pub mod tests {
     fn test_display() {
         assert_eq!(Action::Chance.to_string(), "Chance");
         assert_eq!(Action::PlayerBet(99).to_string(), "Bet(99)");
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    #[test]
+    fn test_action_chance_ser_de() {
+        assert_tokens(&Action::Chance, &[Token::Str("C")]);
+    }
+
+    #[test]
+    fn test_action_player_bet_ser_de() {
+        assert_tokens(&Action::PlayerBet(100), &[Token::U16(100)]);
     }
 }

@@ -6,9 +6,9 @@
 //! * turn -> at most 2 drawing suits
 //! * river -> at most 1 flush suit
 
-use std::fmt;
+use std::{fmt, str::FromStr};
 
-use crate::{Board, Card, HandN, Rank, Street, Suit, Suit4};
+use crate::{Board, Card, HandN, ParseError, Rank, Street, Suit, Suit4};
 
 const N_HOLDEM: usize = 2;
 const N_OMAHA: usize = 4;
@@ -23,9 +23,72 @@ pub struct CanonicalCard {
     pub suit: Option<Suit>,
 }
 
+impl FromStr for CanonicalCard {
+    type Err = ParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        fn to_suit(c: char) -> Result<Option<Suit>, ParseError> {
+            if c == '*' {
+                Ok(None)
+            } else {
+                Ok(Some(Suit::try_from(c)?))
+            }
+        }
+
+        let mut cs = s.chars().filter(|c| !c.is_whitespace());
+
+        if let Some(c) = cs.next()
+            && let Ok(rank) = Rank::try_from(c)
+            && let Some(c) = cs.next()
+            && let Ok(suit) = to_suit(c)
+            && cs.next().is_none()
+        {
+            return Ok(Self { rank, suit });
+        }
+
+        Err(ParseError::InvalidCard(s.into()))
+    }
+}
+
+impl From<Card> for CanonicalCard {
+    fn from(card: Card) -> Self {
+        Self {
+            rank: card.rank,
+            suit: Some(card.suit),
+        }
+    }
+}
+
 impl fmt::Debug for CanonicalCard {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}{}", self.rank, self.suit.map_or('*', Suit::to_char))
+    }
+}
+
+#[cfg(feature = "serde")]
+impl serde::Serialize for CanonicalCard {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&format!("{self:?}"))
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for CanonicalCard {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error;
+
+        let text = String::deserialize(deserializer)?;
+
+        match text.parse() {
+            Ok(c) => Ok(c),
+            Err(e) => Err(Error::custom(e.to_string())),
+        }
     }
 }
 
@@ -238,6 +301,38 @@ mod tests {
     }
 
     #[test]
+    fn test_from_str() {
+        fn parse(s: &str) -> Result<CanonicalCard, ParseError> {
+            s.parse()
+        }
+
+        assert_eq!(parse("2s"), Ok(cards!("2s")[0].into()));
+        assert_eq!(parse("2 S "), Ok(cards!("2s")[0].into()));
+        assert!("".parse::<Card>().is_err());
+        assert!("?".parse::<Card>().is_err());
+        assert!("2".parse::<Card>().is_err());
+        assert!("2k".parse::<Card>().is_err());
+        assert_eq!(
+            parse("2s?"),
+            Err(ParseError::InvalidCard("2s?".to_owned())),
+        );
+        assert!(parse("").is_err());
+        assert!(parse("?").is_err());
+        assert!(parse("2").is_err());
+        assert!(parse("2k").is_err());
+    }
+
+    #[test]
+    fn test_eq() {
+        fn cc(s: &str) -> CanonicalCard {
+            s.parse().unwrap()
+        }
+        assert_eq!(cc("2s"), cc("2s"));
+        assert_ne!(cc("2s"), cc("2h"));
+        assert_eq!(cc("2*"), cc("2*"));
+    }
+
+    #[test]
     fn test_canonical_hand_preflop() {
         let pf = Board::default();
         assert_canonical_hand(CanonicalHand::new(pf, &cards!("AdKd")), "KsAs");
@@ -282,7 +377,7 @@ mod tests {
     }
 
     #[quickcheck]
-    fn test_eq(
+    fn test_hand_eq(
         cs: CardN<4>,
         suit_relevant: [bool; 4],
         new_suit: Suit,
@@ -325,5 +420,34 @@ mod tests {
             Some(new_suit)
         };
         assert_eq_check(&left, &right);
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    #[test]
+    fn test_canonical_card_with_suit_ser_de() {
+        assert_tokens(
+            &CanonicalCard {
+                rank: Rank::RA,
+                suit: Some(Suit::S),
+            },
+            &[Token::Str("As")],
+        );
+    }
+
+    #[test]
+    fn test_canonical_card_without_suit_ser_de() {
+        assert_tokens(
+            &CanonicalCard {
+                rank: Rank::R2,
+                suit: None,
+            },
+            &[Token::Str("2*")],
+        );
     }
 }

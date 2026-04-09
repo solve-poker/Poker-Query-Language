@@ -1,8 +1,9 @@
 use core::{borrow, fmt};
+use std::str::FromStr;
 
 use derive_more::{Deref, DerefMut};
 
-use crate::tree::{Action, AnnotatedAction};
+use crate::tree::{Action, AnnotatedAction, TreeParseError};
 
 #[macro_export]
 macro_rules! history {
@@ -88,6 +89,12 @@ impl borrow::Borrow<[Action]> for History {
     }
 }
 
+impl AsRef<[Action]> for History {
+    fn as_ref(&self) -> &[Action] {
+        &self.0
+    }
+}
+
 impl From<&[Action]> for History {
     fn from(actions: &[Action]) -> Self {
         Self(actions.to_vec())
@@ -116,6 +123,21 @@ impl fmt::Debug for History {
         let cs = self.0.iter().map(|a| format!("{a:?}")).collect::<Vec<_>>();
 
         write!(f, "<{}>", cs.join("-"))
+    }
+}
+
+impl FromStr for History {
+    type Err = TreeParseError;
+
+    fn from_str(text: &str) -> Result<Self, Self::Err> {
+        if text.is_empty() {
+            return Ok(Self::default());
+        }
+        let actions: Vec<Action> = text
+            .split('-')
+            .map(str::parse::<Action>)
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(actions.into())
     }
 }
 

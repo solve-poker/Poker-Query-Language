@@ -4,35 +4,49 @@ use super::{CardCount, Display, FromStr, Hash, Idx, ParseError};
 ///
 /// Represents card ranks from 2 to Ace, with parsing support and conversion utilities.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]
 pub enum Rank {
     #[default]
+    #[cfg_attr(feature = "serde", serde(rename = "2"))]
     #[display("2")]
     R2 = 0,
+    #[cfg_attr(feature = "serde", serde(rename = "3"))]
     #[display("3")]
     R3,
+    #[cfg_attr(feature = "serde", serde(rename = "4"))]
     #[display("4")]
     R4,
+    #[cfg_attr(feature = "serde", serde(rename = "5"))]
     #[display("5")]
     R5,
+    #[cfg_attr(feature = "serde", serde(rename = "6"))]
     #[display("6")]
     R6,
+    #[cfg_attr(feature = "serde", serde(rename = "7"))]
     #[display("7")]
     R7,
+    #[cfg_attr(feature = "serde", serde(rename = "8"))]
     #[display("8")]
     R8,
+    #[cfg_attr(feature = "serde", serde(rename = "9"))]
     #[display("9")]
     R9,
+    #[cfg_attr(feature = "serde", serde(rename = "T"))]
     #[display("T")]
     RT,
+    #[cfg_attr(feature = "serde", serde(rename = "J"))]
     #[display("J")]
     RJ,
+    #[cfg_attr(feature = "serde", serde(rename = "Q"))]
     #[display("Q")]
     RQ,
+    #[cfg_attr(feature = "serde", serde(rename = "K"))]
     #[display("K")]
     RK,
+    #[cfg_attr(feature = "serde", serde(rename = "A"))]
     #[display("A")]
     RA,
 }
@@ -240,5 +254,39 @@ mod tests {
             Rank::ARR_ALL.map(Rank::to_char).iter().collect::<String>(),
             "23456789TJQKA",
         );
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    fn assert_rank(rank: Rank, s: &'static str) {
+        assert_tokens(
+            &rank.compact(),
+            &[Token::UnitVariant {
+                name: "Rank",
+                variant: s,
+            }],
+        );
+    }
+
+    #[quickcheck]
+    fn test_rank_ser_de() {
+        assert_rank(Rank::R2, "2");
+        assert_rank(Rank::R3, "3");
+        assert_rank(Rank::R4, "4");
+        assert_rank(Rank::R5, "5");
+        assert_rank(Rank::R6, "6");
+        assert_rank(Rank::R7, "7");
+        assert_rank(Rank::R8, "8");
+        assert_rank(Rank::R9, "9");
+        assert_rank(Rank::RT, "T");
+        assert_rank(Rank::RJ, "J");
+        assert_rank(Rank::RQ, "Q");
+        assert_rank(Rank::RK, "K");
+        assert_rank(Rank::RA, "A");
     }
 }

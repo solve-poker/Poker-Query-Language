@@ -1,6 +1,7 @@
 use super::{Board, Card64, CardCount, Display, FromStr, ParseError};
 
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
     Debug, Clone, PartialEq, Eq, Copy, PartialOrd, Ord, Default, Display,
 )]
@@ -147,5 +148,30 @@ pub mod tests {
         assert_eq!(Ok(Street::Flop), " flop ".parse(), "should trim");
 
         assert!("invalid".parse::<Street>().is_err());
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    fn assert_street(street: Street, s: &'static str) {
+        assert_tokens(
+            &street.compact(),
+            &[Token::UnitVariant {
+                name: "Street",
+                variant: s,
+            }],
+        );
+    }
+
+    #[quickcheck]
+    fn test_street_ser_de() {
+        assert_street(Street::Preflop, "Preflop");
+        assert_street(Street::Flop, "Flop");
+        assert_street(Street::Turn, "Turn");
+        assert_street(Street::River, "River");
     }
 }

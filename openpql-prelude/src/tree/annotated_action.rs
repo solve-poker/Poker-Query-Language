@@ -3,6 +3,7 @@ use crate::{
     tree::{Action, AnnotatedActionKind, Chip, PlayerIdx, idx_prev, to_pid},
 };
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
     Clone,
     Copy,
@@ -220,5 +221,84 @@ mod tests {
     #[test]
     fn test_default() {
         assert_eq!(AnnotatedAction::default(), PREFLOP);
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    #[test]
+    fn test_annotated_action_join_ser_de() {
+        assert_tokens(
+            &AnnotatedAction::Join(0, 100),
+            &[
+                Token::TupleVariant {
+                    name: "AnnotatedAction",
+                    variant: "Join",
+                    len: 2,
+                },
+                Token::U8(0),
+                Token::U16(100),
+                Token::TupleVariantEnd,
+            ],
+        );
+    }
+
+    #[test]
+    fn test_annotated_action_post_ser_de() {
+        assert_tokens(
+            &AnnotatedAction::Post(1, 50),
+            &[
+                Token::TupleVariant {
+                    name: "AnnotatedAction",
+                    variant: "Post",
+                    len: 2,
+                },
+                Token::U8(1),
+                Token::U16(50),
+                Token::TupleVariantEnd,
+            ],
+        );
+    }
+
+    #[test]
+    fn test_annotated_action_chance_ser_de() {
+        assert_tokens(
+            &AnnotatedAction::Chance(Street::Flop),
+            &[
+                Token::NewtypeVariant {
+                    name: "AnnotatedAction",
+                    variant: "Chance",
+                },
+                Token::UnitVariant {
+                    name: "Street",
+                    variant: "Flop",
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn test_annotated_action_act_ser_de() {
+        assert_tokens(
+            &AnnotatedAction::Act(0, AnnotatedActionKind::Bet, 100),
+            &[
+                Token::TupleVariant {
+                    name: "AnnotatedAction",
+                    variant: "Act",
+                    len: 3,
+                },
+                Token::U8(0),
+                Token::UnitVariant {
+                    name: "AnnotatedActionKind",
+                    variant: "Bet",
+                },
+                Token::U16(100),
+                Token::TupleVariantEnd,
+            ],
+        );
     }
 }

@@ -8,6 +8,17 @@ type Bet = Chip;
 type ToCall = Chip;
 type PlayerRemaining = Chip;
 
+/// Parse error for tree types.
+#[derive(Clone, PartialEq, Eq, Display, Debug)]
+pub enum TreeParseError {
+    #[display("InvalidAction: {_0}")]
+    InvalidAction(String),
+    #[display("InvalidHistory: {_0}")]
+    InvalidHistory(String),
+}
+
+impl Error for TreeParseError {}
+
 #[derive(Clone, PartialEq, Eq, Display)]
 pub enum GameTreeError {
     #[display("BetAmountInvalid P{_0} {_1} facing: {_2} stack: {_3}")]
