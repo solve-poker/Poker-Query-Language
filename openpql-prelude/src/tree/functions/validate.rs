@@ -41,7 +41,9 @@ fn validate_bet_lt(
     let shove = validate_bet_le_shove(history, hero_id, bet)?;
     if bet == shove {
         Ok(AnnotatedActionKind::ShoveCall)
-    } else if bet == 0 && player_committed(hero_id, history) < facing_bet {
+    } else if bet == player_committed(hero_id, history)
+        && player_committed(hero_id, history) < facing_bet
+    {
         Ok(AnnotatedActionKind::Fold)
     } else {
         Err(GameTreeError::BetAmountInvalid(
