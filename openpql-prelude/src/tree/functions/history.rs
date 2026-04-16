@@ -2,12 +2,10 @@ use crate::tree::Action;
 
 pub fn is_descendent(left: &[Action], right: &[Action]) -> bool {
     match (left, right) {
-        ([head_left, tail_left @ ..], [head_right, tail_right @ ..]) => {
-            if head_left == head_right {
-                is_descendent(tail_left, tail_right)
-            } else {
-                false
-            }
+        ([head_left, tail_left @ ..], [head_right, tail_right @ ..])
+            if head_left == head_right =>
+        {
+            is_descendent(tail_left, tail_right)
         }
         ([], _) => true,
         _ => false,

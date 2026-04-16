@@ -106,9 +106,7 @@ where
 
         res.push(Self::from_span_head(span));
 
-        let mut prev_idx = start_idx;
-
-        for i in 1..len {
+        for (prev_idx, i) in (start_idx..).zip(1..len) {
             res.push(
                 (
                     ConstrainRank::Diff(
@@ -120,8 +118,6 @@ where
                 )
                     .into(),
             );
-
-            prev_idx += 1;
         }
 
         res

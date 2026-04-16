@@ -298,7 +298,7 @@ pub mod tests {
         }
 
         assert_err(
-            &format!("from {src}",),
+            &format!("from {src}"),
             PQLErrorKind::ExceededMaximumPlayers(11),
             &src,
         );

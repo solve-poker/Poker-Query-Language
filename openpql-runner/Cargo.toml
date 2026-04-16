@@ -18,10 +18,15 @@ name = "opql"
 path = "src/cli/main.rs"
 required-features = ["cli"]
 
+[[test]]
+name = "functions"
+path = "tests/functions/main.rs"
+
 [dependencies]
 bitflags.workspace = true
 clap = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["display", "std"] }
+openpql-core.workspace = true
 openpql-macro.workspace = true
 openpql-pql-parser = { workspace = true }
 openpql-prelude = { workspace = true }

@@ -26,13 +26,11 @@ use openpql_range_parser::{
 use runner_output::*;
 
 mod error;
-mod output_aggregator;
-mod runner_output;
-// TODO: remove
-#[cfg_attr(coverage_nightly, coverage(off))]
 mod functions;
 mod helper_loc;
+mod output_aggregator;
 mod runner;
+mod runner_output;
 mod types;
 mod util;
 mod vm;
@@ -52,7 +50,7 @@ use vm::{
 };
 
 type HeapIdx = usize;
-type FractionInner = u8;
+type FractionInner = i32;
 type RangeSrc = String;
 type FnCheckRange = Box<dyn Fn(&[PQLCard]) -> bool>;
 

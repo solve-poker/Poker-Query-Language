@@ -18,8 +18,8 @@ pub enum Player {
 #[cfg(all(test, feature = "serde"))]
 #[cfg_attr(coverage_nightly, coverage(off))]
 mod tests_serde {
-    use crate::*;
     use super::Player;
+    use crate::*;
 
     #[test]
     fn test_player_chance_ser_de() {

@@ -49,12 +49,6 @@ impl PQLFnContext<'_> {
         &self.sampled_cards[i..i + n]
     }
 
-    pub(crate) fn get_flop(&self) -> PQLFlop {
-        let i = self.get_idx_board_start();
-
-        PQLFlop::from_slice(&self.sampled_cards[i..])
-    }
-
     pub fn get_c64_board(&self, street: PQLStreet) -> PQLCardSet {
         self.get_board_slice(street).into()
     }

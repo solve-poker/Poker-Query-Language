@@ -2,6 +2,7 @@ use super::{
     BitAnd, BitAndAssign, BitOr, BitOrAssign, Card64, CardCount, Hash, Idx,
     N_STRAIGHT, N_STRAIGHT_SD, Not, Rank, Rank16Inner, RankIdx, Suit, fmt, ops,
 };
+use crate::Card;
 
 #[macro_export]
 macro_rules! r16 {
@@ -49,6 +50,9 @@ impl Rank16 {
     pub(crate) const ALL: Self = Self(0b0001_1111_1111_1111);
     /// Set containing all 9 short deck ranks (6+).
     pub(crate) const ALL_SD: Self = Self(0b0001_1111_1111_0000);
+
+    /// Set containing Ace (as 1) to 8
+    pub const ALL_LO: Self = Self(0b0001_0000_0111_1111);
 
     pub const STRAIGHT_A6789: Self = Self(0b0001_0000_1111_0000);
     pub const STRAIGHT_A2345: Self = Self(0b0001_0000_0000_1111);
@@ -219,6 +223,12 @@ impl FromIterator<Rank> for Rank16 {
         }
 
         res
+    }
+}
+
+impl From<&[Card]> for Rank16 {
+    fn from(cards: &[Card]) -> Self {
+        cards.iter().map(|c| c.rank).collect()
     }
 }
 
