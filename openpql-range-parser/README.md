@@ -5,52 +5,32 @@
 
 Parser for poker range notation.
 
-## Overview
+## Range Syntax
 
-`openpql-range-parser` provides parsing and validation for poker hand range notation commonly used in poker analysis. It converts range strings into concrete sets of hands that can be used for equity calculations and analysis.
+Open PQL uses a **generic, variable-based** syntax — not the classic `AKs`/`AKo` shorthand.
 
-## Features
+Suit variables: `w`, `x`, `y`, `z`. Same letter = same suit, different letters = different suits.
 
-- **Range Notation Support**: Parse generic poker range syntax
-- **Pair Ranges**: `AA`, `KK-JJ`, `99+`
-- **Suited/Offsuit**: `AwKw`, `AxKy`, `AK` (both)
-- **Span Notation**: `22+`, `AT+`
-- **Board Parsing**: Parse 3 flop cards along with fixed turn and river cards
-- **Compact Representation**: Efficient storage of range data
+| Notation | Meaning |
+| --- | --- |
+| `AsKh` | Exact two cards |
+| `AwKw` | Suited AK |
+| `AxKy` | Offsuit AK |
+| `AK` | Any AK |
+| `TT` | Any pocket tens |
+| `QQ+` | Pocket pairs QQ+ |
+| `88-55` | Pairs from 88 down to 55 |
+| `AwJw+` | Suited aces from AJ up |
+| `[2,4,6,8,T]A` | A2, A4, A6, A8, AT |
+| `*` | Any two cards |
 
-## Installation
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-openpql-range-parser = "0.1.0"
-```
-
-## Range Notation Syntax
-
-### Pairs
-- `AA` - Pocket aces
-- `KK-JJ` - Kings through jacks
-- `99+` - Nines or better
-- `22-66` - Deuces through sixes
-
-### Suited/Offsuit Hands
-- `AwKw` - Ace-king suited
-- `AxKy` - Ace-king offsuit
-- `AK` - Both suited and offsuit
-
-### Lists
-- `[2,4,6,8,T]A` - Represents A2, A4, A6, A8, AT
-
-### Wildcards
-- `*` - All possible hands
+Combine with commas: `AA, KK, AwKw, 77-55`.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
+MIT — see [LICENSE](../LICENSE).
 
 ## Links
 
-- [Main Project Repository](https://github.com/solve-poker/Poker-Query-Language)
-- [PQL Documentation](https://pql-docs.solve.poker)
+- [Project repo](https://github.com/solve-poker/Poker-Query-Language)
+- [PQL docs](https://pql-docs.solve.poker)

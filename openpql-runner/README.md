@@ -3,14 +3,33 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.85+-blue.svg)](https://www.rust-lang.org)
 
-Main library and CLI tool (`opql`) for executing PQL queries
+Library and CLI (`opql`) for executing PQL queries.
+
+## CLI
+
+```bash
+opql --run "select equity from hero='AhKh', villain='QQ+', board='Ah9s2c', game='holdem'"
+```
+
+## Library
+
+```rust,ignore
+use std::io;
+use openpql_runner::PQLRunner;
+
+PQLRunner::run(
+    "select equity from hero='AhKh', villain='QQ+', board='', game='holdem'",
+    &mut io::stdout(),
+    &mut io::stderr(),
+)?;
+```
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
+MIT — see [LICENSE](../LICENSE).
 
 ## Links
 
-- [Main Project Repository](https://github.com/solve-poker/Poker-Query-Language)
-- [PQL Documentation](https://pql-docs.solve.poker)
-- [Online Playground](https://pql-playground.solve.poker/)
+- [Project repo](https://github.com/solve-poker/Poker-Query-Language)
+- [PQL docs](https://pql-docs.solve.poker)
+- [Playground](https://pql-playground.solve.poker/)

@@ -17,3 +17,6 @@ perf.hist*
 
 ### Coverage ###
 *.profraw
+
+### Docs ###
+docs/book/

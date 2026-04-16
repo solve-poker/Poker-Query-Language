@@ -45,6 +45,7 @@ opql --run "select avg(boardsuitcount(river)) from hero='As9s', villain='*', boa
 
 # Analyze equity in specific scenarios
 opql --run "select equity from hero='AhKh', villain='QQ+', board='Ah9s2c', game='holdem'"
+# Ranges use generic syntax: AwKw (suited), AxKy (offsuit), AK (either)
 ```
 
 ### WebAssembly Demo
@@ -65,10 +66,11 @@ trunk serve --config ./open-pql-wasm/Trunk.toml
 
 This workspace contains the following crates:
 
-- **`openpql-prelude`**: Core poker library for card handling and evaluation of Hold'em and Short Deck poker
-- **`openpql-range-parser`**: Parser for poker range notation (e.g., "AA-TT", "89+")
-- **`openpql-pql-parser`**: Parser implementation for Poker Query Language (PQL) syntax
-- **`openpql-runner`**: Main library and CLI tool (`opql`) for executing PQL queries
+- **`openpql-prelude`**: Core poker types — cards, hands, evaluators
+- **`openpql-core`**: Game abstraction and query execution core
+- **`openpql-range-parser`**: Parser for poker range notation (e.g. `AA-TT`, `AwKw+`)
+- **`openpql-pql-parser`**: Parser for Poker Query Language (PQL) syntax
+- **`openpql-runner`**: Library and CLI tool (`opql`) for executing PQL queries
 - **`openpql-macro`**: Internal procedural macros
 
 ## Documentation

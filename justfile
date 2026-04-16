@@ -29,6 +29,12 @@ fmt:
 
 # ── Coverage ───────────────────────────────────────────
 
+book:
+    mdbook build docs
+
+book-serve:
+    mdbook serve docs --open
+
 nightly := "cargo +nightly"
 lcov_dir := "./target/coverage"
 

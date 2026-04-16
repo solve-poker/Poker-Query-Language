@@ -1,0 +1,26 @@
+[book]
+title = "Open PQL"
+description = "Tutorial and guide for Open PQL, a Rust implementation of Poker Query Language"
+authors = ["Open PQL Contributors"]
+language = "en"
+src = "src"
+
+[rust]
+edition = "2024"
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/solve-poker/Poker-Query-Language"
+edit-url-template = "https://github.com/solve-poker/Poker-Query-Language/edit/main/docs/{path}"
+additional-css = []
+site-url = "/"
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.playground]
+editable = false
+copyable = true
+line-numbers = true
