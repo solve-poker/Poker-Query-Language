@@ -1,7 +1,6 @@
 use super::{
     BitAnd, BitAndAssign, BitOr, BitOrAssign, Card, Card64Inner, CardCount,
-    CardIdx, CardIter, Hash, Idx, Not, Rank, Rank16, Rank16Inner, Suit, fmt,
-    ops,
+    CardIter, Hash, Idx, Not, Rank, Rank16, Rank16Inner, Suit, fmt, ops,
 };
 
 #[macro_export]
@@ -43,8 +42,8 @@ impl Card64 {
 
     pub(crate) const EMPTY: Self = Self(0);
 
-    const ALL: Self = sealed::all::<false>();
-    const ALL_SD: Self = sealed::all::<true>();
+    const ALL: Self = Self(0x1FFF_1FFF_1FFF_1FFF);
+    const ALL_SD: Self = Self(0x1FF0_1FF0_1FF0_1FF0);
 
     #[must_use]
     #[inline]
@@ -155,32 +154,6 @@ impl Card64 {
 
     const fn from_card(card: Card) -> Self {
         Self::from_indices(card.rank as Idx, card.suit as Idx)
-    }
-}
-
-// compiler-time functions
-#[allow(clippy::cast_possible_wrap)]
-mod sealed {
-    use super::{Card, Card64, CardIdx, Idx};
-
-    pub(super) const fn all<const SD: bool>() -> Card64 {
-        let start_idx = if SD {
-            Card::N_CARDS - Card::N_CARDS_SD
-        } else {
-            0
-        };
-
-        let mut res = Card64::EMPTY;
-        let mut i = 0;
-
-        while i < Card::N_CARDS {
-            if i >= start_idx {
-                res.set(CardIdx(i as Idx).to_card().unwrap());
-            }
-            i += 1;
-        }
-
-        res
     }
 }
 

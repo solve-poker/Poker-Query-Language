@@ -45,9 +45,99 @@ impl Card {
     /// Total number of cards in a short deck
     pub const N_CARDS_SD: CardCount = Suit::N_SUITS * Rank::N_RANKS_SD;
 
-    const ARR_ALL: [Self; Self::N_CARDS as usize] = sealed::all_cards();
-    const ARR_ALL_SD: [Self; Self::N_CARDS_SD as usize] =
-        sealed::all_cards_sd();
+    const ARR_ALL: [Self; Self::N_CARDS as usize] = [
+        Self::new(Rank::R2, Suit::S),
+        Self::new(Rank::R2, Suit::H),
+        Self::new(Rank::R2, Suit::D),
+        Self::new(Rank::R2, Suit::C),
+        Self::new(Rank::R3, Suit::S),
+        Self::new(Rank::R3, Suit::H),
+        Self::new(Rank::R3, Suit::D),
+        Self::new(Rank::R3, Suit::C),
+        Self::new(Rank::R4, Suit::S),
+        Self::new(Rank::R4, Suit::H),
+        Self::new(Rank::R4, Suit::D),
+        Self::new(Rank::R4, Suit::C),
+        Self::new(Rank::R5, Suit::S),
+        Self::new(Rank::R5, Suit::H),
+        Self::new(Rank::R5, Suit::D),
+        Self::new(Rank::R5, Suit::C),
+        Self::new(Rank::R6, Suit::S),
+        Self::new(Rank::R6, Suit::H),
+        Self::new(Rank::R6, Suit::D),
+        Self::new(Rank::R6, Suit::C),
+        Self::new(Rank::R7, Suit::S),
+        Self::new(Rank::R7, Suit::H),
+        Self::new(Rank::R7, Suit::D),
+        Self::new(Rank::R7, Suit::C),
+        Self::new(Rank::R8, Suit::S),
+        Self::new(Rank::R8, Suit::H),
+        Self::new(Rank::R8, Suit::D),
+        Self::new(Rank::R8, Suit::C),
+        Self::new(Rank::R9, Suit::S),
+        Self::new(Rank::R9, Suit::H),
+        Self::new(Rank::R9, Suit::D),
+        Self::new(Rank::R9, Suit::C),
+        Self::new(Rank::RT, Suit::S),
+        Self::new(Rank::RT, Suit::H),
+        Self::new(Rank::RT, Suit::D),
+        Self::new(Rank::RT, Suit::C),
+        Self::new(Rank::RJ, Suit::S),
+        Self::new(Rank::RJ, Suit::H),
+        Self::new(Rank::RJ, Suit::D),
+        Self::new(Rank::RJ, Suit::C),
+        Self::new(Rank::RQ, Suit::S),
+        Self::new(Rank::RQ, Suit::H),
+        Self::new(Rank::RQ, Suit::D),
+        Self::new(Rank::RQ, Suit::C),
+        Self::new(Rank::RK, Suit::S),
+        Self::new(Rank::RK, Suit::H),
+        Self::new(Rank::RK, Suit::D),
+        Self::new(Rank::RK, Suit::C),
+        Self::new(Rank::RA, Suit::S),
+        Self::new(Rank::RA, Suit::H),
+        Self::new(Rank::RA, Suit::D),
+        Self::new(Rank::RA, Suit::C),
+    ];
+
+    const ARR_ALL_SD: [Self; Self::N_CARDS_SD as usize] = [
+        Self::new(Rank::R6, Suit::S),
+        Self::new(Rank::R6, Suit::H),
+        Self::new(Rank::R6, Suit::D),
+        Self::new(Rank::R6, Suit::C),
+        Self::new(Rank::R7, Suit::S),
+        Self::new(Rank::R7, Suit::H),
+        Self::new(Rank::R7, Suit::D),
+        Self::new(Rank::R7, Suit::C),
+        Self::new(Rank::R8, Suit::S),
+        Self::new(Rank::R8, Suit::H),
+        Self::new(Rank::R8, Suit::D),
+        Self::new(Rank::R8, Suit::C),
+        Self::new(Rank::R9, Suit::S),
+        Self::new(Rank::R9, Suit::H),
+        Self::new(Rank::R9, Suit::D),
+        Self::new(Rank::R9, Suit::C),
+        Self::new(Rank::RT, Suit::S),
+        Self::new(Rank::RT, Suit::H),
+        Self::new(Rank::RT, Suit::D),
+        Self::new(Rank::RT, Suit::C),
+        Self::new(Rank::RJ, Suit::S),
+        Self::new(Rank::RJ, Suit::H),
+        Self::new(Rank::RJ, Suit::D),
+        Self::new(Rank::RJ, Suit::C),
+        Self::new(Rank::RQ, Suit::S),
+        Self::new(Rank::RQ, Suit::H),
+        Self::new(Rank::RQ, Suit::D),
+        Self::new(Rank::RQ, Suit::C),
+        Self::new(Rank::RK, Suit::S),
+        Self::new(Rank::RK, Suit::H),
+        Self::new(Rank::RK, Suit::D),
+        Self::new(Rank::RK, Suit::C),
+        Self::new(Rank::RA, Suit::S),
+        Self::new(Rank::RA, Suit::H),
+        Self::new(Rank::RA, Suit::D),
+        Self::new(Rank::RA, Suit::C),
+    ];
 
     /// Creates a new card with the specified rank and suit.
     #[must_use]
@@ -79,43 +169,6 @@ impl Card {
     #[inline]
     pub(crate) const fn eq(self, other: Self) -> bool {
         self.rank.eq(other.rank) && self.suit.eq(other.suit)
-    }
-}
-
-// compiler-time functions
-mod sealed {
-    use super::{Card, CardCount, Rank, Suit};
-
-    const fn mk_card(r: CardCount, s: CardCount) -> Card {
-        Card::new(Rank::all::<false>()[r as usize], Suit::ARR_ALL[s as usize])
-    }
-
-    pub(super) const fn all_cards() -> [Card; Card::N_CARDS as usize] {
-        let mut res = [mk_card(0, 0); Card::N_CARDS as usize];
-        let mut i = 0;
-
-        while i < Card::N_CARDS {
-            res[i as usize] = mk_card(i / Suit::N_SUITS, i % Suit::N_SUITS);
-
-            i += 1;
-        }
-
-        res
-    }
-
-    pub(super) const fn all_cards_sd() -> [Card; Card::N_CARDS_SD as usize] {
-        const SHIFT: CardCount = 4;
-        let mut res = [mk_card(0, 0); Card::N_CARDS_SD as usize];
-        let mut i = 0;
-
-        while i < Card::N_CARDS_SD {
-            res[i as usize] =
-                mk_card(i / Suit::N_SUITS + SHIFT, i % Suit::N_SUITS);
-
-            i += 1;
-        }
-
-        res
     }
 }
 
