@@ -51,6 +51,8 @@ pub enum PQLErrorKind {
     ArithmeticOperationUnsupported(Lhs, Rhs),
     #[from(skip)]
     ComparisonOperationUnsupported(Lhs, Rhs),
+    #[from(skip)]
+    LogicalOperationUnsupported(Lhs, Rhs),
     VmErr(VmError),
 }
 

@@ -102,6 +102,32 @@ mod tests {
     }
 
     #[test]
+    fn test_logic() {
+        let expr = parse_expr("1 = 1 and 2 = 2").unwrap();
+        let mut data = CompilerData::default();
+        let tp = push_expr(&mut data, &expr, PQLType::BOOLEAN).unwrap();
+
+        assert_eq!(tp, PQLType::BOOLEAN);
+        assert_eq!(
+            data.prog.last().map(|(ins, _)| ins.clone()),
+            Some(VmInstruction::BinOp(VmBinOpLogic::And.into())),
+        );
+    }
+
+    #[test]
+    fn test_logic_err() {
+        assert_expr_err(
+            PQLType::BOOLEAN,
+            "1 and 2",
+            PQLErrorKind::LogicalOperationUnsupported(
+                PQLType::LONG,
+                PQLType::LONG,
+            ),
+            "1 and 2",
+        );
+    }
+
+    #[test]
     fn test_binop_err() {
         assert_expr_err(
             PQLType::NUMERIC,

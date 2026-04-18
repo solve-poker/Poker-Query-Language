@@ -4,6 +4,7 @@ use super::*;
 pub enum VmBinOp {
     Arith(VmBinOpArith),
     Cmp(VmBinOpCmp),
+    Logic(VmBinOpLogic),
 }
 
 impl VmBinOp {
@@ -11,6 +12,7 @@ impl VmBinOp {
         match self {
             Self::Arith(op) => op.execute(ctx),
             Self::Cmp(op) => op.execute(ctx),
+            Self::Logic(op) => op.execute(ctx),
         }
     }
 
@@ -22,6 +24,7 @@ impl VmBinOp {
         match self {
             Self::Arith(op) => op.resolve_type(lhs_type, rhs_type),
             Self::Cmp(op) => op.resolve_type(lhs_type, rhs_type),
+            Self::Logic(op) => op.resolve_type(lhs_type, rhs_type),
         }
     }
 }
@@ -38,6 +41,8 @@ impl From<ast::BinOp> for VmBinOp {
             ast::BinOp::Gt => Self::Cmp(VmBinOpCmp::Gt),
             ast::BinOp::Le => Self::Cmp(VmBinOpCmp::Le),
             ast::BinOp::Lt => Self::Cmp(VmBinOpCmp::Lt),
+            ast::BinOp::And => Self::Logic(VmBinOpLogic::And),
+            ast::BinOp::Or => Self::Logic(VmBinOpLogic::Or),
         }
     }
 }

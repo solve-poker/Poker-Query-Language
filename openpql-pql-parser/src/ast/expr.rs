@@ -26,6 +26,8 @@ const fn _to_op(op: BinOp) -> &'static str {
         BinOp::Gt => ">",
         BinOp::Le => "≤",
         BinOp::Lt => "<",
+        BinOp::And => "and",
+        BinOp::Or => "or",
     }
 }
 
@@ -67,6 +69,13 @@ mod tests {
         assert_expr("1 >= 1", "1 ≥ 1");
         assert_expr("1 < 1", "1 < 1");
         assert_expr("1 <= 1", "1 ≤ 1");
+
+        assert_expr("a and b", "a and b");
+        assert_expr("a or b", "a or b");
+        assert_expr("a AND b", "a and b");
+        assert_expr("a OR b", "a or b");
+        assert_expr("a or b and c", "a or b and c");
+        assert_expr("a = 1 and b = 2", "a = 1 and b = 2");
     }
 
     #[test]

@@ -9,4 +9,6 @@ pub enum BinOp {
     Gt,
     Le,
     Lt,
+    And,
+    Or,
 }
