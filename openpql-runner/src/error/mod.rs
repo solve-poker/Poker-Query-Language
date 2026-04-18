@@ -1,7 +1,5 @@
 use super::*;
 
-pub type Loc = usize;
-pub type LocInfo = (Loc, Loc);
 pub type PQLResult<T> = Result<T, PQLError>;
 
 type Given = PQLType;
@@ -17,11 +15,11 @@ pub struct PQLError {
     pub kind: PQLErrorKind,
 }
 
-impl<E> From<(SourceLocation, E)> for PQLError
+impl<E> From<(LocInfo, E)> for PQLError
 where
     PQLErrorKind: From<E>,
 {
-    fn from((loc, kind): (SourceLocation, E)) -> Self {
+    fn from((loc, kind): (LocInfo, E)) -> Self {
         Self {
             loc,
             kind: PQLErrorKind::from(kind),

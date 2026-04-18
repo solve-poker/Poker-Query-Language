@@ -1,6 +1,6 @@
 use super::*;
 
-pub type VmProgramInner = Vec<(VmInstruction, SourceLocation)>;
+pub type VmProgramInner = Vec<(VmInstruction, LocInfo)>;
 
 #[derive(Clone, Default)]
 pub struct VmProgram(pub(crate) VmProgramInner);

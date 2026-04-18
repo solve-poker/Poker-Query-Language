@@ -18,7 +18,7 @@ pub use unary_op::*;
 
 fn mk_err<I, E>(expr: &I, err: E) -> PQLError
 where
-    for<'a> &'a I: HasSourceLocation,
+    I: Spanned,
     PQLErrorKind: From<E>,
 {
     (expr.loc(), err).into()
@@ -26,7 +26,7 @@ where
 
 fn check_type<I>(expr: &I, given: PQLType, expected: PQLType) -> PQLResult<()>
 where
-    for<'a> &'a I: HasSourceLocation,
+    I: Spanned,
 {
     with_loc(expr, || {
         if given.intersects(expected) {
