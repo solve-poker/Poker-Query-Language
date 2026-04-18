@@ -1,10 +1,16 @@
-use super::{Loc, str};
+use super::{Loc, LocInfo, Spanned, str};
 
 #[derive(Clone, PartialEq, Eq, derive_more::From, derive_more::Debug)]
 #[debug("{:?}", self.inner)]
 pub struct Str<'i> {
     pub inner: &'i str,
     pub loc: (Loc, Loc),
+}
+
+impl Spanned for Str<'_> {
+    fn loc(&self) -> LocInfo {
+        self.loc
+    }
 }
 
 #[cfg(test)]

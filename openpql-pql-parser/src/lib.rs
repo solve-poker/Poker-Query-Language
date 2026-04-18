@@ -10,6 +10,7 @@ use rustc_hash::{FxHashMap, FxHashSet};
 
 pub mod ast;
 mod error;
+mod spanned;
 
 pub use error::Error;
 use error::{LalrError, ResultE, user_err};
@@ -17,6 +18,7 @@ use parser::{
     ExprParser, FnCallParser, FromClauseParser, IdentParser, NumParser,
     PQLParser, SelectorParser, StrParser,
 };
+pub use spanned::Spanned;
 
 pub fn parse_pql(src: &str) -> Result<Vec<ast::Stmt<'_>>, Error> {
     PQLParser::new().parse(src).map_err(Into::into)

@@ -1,4 +1,4 @@
-use super::{Expr, Ident, Loc, String};
+use super::{Expr, Ident, Loc, LocInfo, Spanned, String};
 
 #[derive(Clone, PartialEq, derive_more::From, derive_more::Debug)]
 #[debug("{:?}({})", self.name, _to_str(&self.args))]
@@ -7,6 +7,12 @@ pub struct FnCall<'i> {
     pub args: Vec<Expr<'i>>,
 
     pub loc: (Loc, Loc),
+}
+
+impl Spanned for FnCall<'_> {
+    fn loc(&self) -> LocInfo {
+        self.loc
+    }
 }
 
 fn _to_str(elems: &[Expr<'_>]) -> String {

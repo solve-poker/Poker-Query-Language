@@ -1,4 +1,13 @@
-use super::{Display, Error, LalrError, Loc, NumValueFloat, NumValueInt, str};
+use super::{
+    Display, Error, LalrError, Loc, LocInfo, NumValueFloat, NumValueInt,
+    Spanned, str,
+};
+
+impl Spanned for Num {
+    fn loc(&self) -> LocInfo {
+        self.loc
+    }
+}
 
 #[derive(Clone, PartialEq, derive_more::From, derive_more::Debug)]
 #[debug("{}", self.inner)]

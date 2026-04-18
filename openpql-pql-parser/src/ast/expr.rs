@@ -1,4 +1,6 @@
-use super::{BinOp, FnCall, Ident, Loc, LocInfo, Num, Str, UnaryOp, str};
+use super::{
+    BinOp, FnCall, Ident, Loc, LocInfo, Num, Spanned, Str, UnaryOp, str,
+};
 
 #[derive(Clone, PartialEq, derive_more::From, derive_more::Debug)]
 pub enum Expr<'i> {
@@ -40,8 +42,8 @@ const fn _to_unary_op(op: UnaryOp) -> &'static str {
     }
 }
 
-impl Expr<'_> {
-    pub const fn loc(&self) -> LocInfo {
+impl Spanned for Expr<'_> {
+    fn loc(&self) -> LocInfo {
         match self {
             Expr::Ident(id) => id.loc,
             Expr::Str(s) => s.loc,
@@ -51,7 +53,9 @@ impl Expr<'_> {
             Expr::UnaryOp(_, start, e) => (*start, e.loc().1),
         }
     }
+}
 
+impl Expr<'_> {
     pub(crate) fn binop(op: BinOp, l: Self, r: Self) -> Self {
         Self::BinOp(op, Box::new(l), Box::new(r))
     }

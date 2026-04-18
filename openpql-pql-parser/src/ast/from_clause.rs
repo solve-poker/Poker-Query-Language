@@ -1,5 +1,6 @@
 use super::{
-    Entry, Error, FxHashMap, Ident, Loc, ResultE, Str, String, fmt, user_err,
+    Entry, Error, FxHashMap, Ident, Loc, LocInfo, ResultE, Spanned, Str,
+    String, fmt, user_err,
 };
 
 #[derive(PartialEq, Eq, Default)]
@@ -74,10 +75,22 @@ impl fmt::Debug for FromClause<'_> {
     }
 }
 
+impl Spanned for FromClause<'_> {
+    fn loc(&self) -> LocInfo {
+        self.loc
+    }
+}
+
 #[derive(PartialEq, Eq, Debug)]
 pub struct FromItem<'i> {
     pub key: Ident<'i>,
     pub value: Str<'i>,
+}
+
+impl Spanned for FromItem<'_> {
+    fn loc(&self) -> LocInfo {
+        (self.key.loc.0, self.value.loc.1)
+    }
 }
 
 impl<'i, U, V> From<(U, V)> for FromItem<'i>
