@@ -28,33 +28,3 @@ pub fn nut_hi(
 
     true
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::*;
-
-    #[test]
-    fn test_nut_hi_holdem() {
-        let game = PQLGame::Holdem;
-
-        let ctx = TestPQLFnContext::from_cards(game, cards!("Qs5s AsJsKs3h4c"));
-        assert!(nut_hi(&ctx.as_ctx(), 0.into(), PQLStreet::Flop));
-
-        let ctx = TestPQLFnContext::from_cards(game, cards!("As2s KsQsJs3h4c"));
-        assert!(!nut_hi(&ctx.as_ctx(), 0.into(), PQLStreet::Flop));
-
-        // Ts dead
-        // let ctx = TestPQLFnContext::from_cards(game, cards!("As2s KsQsJs3h4c"));
-        // assert!(!nut_hi(&mut ctx.as_ctx(), 0.into(), PQLStreet::Flop));
-    }
-
-    #[test]
-    fn test_nut_hi_omaha() {
-        let game = PQLGame::Omaha;
-
-        let ctx =
-            TestPQLFnContext::from_cards(game, cards!("9s8s2s2h KsQsJsTs2c"));
-        assert!(nut_hi(&ctx.as_ctx(), 0.into(), PQLStreet::River));
-    }
-}

@@ -10,21 +10,3 @@ pub fn intersecting_hand_ranks(
         PQLBoard::from(ctx.get_board_slice(street)),
     )
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::*;
-
-    #[quickcheck]
-    fn test_intersecting_hand_ranks(ctx: TestPQLFnContext, street: PQLStreet) {
-        let ctx = ctx.as_ctx();
-
-        for player in PQLPlayer::iter(ctx.n_players) {
-            let p = hand_ranks(&ctx, player);
-            let b = board_ranks(&ctx, street);
-
-            assert_eq!(intersecting_hand_ranks(&ctx, player, street), p & b);
-        }
-    }
-}

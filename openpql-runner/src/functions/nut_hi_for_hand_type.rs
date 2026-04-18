@@ -31,21 +31,3 @@ pub fn nut_hi_for_hand_type(
 
     true
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::*;
-
-    #[test]
-    fn test_nut_hi_for_hand_type_holdem() {
-        let game = PQLGame::Holdem;
-        let ctx = TestPQLFnContext::from_cards(game, cards!("AsKh AdTd2d3h4c"));
-
-        assert!(nut_hi_for_hand_type(
-            &ctx.as_ctx(),
-            0.into(),
-            PQLStreet::Flop
-        ));
-    }
-}

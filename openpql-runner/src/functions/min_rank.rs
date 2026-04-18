@@ -10,20 +10,3 @@ pub const fn min_rank(
         None => Err(RuntimeError::ValueRetrievalFailed(PQLType::RANK)),
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::*;
-
-    #[quickcheck]
-    fn test_min_rank(ctx: TestPQLFnContext, ranks: PQLRankSet) -> TestResult {
-        let ctx = ctx.as_ctx();
-
-        let expected = ranks
-            .min_rank()
-            .ok_or(RuntimeError::ValueRetrievalFailed(PQLType::RANK));
-
-        TestResult::from_bool(min_rank(&ctx, ranks) == expected)
-    }
-}

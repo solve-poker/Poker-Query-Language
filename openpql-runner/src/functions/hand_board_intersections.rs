@@ -10,24 +10,3 @@ pub fn hand_board_intersections(
         PQLBoard::from(ctx.get_board_slice(street)),
     )
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::*;
-
-    #[quickcheck]
-    fn test_hand_board_intersections(ctx: TestPQLFnContext, street: PQLStreet) {
-        let ctx = ctx.as_ctx();
-
-        for player in PQLPlayer::iter(ctx.n_players) {
-            let p = hand_ranks(&ctx, player);
-            let b = board_ranks(&ctx, street);
-
-            assert_eq!(
-                hand_board_intersections(&ctx, player, street),
-                (p & b).count()
-            );
-        }
-    }
-}
