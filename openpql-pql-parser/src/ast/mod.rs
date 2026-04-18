@@ -13,6 +13,7 @@ mod selector;
 mod selector_kind;
 mod stmt;
 mod str;
+mod unary_op;
 
 pub use bin_op::BinOp;
 pub use expr::Expr;
@@ -24,6 +25,7 @@ pub use selector::Selector;
 pub use selector_kind::SelectorKind;
 pub use stmt::Stmt;
 pub use str::Str;
+pub use unary_op::UnaryOp;
 
 pub type NumValueInt = i64;
 pub type NumValueFloat = f64;

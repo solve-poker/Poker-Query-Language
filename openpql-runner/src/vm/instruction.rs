@@ -6,6 +6,7 @@ pub enum VmInstruction {
     Push(VmStackValue),
     FnCall(&'static dyn PQLFn),
     BinOp(VmBinOp),
+    UnaryOp(VmUnaryOp),
     CastNum(PQLType),
 }
 
@@ -17,6 +18,7 @@ impl VmInstruction {
                 proc.execute(ctx).map(|val| ctx.stack.push(val))?;
             }
             Self::BinOp(op) => op.execute(ctx)?,
+            Self::UnaryOp(op) => op.execute(ctx)?,
             Self::CastNum(kind) => {
                 let value = ctx.stack.pop()?;
 
@@ -64,6 +66,7 @@ pub mod tests {
                 (Self::Push(l), Self::Push(r)) => l == r,
                 (Self::FnCall(_l), Self::FnCall(_r)) => panic!(),
                 (Self::BinOp(l), Self::BinOp(r)) => l == r,
+                (Self::UnaryOp(l), Self::UnaryOp(r)) => l == r,
                 (Self::CastNum(l), Self::CastNum(r)) => l == r,
                 _ => false,
             }

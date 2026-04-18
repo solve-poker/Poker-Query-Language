@@ -5,7 +5,7 @@ pub fn push_expr(
     expr: &ast::Expr,
     expected_type: PQLType,
 ) -> PQLResult<PQLType> {
-    use ast::Expr::{BinOp, FnCall, Ident, Num, Str};
+    use ast::Expr::{BinOp, FnCall, Ident, Num, Str, UnaryOp};
 
     let rtn_type = match expr {
         Ident(ident) => push_ident(data, ident, expected_type),
@@ -13,6 +13,7 @@ pub fn push_expr(
         FnCall(fncall) => push_fncall(data, fncall),
         Num(num) => push_num(data, num, expected_type),
         BinOp(op, l, r) => push_binop(data, *op, l, r),
+        UnaryOp(op, start, e) => push_unary_op(data, *op, *start, e),
     }?;
 
     if rtn_type != expected_type

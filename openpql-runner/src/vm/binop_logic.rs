@@ -7,6 +7,7 @@ pub enum VmBinOpLogic {
 }
 
 impl VmBinOpLogic {
+    #[allow(clippy::unnecessary_wraps)]
     pub fn execute(self, ctx: &mut VmExecContext) -> Result<(), PQLErrorKind> {
         let rhs = ctx.stack.downcast_pop::<PQLBoolean>();
         let lhs = ctx.stack.downcast_pop::<PQLBoolean>();
@@ -22,6 +23,7 @@ impl VmBinOpLogic {
         Ok(())
     }
 
+    #[allow(clippy::unused_self)]
     pub fn resolve_type(
         self,
         lhs_type: PQLType,

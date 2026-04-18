@@ -15,6 +15,8 @@ mod sampled_data;
 mod stack;
 mod stack_value;
 mod static_data;
+mod unary_op;
+mod unary_op_logic;
 #[allow(clippy::module_inception)]
 mod vm;
 
@@ -33,6 +35,8 @@ pub use sampled_data::*;
 pub use stack::*;
 pub use stack_value::*;
 pub use static_data::*;
+pub use unary_op::*;
+pub use unary_op_logic::*;
 pub use vm::*;
 
 type PlayerName = String;

@@ -1,4 +1,4 @@
-use super::{BinOp, FnCall, Ident, LocInfo, Num, Str, str};
+use super::{BinOp, FnCall, Ident, Loc, LocInfo, Num, Str, UnaryOp, str};
 
 #[derive(Clone, PartialEq, derive_more::From, derive_more::Debug)]
 pub enum Expr<'i> {
@@ -12,6 +12,8 @@ pub enum Expr<'i> {
     Num(Num),
     #[debug("{_1:?} {} {_2:?}", _to_op(*_0))]
     BinOp(BinOp, Box<Self>, Box<Self>),
+    #[debug("{} {_2:?}", _to_unary_op(*_0))]
+    UnaryOp(UnaryOp, Loc, Box<Self>),
 }
 
 #[inline]
@@ -31,6 +33,13 @@ const fn _to_op(op: BinOp) -> &'static str {
     }
 }
 
+#[inline]
+const fn _to_unary_op(op: UnaryOp) -> &'static str {
+    match op {
+        UnaryOp::Not => "not",
+    }
+}
+
 impl Expr<'_> {
     pub const fn loc(&self) -> LocInfo {
         match self {
@@ -39,11 +48,16 @@ impl Expr<'_> {
             Expr::FnCall(fncall) => fncall.loc,
             Expr::Num(int) => int.loc,
             Expr::BinOp(_, l, r) => (l.loc().0, r.loc().1),
+            Expr::UnaryOp(_, start, e) => (*start, e.loc().1),
         }
     }
 
     pub(crate) fn binop(op: BinOp, l: Self, r: Self) -> Self {
         Self::BinOp(op, Box::new(l), Box::new(r))
+    }
+
+    pub(crate) fn unary_op(op: UnaryOp, start: Loc, e: Self) -> Self {
+        Self::UnaryOp(op, start, Box::new(e))
     }
 }
 
@@ -79,6 +93,16 @@ mod tests {
     }
 
     #[test]
+    fn test_unary_op() {
+        assert_expr("not a", "not a");
+        assert_expr("NOT a", "not a");
+        assert_expr("not not a", "not not a");
+        assert_expr("not a and b", "not a and b");
+        assert_expr("a and not b", "a and not b");
+        assert_expr("not a = 1", "not a = 1");
+    }
+
+    #[test]
     fn test_expr() {
         assert_expr("id", "id");
         assert_expr("'str'", "\"str\"");
@@ -96,6 +120,7 @@ mod tests {
         assert_loc("sin(x)", 0, 6);
         assert_loc("10", 0, 2);
         assert_loc("1 >= 3", 0, 6);
+        assert_loc("not a", 0, 5);
     }
 
     #[test]

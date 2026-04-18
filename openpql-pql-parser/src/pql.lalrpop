@@ -1,7 +1,7 @@
 use super::{
     ast::{
         BinOp, Expr, FnCall, FromClause, FromItem, Ident, Num, Selector,
-        Stmt, Str,
+        Stmt, Str, UnaryOp,
     },
     strip_str, Error,
 };
@@ -48,7 +48,12 @@ ExprOr: Expr<'input> = {
 }
 
 ExprAnd: Expr<'input> = {
-    <l: ExprCmp> "and" <r: ExprAnd> => Expr::binop(BinOp::And, l, r),
+    <l: ExprNot> "and" <r: ExprAnd> => Expr::binop(BinOp::And, l, r),
+    <ExprNot> => <>,
+}
+
+ExprNot: Expr<'input> = {
+    <l: @L> "not" <e: ExprNot> => Expr::unary_op(UnaryOp::Not, l, e),
     <ExprCmp> => <>,
 }
 
@@ -110,6 +115,7 @@ match {
   r"(?i)as" => "as",
   r"(?i)and" => "and",
   r"(?i)or" => "or",
+  r"(?i)not" => "not",
 } else {
   _
 }

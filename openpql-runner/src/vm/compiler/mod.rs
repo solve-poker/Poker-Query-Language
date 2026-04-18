@@ -6,6 +6,7 @@ mod fncall;
 mod ident;
 mod numeric;
 mod string;
+mod unary_op;
 
 pub use binop::*;
 pub use expression::*;
@@ -13,6 +14,7 @@ pub use fncall::*;
 pub use ident::*;
 pub use numeric::*;
 pub use string::*;
+pub use unary_op::*;
 
 fn mk_err<I, E>(expr: &I, err: E) -> PQLError
 where
