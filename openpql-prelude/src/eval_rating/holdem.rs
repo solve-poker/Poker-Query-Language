@@ -69,7 +69,6 @@ pub(super) const fn eval_pair(
 }
 
 #[inline]
-#[cfg_attr(coverage_nightly, coverage(off))]
 pub(super) const fn mk_straight_ranking<const FLUSH: bool>(
     has1: Rank16,
 ) -> HandRating {

@@ -83,7 +83,6 @@ impl Card {
 }
 
 // compiler-time functions
-#[cfg_attr(coverage_nightly, coverage(off))]
 mod sealed {
     use super::{Card, CardCount, Rank, Suit};
 

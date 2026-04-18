@@ -6,7 +6,6 @@ pub type VmProgramInner = Vec<(VmInstruction, LocInfo)>;
 pub struct VmProgram(pub(crate) VmProgramInner);
 
 impl fmt::Debug for VmProgram {
-    #[cfg_attr(coverage_nightly, coverage(off))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_list()
             .entries(self.0.iter().map(|t| t.0.clone()))

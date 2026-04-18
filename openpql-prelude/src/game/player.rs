@@ -30,7 +30,6 @@ impl Player {
 }
 
 impl From<usize> for Player {
-    #[cfg_attr(coverage_nightly, coverage(off))]
     fn from(i: usize) -> Self {
         debug_assert!(i < PlayerIdx::MAX.into());
 
@@ -39,7 +38,6 @@ impl From<usize> for Player {
 }
 
 impl From<i32> for Player {
-    #[cfg_attr(coverage_nightly, coverage(off))]
     fn from(i: i32) -> Self {
         debug_assert!(i >= 0 && i < PlayerIdx::MAX.into());
 

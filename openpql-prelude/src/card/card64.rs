@@ -160,7 +160,6 @@ impl Card64 {
 
 // compiler-time functions
 #[allow(clippy::cast_possible_wrap)]
-#[cfg_attr(coverage_nightly, coverage(off))]
 mod sealed {
     use super::{Card, Card64, CardIdx, Idx};
 

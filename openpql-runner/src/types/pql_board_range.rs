@@ -3,7 +3,6 @@ use super::*;
 pub struct PQLBoardRange(pub(crate) FnCheckRange, RangeSrc, PQLGame);
 
 impl fmt::Debug for PQLBoardRange {
-    #[cfg_attr(coverage_nightly, coverage(off))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("PQLBoardRange")
             .field(&self.1)

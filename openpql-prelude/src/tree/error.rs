@@ -34,7 +34,6 @@ pub enum GameTreeError {
 }
 
 impl fmt::Debug for GameTreeError {
-    #[cfg_attr(coverage_nightly, coverage(off))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{self}")
     }

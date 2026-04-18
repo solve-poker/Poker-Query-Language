@@ -28,7 +28,6 @@ use super::{Card, Card64, Deref, HandIter, Hash, Index, Into, fmt};
 pub struct HandN<const N: usize>(pub(crate) [Card; N]);
 
 impl<const N: usize> HandN<N> {
-    #[cfg_attr(coverage_nightly, coverage(off))]
     pub(crate) fn new(array: [Card; N]) -> Self {
         debug_assert!(N > 1, "HandN should have at least two cards.");
         debug_assert!(
@@ -39,7 +38,6 @@ impl<const N: usize> HandN<N> {
     }
 
     /// Creates a sorted hand from a slice.
-    #[cfg_attr(coverage_nightly, coverage(off))]
     pub fn from_slice(cs: &[Card]) -> Self {
         debug_assert!(
             cs.len() >= N,
