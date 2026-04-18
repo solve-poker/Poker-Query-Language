@@ -40,28 +40,40 @@ mod tests {
         assert_expr_err(
             PQLType::STREET,
             "0.1",
-            PQLErrorKind::TypeError(PQLType::DOUBLE, PQLType::STREET),
+            PQLErrorKind::TypeError {
+                given: PQLType::DOUBLE,
+                expected: PQLType::STREET,
+            },
             "0.1",
         );
 
         assert_expr_err(
             PQLType::NUMERIC,
             "river",
-            PQLErrorKind::TypeError(PQLType::STREET, PQLType::NUMERIC),
+            PQLErrorKind::TypeError {
+                given: PQLType::STREET,
+                expected: PQLType::NUMERIC,
+            },
             "river",
         );
 
         assert_expr_err(
             PQLType::BOOLEAN,
             "1",
-            PQLErrorKind::TypeError(PQLType::LONG, PQLType::BOOLEAN),
+            PQLErrorKind::TypeError {
+                given: PQLType::LONG,
+                expected: PQLType::BOOLEAN,
+            },
             "1",
         );
 
         assert_expr_err(
             PQLType::NUMERIC,
             "'AA'",
-            PQLErrorKind::TypeError(PQLType::STRING, PQLType::NUMERIC),
+            PQLErrorKind::TypeError {
+                given: PQLType::STRING,
+                expected: PQLType::NUMERIC,
+            },
             "'AA'",
         );
     }

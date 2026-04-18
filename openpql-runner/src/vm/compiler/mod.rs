@@ -32,7 +32,7 @@ where
         if given.intersects(expected) {
             Ok(())
         } else {
-            Err(PQLErrorKind::TypeError(given, expected))
+            Err(PQLErrorKind::TypeError { given, expected })
         }
     })
 }
@@ -143,13 +143,19 @@ mod tests {
 
         assert_err(
             "count(5.0)",
-            PQLErrorKind::TypeError(PQLType::DOUBLE, PQLType::BOOLEAN),
+            PQLErrorKind::TypeError {
+                given: PQLType::DOUBLE,
+                expected: PQLType::BOOLEAN,
+            },
             "5.0",
         );
 
         assert_err(
             "avg(1 = 1)",
-            PQLErrorKind::TypeError(PQLType::BOOLEAN, PQLType::NUMERIC),
+            PQLErrorKind::TypeError {
+                given: PQLType::BOOLEAN,
+                expected: PQLType::NUMERIC,
+            },
             "1 = 1",
         );
     }

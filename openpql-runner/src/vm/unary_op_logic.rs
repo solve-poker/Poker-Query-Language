@@ -28,9 +28,10 @@ impl VmUnaryOpLogic {
         if arg_type == PQLType::BOOLEAN {
             Ok(PQLType::BOOLEAN)
         } else {
-            Err(PQLErrorKind::LogicalOperationUnsupported(
-                arg_type, arg_type,
-            ))
+            Err(PQLErrorKind::LogicalOperationUnsupported {
+                lhs: arg_type,
+                rhs: arg_type,
+            })
         }
     }
 }
@@ -63,10 +64,10 @@ mod tests {
     fn test_resolve_type_err() {
         assert_eq!(
             VmUnaryOpLogic::Not.resolve_type(PQLType::LONG),
-            Err(PQLErrorKind::LogicalOperationUnsupported(
-                PQLType::LONG,
-                PQLType::LONG,
-            )),
+            Err(PQLErrorKind::LogicalOperationUnsupported {
+                lhs: PQLType::LONG,
+                rhs: PQLType::LONG,
+            }),
         );
     }
 }

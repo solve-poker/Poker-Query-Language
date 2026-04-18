@@ -38,9 +38,10 @@ impl VmBinOpArith {
         rhs_type: PQLType,
     ) -> Result<PQLType, PQLErrorKind> {
         if !lhs_type.is_num() || !rhs_type.is_num() {
-            return Err(PQLErrorKind::ArithmeticOperationUnsupported(
-                lhs_type, rhs_type,
-            ));
+            return Err(PQLErrorKind::ArithmeticOperationUnsupported {
+                lhs: lhs_type,
+                rhs: rhs_type,
+            });
         }
 
         if self == Self::Div

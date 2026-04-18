@@ -29,10 +29,10 @@ const fn validate_argument_count(
     if given.len() == expected.len() {
         Ok(())
     } else {
-        Err(PQLErrorKind::WrongNumberOfArguments(
-            given.len(),
-            expected.len(),
-        ))
+        Err(PQLErrorKind::WrongNumberOfArguments {
+            given: given.len(),
+            expected: expected.len(),
+        })
     }
 }
 
@@ -87,7 +87,7 @@ mod tests {
         assert_err(
             "equity(hero, river, extra)",
             PQLType::NUMERIC,
-            PQLErrorKind::WrongNumberOfArguments(given, expected),
+            PQLErrorKind::WrongNumberOfArguments { given, expected },
             "equity(hero, river, extra)",
         );
     }
@@ -100,7 +100,7 @@ mod tests {
         assert_err(
             "equity(1.0, flop)",
             PQLType::NUMERIC,
-            PQLErrorKind::TypeError(given, expected),
+            PQLErrorKind::TypeError { given, expected },
             "1.0",
         );
     }

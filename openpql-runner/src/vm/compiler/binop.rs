@@ -119,10 +119,10 @@ mod tests {
         assert_expr_err(
             PQLType::BOOLEAN,
             "1 and 2",
-            PQLErrorKind::LogicalOperationUnsupported(
-                PQLType::LONG,
-                PQLType::LONG,
-            ),
+            PQLErrorKind::LogicalOperationUnsupported {
+                lhs: PQLType::LONG,
+                rhs: PQLType::LONG,
+            },
             "1 and 2",
         );
     }
@@ -132,27 +132,30 @@ mod tests {
         assert_expr_err(
             PQLType::NUMERIC,
             "flop + 1",
-            PQLErrorKind::ArithmeticOperationUnsupported(
-                PQLType::STREET,
-                PQLType::LONG,
-            ),
+            PQLErrorKind::ArithmeticOperationUnsupported {
+                lhs: PQLType::STREET,
+                rhs: PQLType::LONG,
+            },
             "flop + 1",
         );
 
         assert_expr_err(
             PQLType::BOOLEAN,
             "1 > flop",
-            PQLErrorKind::ComparisonOperationUnsupported(
-                PQLType::LONG,
-                PQLType::STREET,
-            ),
+            PQLErrorKind::ComparisonOperationUnsupported {
+                lhs: PQLType::LONG,
+                rhs: PQLType::STREET,
+            },
             "1 > flop",
         );
 
         assert_expr_err(
             PQLType::NUMERIC,
             "flopunderpair >= flopnothing",
-            PQLErrorKind::TypeError(PQLType::BOOLEAN, PQLType::NUMERIC),
+            PQLErrorKind::TypeError {
+                given: PQLType::BOOLEAN,
+                expected: PQLType::NUMERIC,
+            },
             "flopunderpair >= flopnothing",
         );
 
@@ -176,10 +179,10 @@ mod tests {
         assert_expr_err(
             PQLType::BOOLEAN,
             "flop < turn",
-            PQLErrorKind::ComparisonOperationUnsupported(
-                PQLType::STREET,
-                PQLType::STREET,
-            ),
+            PQLErrorKind::ComparisonOperationUnsupported {
+                lhs: PQLType::STREET,
+                rhs: PQLType::STREET,
+            },
             "flop < turn",
         );
     }

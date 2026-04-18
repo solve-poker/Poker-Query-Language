@@ -106,9 +106,10 @@ impl VmBinOpCmp {
         } {
             Ok(PQLType::BOOLEAN)
         } else {
-            Err(PQLErrorKind::ComparisonOperationUnsupported(
-                lhs_type, rhs_type,
-            ))
+            Err(PQLErrorKind::ComparisonOperationUnsupported {
+                lhs: lhs_type,
+                rhs: rhs_type,
+            })
         }
     }
 

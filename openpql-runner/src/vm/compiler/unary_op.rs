@@ -45,10 +45,10 @@ mod tests {
         assert_expr_err(
             PQLType::BOOLEAN,
             "not 1",
-            PQLErrorKind::LogicalOperationUnsupported(
-                PQLType::LONG,
-                PQLType::LONG,
-            ),
+            PQLErrorKind::LogicalOperationUnsupported {
+                lhs: PQLType::LONG,
+                rhs: PQLType::LONG,
+            },
             "not 1",
         );
     }

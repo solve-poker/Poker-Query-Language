@@ -32,9 +32,10 @@ impl VmBinOpLogic {
         if lhs_type == PQLType::BOOLEAN && rhs_type == PQLType::BOOLEAN {
             Ok(PQLType::BOOLEAN)
         } else {
-            Err(PQLErrorKind::LogicalOperationUnsupported(
-                lhs_type, rhs_type,
-            ))
+            Err(PQLErrorKind::LogicalOperationUnsupported {
+                lhs: lhs_type,
+                rhs: rhs_type,
+            })
         }
     }
 }
@@ -80,10 +81,10 @@ mod tests {
     fn test_resolve_type_err() {
         assert_eq!(
             VmBinOpLogic::And.resolve_type(PQLType::LONG, PQLType::BOOLEAN),
-            Err(PQLErrorKind::LogicalOperationUnsupported(
-                PQLType::LONG,
-                PQLType::BOOLEAN,
-            )),
+            Err(PQLErrorKind::LogicalOperationUnsupported {
+                lhs: PQLType::LONG,
+                rhs: PQLType::BOOLEAN,
+            }),
         );
     }
 }
