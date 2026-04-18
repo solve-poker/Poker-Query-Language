@@ -9,6 +9,6 @@ pub fn hi_rating(
     core::hi_rating(
         ctx.game,
         ctx.get_player_slice(player),
-        PQLBoard::from(ctx.get_board_slice(street)),
+        ctx.get_board(street),
     )
 }

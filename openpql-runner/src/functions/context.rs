@@ -42,6 +42,10 @@ impl PQLFnContext<'_> {
         self.get_player_slice(player).into()
     }
 
+    pub fn get_board(&self, street: PQLStreet) -> PQLBoard {
+        self.get_board_slice(street).into()
+    }
+
     pub fn get_board_slice(&self, street: PQLStreet) -> &[PQLCard] {
         let i = self.get_idx_board_start();
         let n = street.board_card_count() as usize;

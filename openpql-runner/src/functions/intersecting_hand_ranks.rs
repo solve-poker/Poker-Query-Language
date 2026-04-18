@@ -7,6 +7,6 @@ pub fn intersecting_hand_ranks(
 ) -> PQLRankSet {
     core::intersecting_hand_ranks(
         ctx.get_player_slice(player),
-        PQLBoard::from(ctx.get_board_slice(street)),
+        ctx.get_board(street),
     )
 }

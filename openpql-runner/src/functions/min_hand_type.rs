@@ -10,7 +10,7 @@ pub fn min_hand_type(
     core::min_hand_type(
         ctx.game,
         ctx.get_player_slice(player),
-        PQLBoard::from(ctx.get_board_slice(street)),
+        ctx.get_board(street),
         ht,
     )
 }

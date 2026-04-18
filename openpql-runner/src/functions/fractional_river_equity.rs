@@ -10,7 +10,7 @@ pub fn fractional_river_equity(
         ctx.game.player_cards_len(),
     );
     let player_cards = &ctx.sampled_cards[..idx_board];
-    let board = PQLBoard::from(ctx.get_board_slice(PQLStreet::River));
+    let board = ctx.get_board(PQLStreet::River);
 
     core::fractional_river_equity(ctx.game, board, player_cards, hero.into())
 }

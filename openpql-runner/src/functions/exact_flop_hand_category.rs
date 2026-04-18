@@ -9,7 +9,7 @@ pub fn exact_flop_hand_category(
     core::exact_flop_hand_category(
         ctx.game,
         ctx.get_player_slice(player),
-        PQLBoard::from(ctx.get_board_slice(PQLStreet::Flop)),
+        ctx.get_board(PQLStreet::Flop),
         category,
     )
 }

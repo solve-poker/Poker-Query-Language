@@ -32,7 +32,6 @@ mod output_aggregator;
 mod runner;
 mod runner_output;
 mod types;
-mod util;
 mod vm;
 
 pub use error::*;
@@ -43,7 +42,6 @@ pub use runner::*;
 #[cfg(test)]
 pub use tests::*;
 pub use types::*;
-use util::*;
 use vm::{
     Vm, VmBinOpCmp, VmCache, VmExecContext, VmProgram, VmSampledData,
     VmStackValue,

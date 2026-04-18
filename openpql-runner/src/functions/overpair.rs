@@ -6,8 +6,5 @@ pub fn overpair(
     player: PQLPlayer,
     street: PQLStreet,
 ) -> PQLBoolean {
-    core::overpair(
-        ctx.get_player_slice(player),
-        PQLBoard::from(ctx.get_board_slice(street)),
-    )
+    core::overpair(ctx.get_player_slice(player), ctx.get_board(street))
 }

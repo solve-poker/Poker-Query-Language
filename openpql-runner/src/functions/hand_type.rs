@@ -9,6 +9,6 @@ pub fn hand_type(
     core::hand_type(
         ctx.game,
         ctx.get_player_slice(player),
-        PQLBoard::from(ctx.get_board_slice(street)),
+        ctx.get_board(street),
     )
 }
