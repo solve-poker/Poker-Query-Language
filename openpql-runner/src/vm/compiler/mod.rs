@@ -71,6 +71,18 @@ pub fn compile_selector(
     Ok(VmProgram(prog))
 }
 
+pub fn compile_where(vm: &mut Vm, expr: &ast::Expr) -> PQLResult<VmProgram> {
+    let mut data = CompilerData::new(&vm.static_data);
+
+    push_expr(&mut data, expr, PQLType::BOOLEAN)?;
+
+    let (prog, heap) = (data.prog, data.heap);
+
+    vm.heap.extend(heap);
+
+    Ok(VmProgram(prog))
+}
+
 #[cfg(test)]
 impl CompilerData<'_> {
     // TODO: replace Box::leak

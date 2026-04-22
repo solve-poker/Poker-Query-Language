@@ -18,6 +18,11 @@ impl PQLRunner {
 
         let mut output = RunnerOutput::new(game, &stmt.selectors);
 
+        let where_program = match &stmt.where_clause {
+            Some(expr) => Some(vm::compile_where(&mut vm, expr)?),
+            None => None,
+        };
+
         for (idx, selector) in stmt.selectors.iter().enumerate() {
             let program = vm::compile_selector(&mut vm, selector)?;
             while output.n_succ < n_trails {
@@ -28,6 +33,19 @@ impl PQLRunner {
 
                 match vm.sample(&mut rng) {
                     Some(()) => {
+                        if let Some(wp) = &where_program {
+                            let keep = matches!(
+                                wp.execute(&mut vm.as_context())?,
+                                VmStackValue::Bool(true)
+                            );
+
+                            if !keep {
+                                //TODO: refine this
+                                output.n_fail += 1;
+                                continue;
+                            }
+                        }
+
                         output.push_value(
                             idx,
                             program.execute(&mut vm.as_context())?,

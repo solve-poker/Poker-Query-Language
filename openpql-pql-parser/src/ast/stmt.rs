@@ -1,9 +1,10 @@
-use super::{Error, FromClause, FxHashSet, ResultE, Selector, user_err};
+use super::{Error, Expr, FromClause, FxHashSet, ResultE, Selector, user_err};
 
 #[derive(PartialEq, Debug)]
 pub struct Stmt<'i> {
     pub selectors: Vec<Selector<'i>>,
     pub from: FromClause<'i>,
+    pub where_clause: Option<Expr<'i>>,
 }
 
 fn ensure_uniq_names<'i>(selectors: &[Selector]) -> ResultE<'i, ()> {
@@ -24,10 +25,15 @@ impl<'i> Stmt<'i> {
     pub fn new(
         selectors: Vec<Selector<'i>>,
         from: FromClause<'i>,
+        where_clause: Option<Expr<'i>>,
     ) -> ResultE<'i, Self> {
         ensure_uniq_names(&selectors)?;
 
-        Ok(Self { selectors, from })
+        Ok(Self {
+            selectors,
+            from,
+            where_clause,
+        })
     }
 }
 
@@ -58,5 +64,25 @@ mod tests {
             e("select avg(_) as s1, avg(_) as s1 from _=''"),
             Error::DuplicatedSelectorName((31, 33))
         );
+    }
+
+    #[test]
+    fn test_stmt_where_absent() {
+        let stmt = s("select count(_) from _=''");
+        assert!(stmt.where_clause.is_none());
+    }
+
+    #[test]
+    fn test_stmt_where_present() {
+        let stmt = s("select count(_) from _='' where 1 = 1");
+        assert!(stmt.where_clause.is_some());
+    }
+
+    #[test]
+    fn test_stmt_where_logical() {
+        let _ = s("select count(_) from _='' where 1 = 1 and 2 = 2");
+        let _ = s("select count(_) from _='' where 1 = 1 or 2 = 2");
+        let _ = s("select count(_) from _='' where not 1 = 2");
+        let _ = s("select count(_) from _='' where not 1 = 2 and 1 = 1");
     }
 }

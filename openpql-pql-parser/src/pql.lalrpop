@@ -18,7 +18,8 @@ pub(crate) PQL: Vec<Stmt<'input>> = {
 };
 
 pub(crate) Stmt: Stmt<'input> = {
-    "select" <s: CommaSep<Selector>> <f: FromClause> =>? Stmt::new(s, f),
+    "select" <s: CommaSep<Selector>> <f: FromClause> <w: WhereClause?> =>?
+      Stmt::new(s, f, w),
 };
 
 pub(crate) Selector: Selector<'input> = {
@@ -32,6 +33,10 @@ pub(crate) FromClause: FromClause<'input> = {
 
 FromItem: FromItem<'input> = {
     <k: Ident> "=" <v: Str> => (k, v).into(),
+}
+
+WhereClause: Expr<'input> = {
+    "where" <e: Expr> => e,
 }
 
 pub(crate) Expr: Expr<'input> = {
@@ -83,6 +88,7 @@ Atom: Expr<'input> = {
     Num => <>.into(),
     Str => <>.into(),
     FnCall => <>.into(),
+    "(" <Expr> ")" => <>,
 }
 
 pub(crate) FnCall: FnCall<'input> = {
@@ -113,6 +119,7 @@ match {
   r"(?i)from" => "from",
   r"(?i)select" => "select",
   r"(?i)as" => "as",
+  r"(?i)where" => "where",
   r"(?i)and" => "and",
   r"(?i)or" => "or",
   r"(?i)not" => "not",

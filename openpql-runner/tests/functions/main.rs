@@ -63,5 +63,6 @@ mod to_card;
 mod to_rank;
 mod turn_card;
 mod twotone_board;
+mod where_clause;
 mod winning_hand_type;
 mod wins_hi;
