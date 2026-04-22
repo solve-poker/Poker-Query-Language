@@ -1,5 +1,6 @@
 use super::{Board, Card64, FlopHandCategory, cmp, eval_flop_holdem};
 
+/// Returns the flop-hand category of an Omaha hand against `board`.
 // TODO: refactor
 pub fn eval_flop_omaha(player: Card64, board: Board) -> FlopHandCategory {
     let player_cards: Vec<_> = player.iter().collect();

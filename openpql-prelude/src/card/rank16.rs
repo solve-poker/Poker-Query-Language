@@ -4,6 +4,7 @@ use super::{
 };
 use crate::Card;
 
+/// Builds a [`Rank16`] from a string of rank characters.
 #[macro_export]
 macro_rules! r16 {
     ($s:expr) => {
@@ -17,10 +18,7 @@ macro_rules! r16 {
     };
 }
 
-/// Bitset representation of rank collections.
-///
-/// A 16-bit bitset for efficient rank set operations. Each bit represents a specific rank,
-/// enabling fast membership tests and set operations.
+/// Bitset of ranks as a 16-bit mask.
 ///
 /// # Memory Layout
 /// ```text
@@ -46,12 +44,10 @@ macro_rules! r16 {
 pub struct Rank16(pub(crate) Rank16Inner);
 
 impl Rank16 {
-    /// Set containing all 13 ranks.
     pub(crate) const ALL: Self = Self(0b0001_1111_1111_1111);
-    /// Set containing all 9 short deck ranks (6+).
     pub(crate) const ALL_SD: Self = Self(0b0001_1111_1111_0000);
 
-    /// Set containing Ace (as 1) to 8
+    /// Low straight candidates A-8.
     pub const ALL_LO: Self = Self(0b0001_0000_0111_1111);
 
     pub const STRAIGHT_A6789: Self = Self(0b0001_0000_1111_0000);
@@ -88,11 +84,13 @@ impl Rank16 {
         Self::STRAIGHT_TJQKA,
     ];
 
+    /// Returns every rank, short-deck when `SD` is true.
     #[inline]
     pub const fn all<const SD: bool>() -> Self {
         const { if SD { Self::ALL_SD } else { Self::ALL } }
     }
 
+    /// Returns every straight, short-deck when `SD` is true.
     #[inline]
     pub const fn all_straights<const SD: bool>() -> &'static [Self] {
         const {
@@ -104,41 +102,41 @@ impl Rank16 {
         }
     }
 
-    /// Returns `true` if the set contains no ranks.
+    /// Returns `true` if the set is empty.
     #[must_use]
     #[inline]
     pub const fn is_empty(self) -> bool {
         self.0 == 0
     }
 
-    /// Adds the specified rank to this set.
+    /// Adds `rank` to the set.
     #[inline]
-    pub const fn set(&mut self, r: Rank) {
-        self.0 |= 1 << r as Idx;
+    pub const fn set(&mut self, rank: Rank) {
+        self.0 |= 1 << rank as Idx;
     }
 
-    /// Removes the specified rank from this set.
+    /// Removes `rank` from the set.
     #[inline]
-    pub const fn unset(&mut self, r: Rank) {
-        self.0 &= !(1 << r as Idx);
+    pub const fn unset(&mut self, rank: Rank) {
+        self.0 &= !(1 << rank as Idx);
     }
 
-    /// Returns `true` if this set contains the specified rank.
+    /// Returns `true` if the set contains `rank`.
     #[must_use]
     #[inline]
-    pub const fn contains_rank(self, r: Rank) -> bool {
-        let v = 1 << (r as Idx);
+    pub const fn contains_rank(self, rank: Rank) -> bool {
+        let v = 1 << (rank as Idx);
         v == v & self.0
     }
 
-    /// Returns the number of ranks in this set.
+    /// Returns the number of ranks.
     #[must_use]
     #[inline]
     pub const fn count(self) -> CardCount {
         self.0.count_ones().to_le_bytes()[0]
     }
 
-    /// Returns the lowest rank in this set, or `None` if empty.
+    /// Returns the lowest rank, or `None` when empty.
     #[must_use]
     #[inline]
     #[allow(clippy::cast_possible_truncation)]
@@ -146,7 +144,7 @@ impl Rank16 {
         RankIdx(self.0.trailing_zeros() as Idx).to_rank()
     }
 
-    /// Returns the highest rank in this set, or `None` if empty.
+    /// Returns the highest rank, or `None` when empty.
     #[must_use]
     #[inline]
     #[allow(clippy::cast_possible_truncation)]
@@ -157,7 +155,7 @@ impl Rank16 {
             .to_rank()
     }
 
-    /// Returns the nth highest rank in this set (1-indexed), or `None` if not found.
+    /// Returns the 1-indexed `n`-th highest rank, or `None` when absent.
     #[must_use]
     #[inline]
     pub const fn nth_rank(self, mut n: CardCount) -> Option<Rank> {

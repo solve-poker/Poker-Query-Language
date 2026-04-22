@@ -1,13 +1,12 @@
 use super::{Card, Idx, RankIdx, SuitIdx};
 
-/// Card index representation.
-///
-/// Converts cards to unique numeric indices (0-51).
+/// Numeric index of a card in the range 0-51.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct CardIdx(pub(crate) Idx);
 
 impl CardIdx {
+    /// Returns the card, or `None` if out of range.
     pub const fn to_card(self) -> Option<Card> {
         match (RankIdx(self.0 / 4).to_rank(), SuitIdx(self.0 % 4).to_suit()) {
             (Some(r), Some(s)) => Some(Card::new(r, s)),

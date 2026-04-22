@@ -3,6 +3,7 @@ use super::{
     CardIter, Hash, Idx, Not, Rank, Rank16, Rank16Inner, Suit, fmt, ops,
 };
 
+/// Builds a [`Card64`] bitset from a string of cards.
 #[macro_export]
 macro_rules! c64 {
     ($s:expr) => {
@@ -10,10 +11,7 @@ macro_rules! c64 {
     };
 }
 
-/// Bitset representation of card collections.
-///
-/// A 64-bit bitset for efficient card set operations. Each bit represents a specific card,
-/// enabling fast membership tests and set operations.
+/// Bitset of cards as a 64-bit mask.
 ///
 /// # Memory Layout
 /// ```text
@@ -45,39 +43,40 @@ impl Card64 {
     const ALL: Self = Self(0x1FFF_1FFF_1FFF_1FFF);
     const ALL_SD: Self = Self(0x1FF0_1FF0_1FF0_1FF0);
 
+    /// Returns every card, short-deck when `SD` is true.
     #[must_use]
     #[inline]
     pub const fn all<const SD: bool>() -> Self {
         const { if SD { Self::ALL_SD } else { Self::ALL } }
     }
 
-    /// Returns `true` if the set contains no cards.
+    /// Returns `true` if the set is empty.
     #[must_use]
     #[inline]
     pub const fn is_empty(self) -> bool {
         self.0 == 0
     }
 
-    /// Adds the specified card to this set.
+    /// Adds `card` to the set.
     #[inline]
     pub const fn set(&mut self, card: Card) {
         self.0 |= Self::from_card(card).0;
     }
 
-    /// Removes the specified card from this set.
+    /// Removes `card` from the set.
     #[inline]
     pub const fn unset(&mut self, card: Card) {
         self.0 &= !Self::from_card(card).0;
     }
 
-    /// Returns `true` if this set contains all cards in `other`.
+    /// Returns `true` if the set is a superset of `other`.
     #[must_use]
     #[inline]
     pub fn contains(self, other: Self) -> bool {
         other & self == other
     }
 
-    /// Returns `true` if this set contains the specified card.
+    /// Returns `true` if the set contains `card`.
     #[must_use]
     #[inline]
     pub const fn contains_card(self, card: Card) -> bool {
@@ -85,7 +84,7 @@ impl Card64 {
         v & self.0 == v
     }
 
-    /// Returns the number of cards in this set.
+    /// Returns the number of cards.
     #[must_use]
     #[inline]
     #[allow(clippy::cast_possible_truncation)]
@@ -93,14 +92,14 @@ impl Card64 {
         self.0.count_ones() as CardCount
     }
 
-    /// Returns the number of cards with the specified rank.
+    /// Returns the number of cards of `rank`.
     #[must_use]
     #[inline]
     pub const fn count_by_rank(self, rank: Rank) -> CardCount {
         Self(self.0 & Self::from_ranks(Rank16::from_rank(rank)).0).count()
     }
 
-    /// Returns the number of cards with the specified suit.
+    /// Returns the number of cards of `suit`.
     #[must_use]
     #[inline]
     pub const fn count_by_suit(self, suit: Suit) -> CardCount {
@@ -113,7 +112,7 @@ impl Card64 {
         Rank16((self.0 >> (Self::OFFSET_SUIT * suit as Idx)) as Rank16Inner)
     }
 
-    /// Creates a card set containing all specified ranks in all suits.
+    /// Creates a set containing `rs` across every suit.
     #[inline]
     #[must_use]
     pub const fn from_ranks(rs: Rank16) -> Self {
@@ -122,7 +121,7 @@ impl Card64 {
         Self(Card64Inner::from_le_bytes([l, h, l, h, l, h, l, h]))
     }
 
-    /// Creates a card set containing all ranks in a specified suit.
+    /// Creates a set containing every rank of `suit`.
     #[inline]
     #[must_use]
     pub const fn from_suit(suit: Suit) -> Self {
@@ -131,7 +130,7 @@ impl Card64 {
         Self(v << (Self::OFFSET_SUIT * (suit as Idx)))
     }
 
-    /// Returns the set of ranks present in this card set.
+    /// Returns the union of ranks present.
     #[inline]
     #[must_use]
     pub const fn ranks(self) -> Rank16 {
@@ -143,7 +142,7 @@ impl Card64 {
         )
     }
 
-    /// Returns an iterator over all cards in this set.
+    /// Returns an iterator over the cards.
     pub const fn iter(self) -> CardIter {
         CardIter::new(self)
     }

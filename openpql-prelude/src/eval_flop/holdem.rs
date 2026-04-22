@@ -2,6 +2,7 @@ use super::{
     Board, Card64, FlopHandCategory, HandRatingView, HandType, eval_holdem,
 };
 
+/// Returns the flop-hand category of a Hold'em hand against `board`.
 // TODO: refactor later
 pub fn eval_flop_holdem(player: Card64, board: Board) -> FlopHandCategory {
     board.flop.map_or(FlopHandCategory::Nothing, |flop| {

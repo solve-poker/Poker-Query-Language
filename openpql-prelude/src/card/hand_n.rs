@@ -8,9 +8,7 @@ use speedy::{Context, Readable, Reader, Writable, Writer};
 
 use super::{Card, Card64, Deref, HandIter, Hash, Index, Into, fmt};
 
-/// Fixed-size hand representation.
-///
-/// Represents exactly N cards. Cards are stored sorted and deduplicated.
+/// Sorted hand of exactly `N` cards.
 #[derive(
     Copy,
     Clone,
@@ -37,7 +35,7 @@ impl<const N: usize> HandN<N> {
         Self(array)
     }
 
-    /// Creates a sorted hand from a slice.
+    /// Creates a sorted hand from the first `N` cards.
     pub fn from_slice(cs: &[Card]) -> Self {
         debug_assert!(
             cs.len() >= N,
@@ -53,7 +51,7 @@ impl<const N: usize> HandN<N> {
         Self(cards)
     }
 
-    /// Returns an iterator over all possible N-card hands (card combination)
+    /// Returns an iterator over every `N`-card combination.
     pub fn iter_all<const SD: bool>() -> HandIter<SD, N> {
         HandIter::default()
     }

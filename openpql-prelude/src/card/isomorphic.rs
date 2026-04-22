@@ -1,7 +1,7 @@
 use super::{Board, Card, CardCount, Flop, HandN, Suit, SuitMapping};
 
 impl<const N: usize> HandN<N> {
-    /// Creates a suit-isomorphic hand using the provided suit mapping.
+    /// Creates a suit-isomorphic hand, extending `mapping`.
     pub fn new_iso_with_mapping(
         cards: &[Card],
         mapping: &mut SuitMapping,
@@ -9,7 +9,7 @@ impl<const N: usize> HandN<N> {
         Self::new(create_iso_array(cards, mapping))
     }
 
-    /// Creates a suit-isomorphic hand and returns the suit mapping used.
+    /// Creates a suit-isomorphic hand along with its suit mapping.
     pub fn new_iso(cards: &[Card]) -> (Self, SuitMapping) {
         let mut mapping = SuitMapping::default();
         let iso = Self::new_iso_with_mapping(cards, &mut mapping);
@@ -18,7 +18,7 @@ impl<const N: usize> HandN<N> {
 }
 
 impl Board {
-    /// Creates a suit-isomorphic board using the provided suit mapping.
+    /// Creates a suit-isomorphic board, extending `mapping`.
     pub fn new_iso_with_mapping(
         cards: &[Card],
         mapping: &mut SuitMapping,
@@ -26,7 +26,7 @@ impl Board {
         create_iso_board(cards, mapping)
     }
 
-    /// Creates a suit-isomorphic board and returns the suit mapping used.
+    /// Creates a suit-isomorphic board along with its suit mapping.
     pub fn new_iso(cards: &[Card]) -> (Self, SuitMapping) {
         let mut mapping = SuitMapping::default();
         let iso = Self::new_iso_with_mapping(cards, &mut mapping);

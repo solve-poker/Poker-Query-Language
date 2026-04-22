@@ -6,6 +6,7 @@ use crate::tree::{
     player_committed, player_shove_amount,
 };
 
+/// Classifies `bet` for the next actor and returns the resulting action.
 pub fn validate_bet(
     history: &[AnnotatedAction],
     bet: Chip,

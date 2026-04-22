@@ -1,8 +1,6 @@
 use super::{Display, Hash, Idx, Rank};
 
-/// Rank index representation.
-///
-/// Converts ranks to numeric indices (0-12).
+/// Numeric index of a rank in the range 0-12.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
@@ -10,6 +8,7 @@ use super::{Display, Hash, Idx, Rank};
 pub struct RankIdx(pub(crate) Idx);
 
 impl RankIdx {
+    /// Returns the rank, or `None` if out of range.
     pub const fn to_rank(self) -> Option<Rank> {
         match self.0 {
             0 => Some(Rank::R2),

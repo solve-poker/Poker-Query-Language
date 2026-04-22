@@ -8,6 +8,7 @@ use super::{
     Card64, CardCount, Display, FromStr, Hash, ParseError, Rank, Suit,
 };
 
+/// Parses a string literal into a [`Card`], panicking on failure.
 #[macro_export]
 macro_rules! card {
     ($s:expr) => {
@@ -15,6 +16,7 @@ macro_rules! card {
     };
 }
 
+/// Parses a string of cards into a `Vec<Card>`.
 #[macro_export]
 macro_rules! cards {
     ($s:expr) => {{
@@ -28,21 +30,21 @@ macro_rules! cards {
     }};
 }
 
-/// Playing card representation.
-///
-/// Represents a single playing card with a rank and suit, with macros for convenient creation.
+/// Playing card with a rank and suit.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Clone, Copy, Debug, Display, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[display("{rank}{suit}")]
 pub struct Card {
+    /// Card rank.
     pub rank: Rank,
+    /// Card suit.
     pub suit: Suit,
 }
 
 impl Card {
-    /// Total number of cards in a standard deck
+    /// Card count in a standard deck.
     pub const N_CARDS: CardCount = Suit::N_SUITS * Rank::N_RANKS;
-    /// Total number of cards in a short deck
+    /// Card count in a short deck.
     pub const N_CARDS_SD: CardCount = Suit::N_SUITS * Rank::N_RANKS_SD;
 
     const ARR_ALL: [Self; Self::N_CARDS as usize] = [
@@ -139,14 +141,14 @@ impl Card {
         Self::new(Rank::RA, Suit::C),
     ];
 
-    /// Creates a new card with the specified rank and suit.
+    /// Creates a card from a rank and suit.
     #[must_use]
     #[inline]
     pub const fn new(r: Rank, s: Suit) -> Self {
         Self { rank: r, suit: s }
     }
 
-    /// Returns a slice of all cards
+    /// Returns every card in the deck, short-deck when `SD` is true.
     #[inline]
     pub const fn all<const SD: bool>() -> &'static [Self] {
         const {

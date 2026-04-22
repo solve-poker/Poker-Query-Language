@@ -3,6 +3,7 @@ use crate::{
     tree::{Action, AnnotatedActionKind, Chip, PlayerIdx, idx_prev, to_pid},
 };
 
+/// A history entry carrying player, action kind, and chip context.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
     Clone,
@@ -15,18 +16,23 @@ use crate::{
     derive_more::Debug,
 )]
 pub enum AnnotatedAction {
+    /// Player joins the hand with a starting stack.
     #[from(skip)]
     #[debug("P{_0}: {_1}")]
     Join(PlayerIdx, Chip),
+    /// Player posts an ante or blind.
     #[debug("P{_0} Post({_1})")]
     Post(PlayerIdx, Chip),
+    /// Chance event dealing the given street.
     #[debug("{_0}")]
     Chance(Street),
+    /// Player action with kind and chip amount.
     #[debug("P{_0} {_1}({_2})")]
     Act(PlayerIdx, AnnotatedActionKind, Chip),
 }
 
 impl AnnotatedAction {
+    /// Returns the join, preflop, ante, and blind actions for a hand.
     //// TODO: allin post
     //// Players: [SB,BB,UTG,UTG+1,CO,BTN]; [BB,BTN/SB]
     pub fn new_prefix(
@@ -75,6 +81,7 @@ impl AnnotatedAction {
             .collect()
     }
 
+    /// Returns the bare `Action` for chance and player acts, `None` otherwise.
     pub const fn to_action(&self) -> Option<Action> {
         match self {
             Self::Chance(_) => Some(Action::Chance),
@@ -90,6 +97,7 @@ impl Default for AnnotatedAction {
     }
 }
 
+/// Builds a sequence of [`AnnotatedAction`] entries with stacks, blinds, and per-step actions.
 #[macro_export]
 macro_rules! actions {
     (
@@ -106,6 +114,7 @@ macro_rules! actions {
     }};
 }
 
+/// Constructs a single [`AnnotatedAction`] from named-position shorthand.
 #[macro_export]
 macro_rules! action {
     (@player $n:expr, $player:ident) => {{

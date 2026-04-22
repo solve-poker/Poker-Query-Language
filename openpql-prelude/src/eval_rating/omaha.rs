@@ -1,9 +1,9 @@
 use super::{Card64, HandRating, Rank16, count_ranks, flush_ranks_omaha};
 
-/// Evaluates an Omaha hand ranking from player cards and board cards.
+/// Returns the Omaha rating of `player` against `board`.
 ///
 /// # Panics
-/// Panics if the input is not a valid hand.
+/// Panics on an invalid hand.
 #[inline]
 pub const fn eval_omaha(player: Card64, board: Card64) -> HandRating {
     let nf = eval_omaha_noflush(player, board);
@@ -16,7 +16,7 @@ pub const fn eval_omaha(player: Card64, board: Card64) -> HandRating {
     nf
 }
 
-/// Evaluates an Omaha hand ranking excluding flush hands.
+/// Returns the Omaha rating of `player` against `board`, ignoring flushes.
 #[inline]
 pub const fn eval_omaha_noflush(player: Card64, board: Card64) -> HandRating {
     let [p1, p2, _, _] = count_ranks(player);
@@ -51,7 +51,7 @@ pub const fn eval_omaha_noflush(player: Card64, board: Card64) -> HandRating {
     ))
 }
 
-/// Evaluates an Omaha flush hand.
+/// Returns the flush or straight-flush rating of `player` against `board`, if any.
 #[inline]
 pub const fn eval_omaha_flush(
     player: Card64,

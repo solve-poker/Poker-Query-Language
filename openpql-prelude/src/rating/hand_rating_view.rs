@@ -1,7 +1,6 @@
 use super::{HandRating, HandType, Rank16};
 
-/// Hand Ranking Wrapper
-/// helper struct to view details of a thin `HandRating`
+/// Decoded view of a `HandRating`.
 #[derive(Clone, Debug)]
 pub struct HandRatingView {
     pub hand_type: HandType,

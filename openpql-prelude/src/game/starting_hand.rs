@@ -33,6 +33,7 @@ fn all_hands(game: Game) -> &'static [Vec<Card>] {
 }
 
 impl Game {
+    /// Returns every legal starting hand for this variant.
     pub fn starting_hands(self) -> &'static [Vec<Card>] {
         all_hands(self)
     }

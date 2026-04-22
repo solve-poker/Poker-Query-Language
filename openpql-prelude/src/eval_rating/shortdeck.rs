@@ -48,6 +48,7 @@ const fn eval_straightflush_sd(has1: Rank16) -> Option<HandRating> {
     eval_straight_inner_sd::<true>(has1)
 }
 
+/// Returns the Short Deck flush or straight-flush rating of `c64`, if any.
 #[inline]
 pub const fn eval_shortdeck_flush(c64: Card64) -> Option<HandRating> {
     if let Some(ranks) = flush_ranks(c64) {
@@ -61,10 +62,10 @@ pub const fn eval_shortdeck_flush(c64: Card64) -> Option<HandRating> {
     }
 }
 
-/// Evaluates a Short Deck hand ranking excluding flush hands from 5-7 cards.
+/// Returns the Short Deck rating of `c64`, ignoring flushes.
 ///
 /// # Panics
-/// Panics if the input is not a valid hand.
+/// Panics on an invalid hand.
 #[inline]
 pub const fn eval_shortdeck_noflush(c64: Card64) -> HandRating {
     let [has1, has2, has3, has4] = count_ranks(c64);
@@ -96,10 +97,10 @@ pub const fn eval_shortdeck_noflush(c64: Card64) -> HandRating {
     HandRating::new_highcard(has1.retain_highest5())
 }
 
-/// Evaluates a Short Deck hand ranking from 5-7 cards.
+/// Returns the Short Deck rating of 5 to 7 cards.
 ///
 /// # Panics
-/// Panics if the input is not a valid hand.
+/// Panics on an invalid hand.
 #[inline]
 pub const fn eval_shortdeck(c64: Card64) -> HandRating {
     if let Some(f) = eval_shortdeck_flush(c64) {

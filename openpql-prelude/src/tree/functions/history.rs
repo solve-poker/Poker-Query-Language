@@ -1,5 +1,6 @@
 use crate::tree::Action;
 
+/// Returns `true` if `left` is a prefix of `right`.
 pub fn is_descendent(left: &[Action], right: &[Action]) -> bool {
     match (left, right) {
         ([head_left, tail_left @ ..], [head_right, tail_right @ ..])

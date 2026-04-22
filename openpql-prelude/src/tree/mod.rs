@@ -1,3 +1,4 @@
+/// Chip amount.
 pub type Chip = u16;
 
 mod action;

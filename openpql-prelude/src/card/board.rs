@@ -1,6 +1,7 @@
 use super::{Card, Card64, Flop, Hash, fmt};
 use crate::{CardCount, Suit, Suit4};
 
+/// Builds a [`Board`] from a string of cards.
 #[macro_export]
 macro_rules! board {
     ($s:expr) => {
@@ -8,36 +9,34 @@ macro_rules! board {
     };
 }
 
-/// Board representation for poker games.
-///
-/// Represents community cards (flop, turn, river) with a macro for convenient creation.
+/// Community cards across flop, turn, and river.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Copy, Clone, derive_more::Debug, PartialEq, Eq, Hash, Default)]
 #[debug("Board<{}>", self)]
 pub struct Board {
+    /// Three flop cards, or `None` preflop.
     pub flop: Option<Flop>,
+    /// Turn card, when dealt.
     pub turn: Option<Card>,
+    /// River card, when dealt.
     pub river: Option<Card>,
 }
 
 impl Board {
-    /// Index of the turn card in a board array
+    /// Slice index of the turn card.
     pub const IDX_TURN: usize = 3;
-    /// Index of the river card in a board array
+    /// Slice index of the river card.
     pub const IDX_RIVER: usize = 4;
-    /// Number of board cards preflop
+    /// Card count preflop.
     pub const N_PREFLOP: usize = 0;
-    /// Number of board cards in a flop
+    /// Card count on the flop.
     pub const N_FLOP: usize = 3;
-    /// Number of board cards in a flop + turn
+    /// Card count through the turn.
     pub const N_TURN: usize = 4;
-    /// Number of board cards in a flop + turn + river
+    /// Card count through the river.
     pub const N_RIVER: usize = 5;
 
-    /// Creates a board from a slice of cards.
-    ///
-    /// Expects cards in order: flop (3 cards), turn, river.
-    /// Cards beyond the first 5 are ignored.
+    /// Creates a board from a slice ordered flop, turn, river.
     pub fn from_slice(cards: &[Card]) -> Self {
         let flop = if cards.len() >= Self::N_FLOP {
             Some(Flop::from_slice(&cards[0..Self::N_FLOP]))
@@ -50,14 +49,14 @@ impl Board {
         Self { flop, turn, river }
     }
 
-    /// Returns `true` if the board has no cards (no flop).
+    /// Returns `true` if no flop is dealt.
     #[must_use]
     #[inline]
     pub const fn is_empty(&self) -> bool {
         self.flop.is_none()
     }
 
-    /// Returns the number of cards on the board (0, 3, 4, or 5).
+    /// Returns the number of dealt cards (0, 3, 4, or 5).
     pub fn len(&self) -> usize {
         match self.flop {
             Some(_) => {
@@ -69,6 +68,7 @@ impl Board {
         }
     }
 
+    /// Returns the dealt cards as a vector.
     pub fn to_vec(&self) -> Vec<Card> {
         match (self.flop, self.turn, self.river) {
             (Some(flop), Some(turn), Some(river)) => {
@@ -82,7 +82,7 @@ impl Board {
         }
     }
 
-    /// Returns an iterator over all cards on the board.
+    /// Returns an iterator over dealt cards.
     pub fn iter(&self) -> impl Iterator<Item = Card> + '_ {
         self.flop
             .iter()
@@ -91,7 +91,7 @@ impl Board {
             .chain(self.river)
     }
 
-    /// Returns `true` if the board contains the specified card.
+    /// Returns `true` if the board contains `card`.
     pub const fn contains_card(&self, card: Card) -> bool {
         #[inline]
         const fn inner_eq(op: Option<Card>, rhs: Card) -> bool {
@@ -110,7 +110,7 @@ impl Board {
         inner_eq(self.turn, card) || inner_eq(self.river, card)
     }
 
-    /// Returns the suits that can still produce a flush by the river.
+    /// Returns suits still able to make a flush by the river.
     pub const fn flush_suits(&self) -> Suit4 {
         match (self.flop, self.turn, self.river) {
             (Some(flop), None, None) => {

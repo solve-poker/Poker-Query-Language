@@ -16,7 +16,7 @@ pub use validate::*;
 
 use crate::tree::{AnnotatedAction, AnnotatedActionKind, PlayerIdx};
 
-/// Returns all actions after last chance action
+/// Returns the slice of actions following the last chance event.
 pub fn current_round(history: &[AnnotatedAction]) -> &[AnnotatedAction] {
     fn inner<'a>(
         acc: &'a [AnnotatedAction],

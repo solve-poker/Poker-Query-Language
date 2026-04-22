@@ -4,8 +4,7 @@ use derive_more::Display;
 
 use crate::tree::{Chip, TreeParseError};
 
-/// Simple Action type for building poker game history.
-/// Note: Dealt cards are treated as separate from the game history.
+/// A game-tree action, either a chance event or a player bet.
 #[derive(
     Clone,
     Copy,
@@ -19,9 +18,11 @@ use crate::tree::{Chip, TreeParseError};
     Ord,
 )]
 pub enum Action {
+    /// Dealing of community cards.
     #[display("Chance")]
     #[debug("C")]
     Chance,
+    /// Player bet of the wrapped chip amount.
     #[display("Bet({_0})")]
     #[debug("{_0}")]
     PlayerBet(Chip),

@@ -1,9 +1,6 @@
 use super::{CardCount, Display, FromStr, Hash, Idx, ParseError};
 
-/// Card suit representation.
-///
-/// Represents the four card suits (spades, hearts, diamonds, clubs),
-/// with parsing support and conversion utilities.
+/// Card suit (spades, hearts, diamonds, clubs).
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "lowercase"))]
@@ -11,28 +8,32 @@ use super::{CardCount, Display, FromStr, Hash, Idx, ParseError};
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]
 pub enum Suit {
+    /// Spades.
     #[default]
     #[display("s")]
     S = 0,
+    /// Hearts.
     #[display("h")]
     H,
+    /// Diamonds.
     #[display("d")]
     D,
+    /// Clubs.
     #[display("c")]
     C,
 }
 
 impl Suit {
-    /// Number of suits in a deck
+    /// Suit count in a deck.
     pub const N_SUITS: CardCount = 4;
 
-    /// Array of all 4 suits.
+    /// Every suit in enum order.
     pub const ARR_ALL: [Self; Self::N_SUITS as usize] =
         [Self::S, Self::H, Self::D, Self::C];
 
-    /// Character representations for suits
+    /// Display character per suit in enum order.
     pub const CHARS: [char; Self::N_SUITS as usize] = ['s', 'h', 'd', 'c'];
-    /// Converts a character to a suit, returning `None` if invalid.
+    /// Parses a suit from a character, returning `None` if invalid.
     #[inline]
     pub const fn from_char(c: char) -> Option<Self> {
         match c {
@@ -44,6 +45,7 @@ impl Suit {
         }
     }
 
+    /// Returns the display character.
     #[inline]
     pub const fn to_char(self) -> char {
         Self::CHARS[self as usize]

@@ -2,19 +2,11 @@ use derive_more::IntoIterator;
 
 use super::{Card, Card64, Deref, Index, Into};
 
-/// A fixed-size array of N cards with compile-time deck type selection.
-///
-/// This is a helper struct primarily used in tests to represent a fixed number of cards.
-/// The generic parameter `N` specifies the number of cards, while `SD` determines the deck type:
-/// - `SD = false` (default): Standard 52-card deck
-/// - `SD = true`: Short deck (typically 36 cards, excluding 2-5)
-///
-/// Similar to `HandN` but with constant generics for compile-time configuration.
+/// Fixed array of `N` cards, short-deck when `SD` is true.
 #[derive(Debug, Clone, Index, derive_more::From, Into, Deref, IntoIterator)]
 pub struct CardN<const N: usize, const SD: bool = false>([Card; N]);
 
 impl<const N: usize, const S: bool> quickcheck::Arbitrary for CardN<N, S> {
-    /// Generates N random distinct cards from the appropriate deck for `QuickCheck` testing.
     fn arbitrary(_g: &mut quickcheck::Gen) -> Self {
         let mut rng = fastrand::Rng::new();
 
@@ -30,10 +22,6 @@ impl<const N: usize, const S: bool> From<CardN<N, S>> for Card64 {
     }
 }
 
-/// Converts a `CardN` into a tuple of two smaller `CardN` instances by splitting the cards.
-///
-/// # Panics
-/// Panics if X + Y > Z (not enough cards to split).
 #[cfg_attr(coverage_nightly, coverage(off))]
 #[allow(clippy::fallible_impl_from)]
 impl<const X: usize, const Y: usize, const Z: usize, const S: bool>

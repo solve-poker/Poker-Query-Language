@@ -1,7 +1,9 @@
 use super::{Add, AddAssign, Display, Into};
 
+/// Numeric index identifying a player.
 pub type PlayerIdx = u8;
 
+/// Player identified by a zero-based index.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Debug,
@@ -20,10 +22,12 @@ pub type PlayerIdx = u8;
 pub struct Player(PlayerIdx);
 
 impl Player {
+    /// Returns an iterator over players `0..n`.
     pub fn iter(n: PlayerIdx) -> impl Iterator<Item = Self> {
         (0..n).map(Self::from)
     }
 
+    /// Returns an iterator over players `0..n`, excluding `self`.
     pub fn iter_opponents(self, n: PlayerIdx) -> impl Iterator<Item = Self> {
         Self::iter(n).filter(move |&p| p != self)
     }

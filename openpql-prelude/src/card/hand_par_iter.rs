@@ -9,6 +9,7 @@ use rayon::{
 
 use super::{Card, HandIter, HandN, ops};
 
+/// Parallel iterator over every `N`-card combination, short-deck when `SD` is true.
 pub struct HandParIter<const SD: bool, const N: usize> {
     range: ops::Range<usize>,
     cards: &'static [Card],
@@ -92,6 +93,7 @@ impl<const SD: bool, const N: usize> Producer for HandParIter<SD, N> {
     }
 }
 
+/// Sequential half of `HandParIter` that unranks combinations from an index range.
 pub struct UnrankIter<const N: usize> {
     range: ops::Range<usize>,
     cards: &'static [Card],

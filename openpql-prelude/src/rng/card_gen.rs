@@ -2,6 +2,7 @@ use rand::RngExt;
 
 use crate::{Card, Card64, RankIdx, SuitIdx, card::Idx};
 
+/// Random dealer that tracks used and unused cards.
 #[derive(Clone, Debug, Default)]
 pub struct CardGen {
     init: Card64,
@@ -10,6 +11,7 @@ pub struct CardGen {
 }
 
 impl CardGen {
+    /// Creates a generator seeded with every legal card except `dead_cards`.
     pub fn new<const SD: bool>(dead_cards: Card64) -> Self {
         let all = Card64::all::<SD>() & !(dead_cards);
 
@@ -20,8 +22,9 @@ impl CardGen {
         }
     }
 
+    /// Draws an unused card at random, or returns `None` if exhausted.
     /// # Panics
-    /// no panics since `Card64::all::<SD>()` guarantees valid values
+    /// won't panic since `unused` only holds bits for valid cards.
     #[allow(clippy::cast_possible_truncation)]
     pub fn deal(&mut self, rng: &mut impl rand::Rng) -> Option<Card> {
         if let Some(bit_idx) = random_set_bit_pos_64(self.unused.into(), rng) {
@@ -43,12 +46,14 @@ impl CardGen {
         }
     }
 
+    /// Returns every card in `c64` to the unused pool.
     pub fn unset(&mut self, c64: Card64) {
         for c in c64.iter() {
             self.unset_card(c);
         }
     }
 
+    /// Returns `card` to the unused pool.
     pub fn unset_card(&mut self, card: Card) {
         debug_assert!(!self.unused.contains_card(card));
 
@@ -56,6 +61,7 @@ impl CardGen {
         self.unused.set(card);
     }
 
+    /// Restores the initial pool of unused cards.
     pub const fn reset(&mut self) {
         self.unused = self.init;
     }
@@ -93,6 +99,15 @@ pub mod tests {
 
     fn deal_all_to_c64(rng: &mut impl rand::Rng, g: &mut CardGen) -> Card64 {
         (0..Card::N_CARDS).filter_map(|_| g.deal(rng)).collect()
+    }
+
+    #[test]
+    fn test_deal_fail() {
+        const SD: bool = false;
+        let mut rng = rand::rng();
+        let mut g = CardGen::new::<SD>(Card64::all::<SD>());
+
+        assert!(g.deal(&mut rng).is_none());
     }
 
     #[test]

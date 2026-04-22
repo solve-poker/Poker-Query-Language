@@ -1,6 +1,4 @@
-//! Player state and action validation utilities.
-//!
-//! [`AnnotatedAction`] -> bool
+//! Boolean predicates over player and action state.
 
 use crate::tree::{
     AnnotatedAction, AnnotatedActionKind, PlayerIdx, current_bet,
@@ -8,7 +6,7 @@ use crate::tree::{
     player_committed,
 };
 
-/// Checks whether all players have folded except for one
+/// Returns `true` if at most one player remains unfolded.
 pub fn all_folded(history: &[AnnotatedAction]) -> bool {
     fn inner(acc: PlayerIdx, history: &[AnnotatedAction]) -> PlayerIdx {
         match history {
@@ -25,14 +23,14 @@ pub fn all_folded(history: &[AnnotatedAction]) -> bool {
     inner(0, history) <= 1
 }
 
-/// Checks whether player has folded given full history
+/// Returns `true` if a player has folded.
 pub fn player_folded(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
     filter_player_action(hero_id, history, |kind| {
         matches!(kind, AnnotatedActionKind::Fold)
     })
 }
 
-/// Checks whether player has shoved given full history
+/// Returns `true` if a player has gone all in.
 pub fn player_shoved(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
     filter_player_action(hero_id, history, |kind| {
         matches!(
@@ -44,12 +42,12 @@ pub fn player_shoved(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
     })
 }
 
-/// checks whether a player has made an action at the current round
+/// Returns `true` if a player has acted in the given round.
 pub fn player_acted(hero_id: PlayerIdx, round: &[AnnotatedAction]) -> bool {
     filter_player_action(hero_id, round, |_| true)
 }
 
-/// checks whether a player can fold/check/call at the current round
+/// Returns `true` if a player still owes action this round.
 pub fn player_can_act(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
     !player_folded(hero_id, history)
         && !player_shoved(hero_id, history)
@@ -57,7 +55,7 @@ pub fn player_can_act(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
             || player_committed(hero_id, history) != current_bet(history))
 }
 
-/// checks whether a player can raise at the current round
+/// Returns `true` if a player is allowed to raise this round.
 pub fn player_can_raise(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -68,6 +66,7 @@ pub fn player_can_raise(
             >= minimum_raise(history)
 }
 
+/// Returns a `true`/`false` flag per seat for unfolded players.
 pub fn active_player_status(history: &[AnnotatedAction]) -> Vec<bool> {
     (0..num_players(history))
         .map(|i| !player_folded(i, history))

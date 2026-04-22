@@ -1,69 +1,79 @@
 use super::{CardCount, Display, FromStr, Hash, Idx, ParseError};
 
-/// Card rank representation.
-///
-/// Represents card ranks from 2 to Ace, with parsing support and conversion utilities.
+/// Card rank from `R2` to `RA`.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
 )]
 pub enum Rank {
+    /// Two.
     #[default]
     #[cfg_attr(feature = "serde", serde(rename = "2"))]
     #[display("2")]
     R2 = 0,
+    /// Three.
     #[cfg_attr(feature = "serde", serde(rename = "3"))]
     #[display("3")]
     R3,
+    /// Four.
     #[cfg_attr(feature = "serde", serde(rename = "4"))]
     #[display("4")]
     R4,
+    /// Five.
     #[cfg_attr(feature = "serde", serde(rename = "5"))]
     #[display("5")]
     R5,
+    /// Six.
     #[cfg_attr(feature = "serde", serde(rename = "6"))]
     #[display("6")]
     R6,
+    /// Seven.
     #[cfg_attr(feature = "serde", serde(rename = "7"))]
     #[display("7")]
     R7,
+    /// Eight.
     #[cfg_attr(feature = "serde", serde(rename = "8"))]
     #[display("8")]
     R8,
+    /// Nine.
     #[cfg_attr(feature = "serde", serde(rename = "9"))]
     #[display("9")]
     R9,
+    /// Ten.
     #[cfg_attr(feature = "serde", serde(rename = "T"))]
     #[display("T")]
     RT,
+    /// Jack.
     #[cfg_attr(feature = "serde", serde(rename = "J"))]
     #[display("J")]
     RJ,
+    /// Queen.
     #[cfg_attr(feature = "serde", serde(rename = "Q"))]
     #[display("Q")]
     RQ,
+    /// King.
     #[cfg_attr(feature = "serde", serde(rename = "K"))]
     #[display("K")]
     RK,
+    /// Ace.
     #[cfg_attr(feature = "serde", serde(rename = "A"))]
     #[display("A")]
     RA,
 }
 
 impl Rank {
-    /// Number of ranks in a standard deck
+    /// Rank count in a standard deck.
     pub const N_RANKS: CardCount = 13;
 
-    /// Number of ranks in a short deck
+    /// Rank count in a short deck.
     pub const N_RANKS_SD: CardCount = 9;
 
-    /// Character representations for ranks
+    /// Display character per rank in ascending order.
     pub const CHARS: [char; Self::N_RANKS as usize] = [
         '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A',
     ];
 
-    /// Array of all 13 ranks.
     const ARR_ALL: [Self; Self::N_RANKS as usize] = [
         Self::R2,
         Self::R3,
@@ -80,7 +90,6 @@ impl Rank {
         Self::RA,
     ];
 
-    /// Array of all 9 ranks in a short deck (6+).
     const ARR_ALL_SD: [Self; Self::N_RANKS_SD as usize] = [
         Self::R6,
         Self::R7,
@@ -93,7 +102,7 @@ impl Rank {
         Self::RA,
     ];
 
-    /// Converts a character to a rank, returning `None` if invalid.
+    /// Parses a rank from a character, returning `None` if invalid.
     #[inline]
     pub const fn from_char(c: char) -> Option<Self> {
         match c {
@@ -114,11 +123,13 @@ impl Rank {
         }
     }
 
+    /// Returns the display character.
     #[inline]
     pub const fn to_char(self) -> char {
         Self::CHARS[self as usize]
     }
 
+    /// Returns every rank, short-deck when `SD` is true.
     #[inline]
     pub const fn all<const SD: bool>() -> &'static [Self] {
         const {

@@ -1,3 +1,6 @@
+//! Card primitives, hand evaluation, and game-tree types for Hold'em and
+//! Short Deck poker.
+
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 #![cfg_attr(test, allow(clippy::needless_pass_by_value))]
 
@@ -19,6 +22,7 @@ mod game;
 mod rating;
 #[cfg(feature = "rand")]
 mod rng;
+/// Game-tree types: actions, history, and tree-building helpers.
 pub mod tree;
 
 pub use card::{

@@ -1,9 +1,6 @@
 use super::{Card, CardCount, HandN};
 
-/// Iterator for generating all possible hands of N cards.
-///
-/// Iterates through all possible combinations of N cards from either a standard 52-card deck
-/// or a short deck (36 cards).
+/// Iterator over every `N`-card combination, short-deck when `SD` is true.
 #[derive(Debug, Clone)]
 pub struct HandIter<const SD: bool, const N: usize> {
     indices: [CardCount; N],
@@ -60,10 +57,6 @@ impl<const SD: bool, const N: usize> Iterator for HandIter<SD, N> {
         Some(HandN::new(cards))
     }
 
-    /// # Panics
-    /// May panic on 32-bit systems when the result exceeds `u32::MAX`.
-    /// For example, C(52, 26) ≈ 4.96 x 10¹⁴, which is greater than 2³² - 1 (4,294,967,295).
-    /// However, this function works correctly for typical small values of N, such as N = 7.
     fn size_hint(&self) -> (usize, Option<usize>) {
         let n = const { if SD { Card::N_CARDS_SD } else { Card::N_CARDS } };
         let r = N;
@@ -76,6 +69,7 @@ impl<const SD: bool, const N: usize> Iterator for HandIter<SD, N> {
 
 impl<const SD: bool, const N: usize> ExactSizeIterator for HandIter<SD, N> {}
 
+/// Returns the binomial coefficient C(n, r).
 pub fn ncr(n: usize, r: usize) -> usize {
     if r > n {
         return 0;

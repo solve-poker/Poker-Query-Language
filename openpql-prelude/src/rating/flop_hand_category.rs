@@ -1,43 +1,62 @@
 use super::{Display, FromStr, N_FLOP_CATEGORY, ParseError, cmp};
 
+/// Category of a hand relative to the flop.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Display)]
 pub enum FlopHandCategory {
+    /// No made hand on the flop.
     #[default]
     #[display("FLOPNOTHING")]
     Nothing,
+    /// Pocket pair below every board card.
     #[display("FLOPUNDERPAIR")]
     UnderPair,
+    /// Pair using the lowest board card.
     #[display("FLOPTHIRDPAIR")]
     ThirdPair,
+    /// Pocket pair between the second and third board card.
     #[display("FLOPPOCKET23")]
     Pocket23,
+    /// Pair using the middle board card.
     #[display("FLOPSECONDPAIR")]
     SecondPair,
+    /// Pocket pair between the top and second board card.
     #[display("FLOPPOCKET12")]
     Pocket12,
+    /// Pair using the highest board card.
     #[display("FLOPTOPPAIR")]
     TopPair,
+    /// Pocket pair above every board card.
     #[display("FLOPOVERPAIR")]
     Overpair,
+    /// Two pair using the two lowest board cards.
     #[display("FLOPBOTTOMTWO")]
     BottomTwo,
+    /// Two pair using the highest and lowest board cards.
     #[display("FLOPTOPANDBOTTOM")]
     TopAndBottom,
+    /// Two pair using the two highest board cards.
     #[display("FLOPTOPTWO")]
     TopTwo,
+    /// Three of a kind using two board cards.
     #[display("FLOPTRIPS")]
     Trips,
+    /// Three of a kind using a pocket pair.
     #[display("FLOPSET")]
     Set,
+    /// Straight on the flop.
     #[display("FLOPSTRAIGHT")]
     Straight,
+    /// Flush on the flop.
     #[display("FLOPFLUSH")]
     Flush,
+    /// Full house on the flop.
     #[display("FLOPFULLHOUSE")]
     FullHouse,
+    /// Four of a kind on the flop.
     #[display("FLOPQUADS")]
     Quads,
+    /// Straight flush on the flop.
     #[display("FLOPSTRAIGHTFLUSH")]
     StraightFlush,
 }
@@ -45,9 +64,12 @@ pub enum FlopHandCategory {
 type Idx = u8;
 
 impl FlopHandCategory {
+    /// Strongest variant.
     pub const MAX: Self = Self::StraightFlush;
+    /// Weakest variant.
     pub const MIN: Self = Self::Nothing;
 
+    /// Every variant in ascending order.
     pub const ARR_ALL: [Self; N_FLOP_CATEGORY] = [
         Self::Nothing,
         Self::UnderPair,
@@ -92,6 +114,7 @@ impl FlopHandCategory {
         }
     }
 
+    /// Compares two categories under Hold'em (`SD = false`) or Short Deck (`SD = true`) ordering.
     pub fn compare<const SD: bool>(self, other: Self) -> cmp::Ordering {
         self.to_idx::<SD>().cmp(&other.to_idx::<SD>())
     }

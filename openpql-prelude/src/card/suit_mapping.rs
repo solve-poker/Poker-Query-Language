@@ -1,8 +1,6 @@
 use super::Suit;
 
-/// Suit mapping for isomorphic transformations.
-///
-/// Tracks and applies suit transformations during isomorphic hand generation.
+/// Incremental suit-to-suit mapping for isomorphic normalization.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Clone, Debug, Default)]
 pub struct SuitMapping {
@@ -11,7 +9,7 @@ pub struct SuitMapping {
 }
 
 impl SuitMapping {
-    /// Creates a new empty suit mapping.
+    /// Creates an empty mapping.
     pub const fn new() -> Self {
         Self {
             map: [None; Suit::N_SUITS as usize],
@@ -19,7 +17,7 @@ impl SuitMapping {
         }
     }
 
-    /// Maps a suit to its isomorphic equivalent, creating a new mapping if needed.
+    /// Returns the mapped suit, assigning the next canonical suit on first use.
     pub const fn map_suit(&mut self, suit: Suit) -> Suit {
         let idx = suit as usize;
         if let Some(iso_suit) = self.map[idx] {
@@ -33,12 +31,12 @@ impl SuitMapping {
         iso_suit
     }
 
-    /// Returns the number of suits that have been mapped.
+    /// Returns the number of mapped suits.
     pub fn len(&self) -> usize {
         self.map.iter().filter(|&&s| s.is_some()).count()
     }
 
-    /// Returns `true` if no suits have been mapped.
+    /// Returns `true` when no suits are mapped.
     pub fn is_empty(&self) -> bool {
         self.map.iter().all(|&s| s.is_none())
     }

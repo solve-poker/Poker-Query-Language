@@ -1,43 +1,35 @@
 use super::{Display, FromStr, HandRating, N_HANDTYPE, ParseError, cmp};
 
-/// Represents the categorical type of a poker hand.
-///
-/// This enum classifies poker hands into their standard categories, ordered from
-/// weakest to strongest. It is used to quickly identify what type of hand a player
-/// has without considering the specific ranks involved.
-///
-/// # Ordering
-/// The variants are ordered from weakest (`HighCard`) to strongest (`StraightFlush`),
-/// matching standard poker hand rankings.
+/// Category of a poker hand, from `HighCard` to `StraightFlush`.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Default, Display)]
 pub enum HandType {
-    /// No matching cards (default/weakest hand type)
+    /// High card.
     #[default]
     #[display("HIGH_CARD")]
     HighCard,
-    /// Two cards of the same rank
+    /// One pair.
     #[display("PAIR")]
     Pair,
-    /// Two different pairs
+    /// Two pair.
     #[display("TWO_PAIR")]
     TwoPair,
-    /// Three cards of the same rank
+    /// Three of a kind.
     #[display("TRIPS")]
     Trips,
-    /// Five cards in sequential rank
+    /// Straight.
     #[display("STRAIGHT")]
     Straight,
-    /// Five cards of the same suit
+    /// Flush.
     #[display("FLUSH")]
     Flush,
-    /// Three of a kind plus a pair
+    /// Full house.
     #[display("FULL_HOUSE")]
     FullHouse,
-    /// Four cards of the same rank
+    /// Four of a kind.
     #[display("QUADS")]
     Quads,
-    /// Five cards in sequential rank, all of the same suit
+    /// Straight flush.
     #[display("STRAIGHT_FLUSH")]
     StraightFlush,
 }
@@ -45,9 +37,12 @@ pub enum HandType {
 type Idx = u8;
 
 impl HandType {
+    /// Strongest variant.
     pub const MAX: Self = Self::StraightFlush;
+    /// Weakest variant.
     pub const MIN: Self = Self::HighCard;
 
+    /// Every variant in ascending order.
     pub const ARR_ALL: [Self; N_HANDTYPE] = [
         Self::HighCard,
         Self::Pair,
@@ -74,6 +69,7 @@ impl HandType {
         }
     }
 
+    /// Compares two hand types under Hold'em (`SD = false`) or Short Deck (`SD = true`) ordering.
     pub fn compare<const SD: bool>(self, other: Self) -> cmp::Ordering {
         self.to_idx::<SD>().cmp(&other.to_idx::<SD>())
     }
@@ -84,12 +80,6 @@ const MASK_LO: u16 = 0b0000_0000_1111_1111;
 const N_FLUSH_SET_BITS: u32 = 7;
 
 impl From<HandRating> for HandType {
-    /// Extracts the categorical hand type from a `HandRanking`.
-    ///
-    /// This implementation decodes the bit-packed `HandRanking` to determine
-    /// the hand type. It uses bit masking to identify the hand category from
-    /// the upper bits and additional bit checks to distinguish between hands
-    /// that share the same mask (e.g., Flush vs `FullHouse`, Quads vs `StraightFlush`).
     fn from(hand_ranking: HandRating) -> Self {
         match hand_ranking.0 & MASK_KIND {
             HandRating::MASK_QUADS => {

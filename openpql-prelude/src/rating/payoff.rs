@@ -6,6 +6,7 @@ type PlayerCount = u8;
 type Chip = u16;
 type Utility = f64;
 
+/// Returns per-player net payoffs after distributing side pots.
 #[allow(clippy::missing_panics_doc)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn calculate_payoffs(

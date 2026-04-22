@@ -4,17 +4,22 @@ use super::{
     eval_shortdeck,
 };
 
+/// Poker variant.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Game {
+    /// Texas Hold'em.
     #[default]
     Holdem,
+    /// Pot-Limit Omaha.
     Omaha,
+    /// Short Deck (6+) Hold'em.
     ShortDeck,
 }
 
 impl Game {
+    /// Returns the number of hole cards dealt to each player.
     pub const fn player_cards_len(self) -> CardCount {
         match self {
             Self::Holdem | Self::ShortDeck => 2,
@@ -22,10 +27,12 @@ impl Game {
         }
     }
 
+    /// Returns `true` for Short Deck.
     pub const fn is_shortdeck(self) -> bool {
         matches!(self, Self::ShortDeck)
     }
 
+    /// Returns the rating of `player` against `board` for this variant.
     pub fn eval_rating(self, player: Card64, board: Card64) -> HandRating {
         match self {
             Self::Holdem => eval_holdem(player | board),
@@ -34,6 +41,7 @@ impl Game {
         }
     }
 
+    /// Returns the flop-hand category of `player` against `board` for this variant.
     pub fn eval_flop_category(
         self,
         player: Card64,

@@ -19,7 +19,7 @@ const fn ncr(n: u8, r: u8) -> u16 {
     }
 }
 
-/// returns the position of most significant set bit
+/// Returns the position of the most significant set bit.
 #[inline]
 const fn pos_msb(v: u16) -> u8 {
     15 - v.leading_zeros().to_le_bytes()[0]

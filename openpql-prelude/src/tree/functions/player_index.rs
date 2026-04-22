@@ -1,7 +1,4 @@
-//! Player index utilities for action history analysis.
-//!
-//! [`AnnotatedAction`] -> `PlayerIdx`
-//! (`PlayerIdx`, [`AnnotatedAction`]) -> `PlayerIdx`
+//! Player-index queries over action history.
 
 use std::iter;
 
@@ -10,22 +7,24 @@ use crate::tree::{
     functions::filter_count, player_can_act,
 };
 
+/// Returns the seat to the left of `i` in an `n`-seat table.
 pub const fn idx_next(n: PlayerIdx, i: PlayerIdx) -> PlayerIdx {
     (i + 1) % n
 }
 
+/// Returns the seat to the right of `i` in an `n`-seat table.
 pub const fn idx_prev(n: PlayerIdx, i: PlayerIdx) -> PlayerIdx {
     (i + n - 1) % n
 }
 
-/// Count players from actions
+/// Returns the number of seated players.
 pub fn num_players(history: &[AnnotatedAction]) -> PlayerIdx {
     filter_count(0, history, &|a: &AnnotatedAction| {
         matches!(a, AnnotatedAction::Join(_, _))
     })
 }
 
-/// Returns the player sit left to hero
+/// Returns the seat to the left of `hero_id`.
 pub fn index_next(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -33,7 +32,7 @@ pub fn index_next(
     idx_next(num_players(history), hero_id)
 }
 
-/// Returns the last acted player of current round (including posting actions)
+/// Returns the seat of the last `Act` or `Post` in the current round.
 pub fn last_acted(history: &[AnnotatedAction]) -> Option<PlayerIdx> {
     match current_round(history) {
         [
@@ -44,7 +43,7 @@ pub fn last_acted(history: &[AnnotatedAction]) -> Option<PlayerIdx> {
     }
 }
 
-/// Returns the next player to act at current round
+/// Iterates seats left of `hero_id` up to but not including `hero_id`.
 pub fn players_after(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -56,7 +55,7 @@ pub fn players_after(
 }
 
 // TODO: refactor; remove iter
-/// Returns the next player to act at current round
+/// Returns the next seat to act, or `None` if the round is closed.
 pub fn next_to_act(history: &[AnnotatedAction]) -> Option<PlayerIdx> {
     if all_folded(history) {
         None

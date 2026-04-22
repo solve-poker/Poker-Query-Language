@@ -1,8 +1,6 @@
 use super::{Display, Hash, Idx, Suit};
 
-/// Suit index representation.
-///
-/// Converts suits to numeric indices (0-3).
+/// Numeric index of a suit in the range 0-3.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
     Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
@@ -10,6 +8,7 @@ use super::{Display, Hash, Idx, Suit};
 pub struct SuitIdx(pub(crate) Idx);
 
 impl SuitIdx {
+    /// Returns the suit, or `None` if out of range.
     pub const fn to_suit(self) -> Option<Suit> {
         match self.0 {
             0 => Some(Suit::S),

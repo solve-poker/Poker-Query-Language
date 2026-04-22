@@ -5,7 +5,7 @@ const fn nc2(n: u8) -> u8 {
     n * (n - 1) / 2
 }
 
-/// returns the position of most significant set bit
+/// Returns the position of the most significant set bit.
 #[inline]
 const fn pos_msb(v: u16) -> u8 {
     15 - v.leading_zeros().to_le_bytes()[0]

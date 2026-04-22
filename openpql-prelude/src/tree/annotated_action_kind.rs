@@ -1,19 +1,26 @@
 use derive_more::{Display, FromStr};
 
-/// Represents the type of action a player can take in a poker hand.
-/// Used to classify parsed player actions in the game tree.
+/// Kind of voluntary player action.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
     Debug, Clone, Copy, Display, PartialOrd, Ord, PartialEq, Eq, FromStr,
 )]
 pub enum AnnotatedActionKind {
+    /// Fold.
     Fold,
+    /// Check.
     Check,
+    /// Call.
     Call,
+    /// Open bet.
     Bet,
+    /// Raise.
     Raise,
+    /// All-in call.
     ShoveCall,
+    /// All-in bet.
     ShoveBet,
+    /// All-in raise.
     ShoveRaise,
 }
 

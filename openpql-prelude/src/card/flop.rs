@@ -1,5 +1,6 @@
 use super::{Board, Card, Card64, HandN, ops};
 
+/// Builds a [`Flop`] from a string of three cards.
 #[macro_export]
 macro_rules! flop {
     ($s:expr) => {
@@ -7,10 +8,7 @@ macro_rules! flop {
     };
 }
 
-/// Flop representation.
-///
-/// Type alias for `HandN<3>` representing the first three community cards.
-/// Includes a macro for convenient flop creation.
+/// First three community cards.
 pub type Flop = HandN<3>;
 
 impl Flop {

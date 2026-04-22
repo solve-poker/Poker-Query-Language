@@ -1,9 +1,6 @@
 use super::{Card, Card64, CardCount};
 
-/// Iterator over cards in a Card64 bitset.
-///
-/// Iterates through all cards set in a Card64 bitset.
-/// Produces cards grouped by rank across suits: 2s2h2c2d, then 3s3h3c3d, etc.
+/// Iterator over cards in a `Card64`, ordered by rank then suit.
 #[derive(Debug, Clone)]
 pub struct CardIter {
     c64: Card64,

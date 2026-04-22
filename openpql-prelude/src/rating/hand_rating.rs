@@ -3,70 +3,49 @@ use super::{
     fmt,
 };
 
-/// Hand Ranking
-/// # Overview
-/// this is used for holdem omaha and shortdeck
-/// there are 10 hand types:
-/// * `RoyalFlush`
-/// * `StraightFlush`
-/// * `Quads`
-/// * `FullHouse`
-/// * `Flush`
-/// * `Straight`
-/// * `Trips`
-/// * `TwoPair`
-/// * `Pair`
-/// * `HighCard`
+/// Bit-packed poker hand rating comparable by integer order.
 ///
-/// # Rank representation:
-/// * Rank as index value
-///   * 0b0000 is Deuce and 0b1100 is Ace
-/// * Combination of two ranks
-///   * nCr(13, 2) is 78 so the index of combination can be fitted in 7 bits
-/// * Combination of three ranks
-///   * nCr(13, 3) is 286 so the index of combination can be fitted in 9 bits
-/// * Combination of five ranks
-///   * we just use the 13 bit flags
-///
-/// # Memory Layout:
+/// # Memory Layout
 /// ```text
 /// u16
 ///
-/// `RoyalFlush`/`StraightFlush`
-/// [15, 0]:   1110ssss 00000000 // s: rank of highest card
+/// RoyalFlush / StraightFlush:
+/// [15, 0]:   1110ssss 00000000  // s: rank of highest card
 ///
-/// `Quads`:
-/// [15, 0]:   11100000 qqqqkkkk // q: rank of quads; k: rank of kicker
+/// Quads:
+/// [15, 0]:   11100000 qqqqkkkk  // q: rank of quads; k: rank of kicker
 ///
-/// `FullHouse`:
-/// [15, 0]:   11011111 ttttpppp // q: rank of trips; k: rank of pair
-/// [15, 0]:   10111111 ttttpppp // shortdeck
+/// FullHouse:
+/// [15, 0]:   11011111 ttttpppp  // t: rank of trips; p: rank of pair
+/// [15, 0]:   10111111 ttttpppp  // shortdeck
 ///
-/// `Flush`:
-/// [15, 0]:   101rrrrr rrrrrrrr // r: set bit of 5 cards and zeros of the rest
-/// [15, 0]:   111rrrrr rrrrrrrr // shortdeck
+/// Flush:
+/// [15, 0]:   101rrrrr rrrrrrrr  // r: bitmask of 5 ranks
+/// [15, 0]:   111rrrrr rrrrrrrr  // shortdeck
 ///
-/// `Straight`:
-/// [15, 0]:   10000000 0000ssss // s: rank of highest card
+/// Straight:
+/// [15, 0]:   10000000 0000ssss  // s: rank of highest card
 ///
-/// `Trips`:
-/// [15, 0]:   0110tttt 0kkkkkkk // t: rank of trips; k: index of combination
+/// Trips:
+/// [15, 0]:   0110tttt 0kkkkkkk  // t: rank of trips; k: index of kicker pair
 ///
-/// `TwoPair`:
-/// [15, 0]:   01000ppp ppppkkkk // p: index of combination; k: rank of kicker
+/// TwoPair:
+/// [15, 0]:   01000ppp ppppkkkk  // p: index of pair pair; k: rank of kicker
 ///
-/// `Pair`:
-/// [15, 0]:   001ppppk kkkkkkkk // p: rank of pair; k: index of combination
+/// Pair:
+/// [15, 0]:   001ppppk kkkkkkkk  // p: rank of pair; k: index of kickers
 ///
-/// `HighCard`:
-/// [15, 0]:   000rrrrr rrrrrrrr // r: bit flags of 5 cards
+/// HighCard:
+/// [15, 0]:   000rrrrr rrrrrrrr  // r: bitmask of 5 ranks
 /// ```
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub struct HandRating(pub(crate) RatingInner);
 
-/// returns highest rank index
-/// input must have 1 or more ranks
+/// Returns the index of the highest set rank.
+///
+/// # Panics
+/// Caller must pass at least one rank.
 #[allow(clippy::cast_possible_truncation)]
 #[must_use]
 #[inline]

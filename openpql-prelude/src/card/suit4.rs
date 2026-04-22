@@ -3,6 +3,7 @@ use super::{
 };
 use crate::Card;
 
+/// Builds a [`Suit4`] from a string of suit characters.
 #[macro_export]
 macro_rules! s4 {
     ($s:expr) => {
@@ -16,10 +17,7 @@ macro_rules! s4 {
     };
 }
 
-/// Bitset representation of suit collections.
-///
-/// A 4-bit bitset for efficient suit set operations. Each bit represents a specific suit,
-/// enabling fast membership tests and set operations.
+/// Bitset of suits as a 4-bit mask.
 ///
 /// # Memory Layout
 /// ```text
@@ -33,27 +31,27 @@ macro_rules! s4 {
 pub struct Suit4(pub(crate) Suit4Inner);
 
 impl Suit4 {
-    /// Set containing all 4 suits.
+    /// Every suit.
     pub const ALL: Self = Self(0b1111);
 
-    /// Returns `true` if the set contains no suits.
+    /// Returns `true` if the set is empty.
     pub const fn is_empty(self) -> bool {
         self.0 == 0
     }
 
-    /// Adds the specified suit to this set.
+    /// Adds `s` to the set.
     #[inline]
     pub const fn set(&mut self, s: Suit) {
         self.0 |= 1 << s as Idx;
     }
 
-    /// Removes the specified suit from this set.
+    /// Removes `s` from the set.
     #[inline]
     pub const fn unset(&mut self, s: Suit) {
         self.0 &= !(1 << s as Idx);
     }
 
-    /// Returns `true` if this set contains the specified suit.
+    /// Returns `true` if the set contains `s`.
     #[must_use]
     #[inline]
     pub const fn contains_suit(self, s: Suit) -> bool {
@@ -61,7 +59,7 @@ impl Suit4 {
         v == v & self.0
     }
 
-    /// Returns the number of suits in this set.
+    /// Returns the number of suits.
     #[must_use]
     #[inline]
     pub const fn count(&self) -> CardCount {

@@ -5,6 +5,7 @@ use derive_more::{Deref, DerefMut};
 
 use crate::tree::{Action, AnnotatedAction, TreeParseError};
 
+/// Builds a [`History`] from `c` (chance) and chip-amount tokens.
 #[macro_export]
 macro_rules! history {
   ($($token:tt),* $(,)?) => {
@@ -14,7 +15,7 @@ macro_rules! history {
   (@convert $chip:expr) => { $crate::tree::Action::from($chip) };
 }
 
-/// A sequence of actions representing a path through the game tree.
+/// Ordered sequence of actions along a path through the game tree.
 #[derive(
     Clone,
     Default,
@@ -31,13 +32,7 @@ macro_rules! history {
 pub struct History(Vec<Action>);
 
 impl History {
-    /// Returns the parent history by excluding the last action.
-    ///
-    /// If the history is empty, returns an empty slice. Otherwise, returns
-    /// all actions except the most recent one.
-    ///
-    /// # Returns
-    /// A slice containing all actions except the last, or an empty slice if empty.
+    /// Returns all actions except the last.
     pub fn parent(&self) -> &[Action] {
         match self.0.split_last() {
             Some((_, parent)) => parent,
@@ -45,16 +40,7 @@ impl History {
         }
     }
 
-    /// Creates a new history by appending an action to the current sequence.
-    ///
-    /// This method clones the current history and adds the specified action,
-    /// returning a new `History` instance without modifying the original.
-    ///
-    /// # Arguments
-    /// * `action` - The action to append to the history
-    ///
-    /// # Returns
-    /// A new `History` containing all previous actions plus the new action.
+    /// Returns a clone with `action` appended.
     #[must_use]
     pub fn with_action(&self, action: Action) -> Self {
         let mut new = self.clone();
@@ -62,6 +48,7 @@ impl History {
         new
     }
 
+    /// Returns a clone extended by the action of an `AnnotatedAction`, if any.
     #[must_use]
     pub fn with_parsed_action(&self, action: AnnotatedAction) -> Self {
         let mut new = self.clone();
@@ -71,13 +58,7 @@ impl History {
         new
     }
 
-    /// Creates a root history starting with a chance action.
-    ///
-    /// The root represents the beginning of the game tree, where cards are dealt
-    /// (represented by `Action::Chance`) before any player actions occur.
-    ///
-    /// # Returns
-    /// A new `History` containing only the initial chance action.
+    /// Creates a history containing a single chance action.
     pub fn root() -> Self {
         Self(vec![Action::Chance])
     }

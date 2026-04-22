@@ -1,6 +1,4 @@
-//! Betting round (street) navigation and analysis utilities.
-//!
-//! [`AnnotatedAction`] -> `Street`
+//! Street derivation from action history.
 
 use crate::{
     Street,
@@ -9,14 +7,14 @@ use crate::{
 
 type ChanceCount = u8;
 
-/// returns number of chances occured
+/// Returns the count of chance actions in the history.
 fn count_chance(history: &[AnnotatedAction]) -> ChanceCount {
     filter_count(0, history, &|a: &AnnotatedAction| {
         matches!(a, AnnotatedAction::Chance(_))
     })
 }
 
-/// returns number of chances occured
+/// Returns the current `Street`, or `None` before the preflop chance.
 pub fn current_street(history: &[AnnotatedAction]) -> Option<Street> {
     match count_chance(history) {
         1 => Some(Street::Preflop),

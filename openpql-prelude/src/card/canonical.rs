@@ -1,10 +1,4 @@
-//! helper structs for determine relevent suits
-//!
-//! * preflop, Holdem/Shortdeck -> only need to distinguish suited/offsuit
-//! * preflop, Omaha -> either single suited or double suited
-//! * flop -> at most 3 potential drawing suits
-//! * turn -> at most 2 drawing suits
-//! * river -> at most 1 flush suit
+//! Canonical hand forms with flush-relevant suits preserved.
 
 use std::{fmt, str::FromStr};
 
@@ -13,13 +7,12 @@ use crate::{Board, Card, HandN, ParseError, Rank, Street, Suit, Suit4};
 const N_HOLDEM: usize = 2;
 const N_OMAHA: usize = 4;
 
-/// A single card in a canonical hand.
-///
-/// `suit` is `Some(s)` when the suit matters for flush potential,
-/// `None` when the suit is irrelevant.
+/// Card with an optional flush-relevant suit.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct CanonicalCard {
+    /// Card rank.
     pub rank: Rank,
+    /// Suit when flush-relevant; `None` means the original suit is irrelevant.
     pub suit: Option<Suit>,
 }
 
@@ -92,11 +85,7 @@ impl<'de> serde::Deserialize<'de> for CanonicalCard {
     }
 }
 
-/// Canonical N-card hand.
-///
-/// Cards sorted (same order as [`HandN`]) with suit encoded per card as
-/// `Option<Suit>`: `Some(s)` when flush-relevant, `None` otherwise.
-/// Suited preflop hands normalise to `Suit::S` (e.g. `AhKh` == `AdKd`).
+/// Sorted hand of `CanonicalCard` values.
 #[derive(
     Clone,
     PartialEq,
@@ -119,11 +108,7 @@ impl fmt::Debug for CanonicalHand {
 }
 
 impl CanonicalHand {
-    /// Derive the canonical hand given the current board.
-    ///
-    /// A card's suit is relevant when the total number of cards of that suit
-    /// (board + hand + remaining board cards) can reach a flush.  With an
-    /// empty board this delegates to preflop logic.
+    /// Creates a canonical hand relative to `board`.
     pub fn new(board: Board, hand: &[Card]) -> Self {
         match Street::from(board) {
             Street::Preflop => Self::preflop(&sort(hand)),

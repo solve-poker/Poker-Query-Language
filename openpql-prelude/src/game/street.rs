@@ -1,19 +1,25 @@
 use super::{Board, Card64, CardCount, Display, FromStr, ParseError};
 
+/// Betting street of a poker hand.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
     Debug, Clone, PartialEq, Eq, Copy, PartialOrd, Ord, Default, Display,
 )]
 pub enum Street {
+    /// Before the flop.
     #[default]
     Preflop = 0,
+    /// After the flop (three community cards).
     Flop,
+    /// After the turn (four community cards).
     Turn,
+    /// After the river (five community cards).
     River,
 }
 
 impl Street {
+    /// Returns the number of board cards exposed on this street.
     // won't truncate since n ≤ 5
     #[allow(clippy::cast_possible_truncation)]
     pub const fn board_card_count(self) -> CardCount {
