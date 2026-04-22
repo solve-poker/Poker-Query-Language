@@ -3,10 +3,10 @@ description = "Poker Range Notation Parser"
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
-license = "MIT"
+license.workspace = true
 name = "openpql-range-parser"
-repository = "https://github.com/solve-poker/Poker-Query-Language"
-version = "0.1.0"
+repository.workspace = true
+version.workspace = true
 
 [dependencies]
 derive_more = { workspace = true, features = ["display"] }

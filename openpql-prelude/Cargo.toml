@@ -3,10 +3,10 @@ description = "Basic library for card handling and evaluation of Hold'em Short D
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
-license = "MIT"
+license.workspace = true
 name = "openpql-prelude"
-repository = "https://github.com/solve-poker/Poker-Query-Language"
-version = "0.1.2"
+repository.workspace = true
+version.workspace = true
 
 [lib]
 name = "openpql_prelude"

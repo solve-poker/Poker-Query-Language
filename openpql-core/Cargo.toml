@@ -1,27 +1,25 @@
 [package]
-name = "openpql-core"
-version = "0.1.0"
+description = "Core types and primitives for Poker Query Language (PQL)"
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
+license.workspace = true
+name = "openpql-core"
+repository.workspace = true
+version.workspace = true
 
 [lints]
 workspace = true
 
 [dependencies]
-bitflags.workspace = true
-clap = { workspace = true, optional = true }
 derive_more = { workspace = true, features = ["display", "std"] }
-openpql-macro.workspace = true
-openpql-pql-parser = { workspace = true }
 openpql-prelude = { workspace = true }
-openpql-range-parser.workspace = true
-rand.workspace = true
-smallvec.workspace = true
 
 [dev-dependencies]
 approx.workspace = true
 quickcheck.workspace = true
 quickcheck_macros.workspace = true
 openpql-prelude = { workspace = true, features = ["quickcheck"] }
-itertools.workspace = true
+
+[lib]
+doctest = false

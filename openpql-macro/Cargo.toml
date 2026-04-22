@@ -3,10 +3,10 @@ description = "Internal crate used by Poker-Query-Language"
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
-license = "MIT"
+license.workspace = true
 name = "openpql-macro"
-repository = "https://github.com/solve-poker/Poker-Query-Language"
-version = "0.1.0"
+repository.workspace = true
+version.workspace = true
 
 [lib]
 proc-macro = true
@@ -16,7 +16,7 @@ doctest = false
 [dependencies]
 proc-macro2 = "1.0"
 quote = "1.0"
-syn = "2.0"
+syn = { version = "2.0", features = ["full"] }
 
 [lints]
 workspace = true
