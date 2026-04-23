@@ -2,12 +2,16 @@ use super::{
     Display, Error, LalrError, Loc, RangeCard, RankConst, SuitConst, ToString,
 };
 
+/// Element of a bracketed card list.
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
 pub enum ListElem {
+    /// Concrete rank and concrete suit.
     #[display("{_0}{_1}")]
     CC(RankConst, SuitConst),
+    /// Concrete rank with any suit.
     #[display("{_0}")]
     CA(RankConst),
+    /// Any rank with concrete suit.
     #[display("{_0}")]
     AC(SuitConst),
 }
@@ -23,6 +27,7 @@ fn to_str(elems: &[ListElem]) -> String {
     )
 }
 
+/// Bracketed list of simple cards.
 #[derive(Clone, PartialEq, Eq, Debug, derive_more::From, Display)]
 #[display("{}", to_str(_0))]
 pub struct List(pub Vec<ListElem>);

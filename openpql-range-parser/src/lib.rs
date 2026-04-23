@@ -12,6 +12,7 @@ use lalrpop_util::{ParseError, lalrpop_mod, lexer::Token};
 use openpql_prelude::*;
 use smallvec::{Array, SmallVec};
 
+/// Abstract syntax tree nodes for parsed range expressions.
 pub mod ast;
 mod checker;
 mod error;
@@ -32,10 +33,13 @@ lalrpop_mod!(
 );
 
 type Idx = u8;
+/// Byte offset into the source string.
 pub type Loc = usize;
+/// Inclusive start and exclusive end byte offsets in the source.
 pub type LocInfo = (Loc, Loc);
 type Expected = Vec<String>;
 
+/// Parses a range expression, respecting short-deck rules when requested.
 pub fn parse_expr(
     is_shortdeck: bool,
     src: &str,

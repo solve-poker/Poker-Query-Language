@@ -2,42 +2,60 @@ use super::{Display, Error, LocInfo, ResultE};
 
 pub type RankConst = openpql_prelude::Rank;
 
+/// Single-letter rank variable token.
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
 pub enum RankVar {
+    /// Rank variable "B".
     #[display("B")]
     RB,
+    /// Rank variable "E".
     #[display("E")]
     RE,
+    /// Rank variable "F".
     #[display("F")]
     RF,
+    /// Rank variable "G".
     #[display("G")]
     RG,
+    /// Rank variable "I".
     #[display("I")]
     RI,
+    /// Rank variable "L".
     #[display("L")]
     RL,
+    /// Rank variable "M".
     #[display("M")]
     RM,
+    /// Rank variable "N".
     #[display("N")]
     RN,
+    /// Rank variable "O".
     #[display("O")]
     RO,
+    /// Rank variable "P".
     #[display("P")]
     RP,
+    /// Rank variable "R".
     #[display("R")]
     RR,
+    /// Rank variable "U".
     #[display("U")]
     RU,
+    /// Rank variable "V".
     #[display("V")]
     RV,
 }
 
+/// Rank slot in a range card: concrete, variable, or wildcard.
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
 pub enum CardRank {
+    /// Concrete rank.
     #[display("{_0}")]
     Const(RankConst),
+    /// Rank variable.
     #[display("{_0}")]
     Var(RankVar),
+    /// Wildcard `*` matching any rank.
     #[display("*")]
     Any,
 }

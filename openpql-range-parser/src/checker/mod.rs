@@ -11,7 +11,9 @@ use super::{
     ops, parse_expr,
 };
 
+/// Range checker for a 5-card board.
 pub type BoardRangeChecker<const SD: bool> = Checker<5, true, SD>;
+/// Range checker for an N-card hand.
 pub type RangeChecker<const N: usize, const SD: bool> = Checker<N, false, SD>;
 
 #[allow(clippy::module_inception)]

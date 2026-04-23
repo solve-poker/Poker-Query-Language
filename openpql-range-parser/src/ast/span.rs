@@ -3,21 +3,26 @@ use super::{
     SuitConst, TermElem, ToString,
 };
 
+/// One card in a span endpoint.
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
 pub enum SpanElem {
+    /// Concrete rank with concrete suit.
     #[display("{_0}{_1}")]
     CC(RankConst, SuitConst),
+    /// Concrete rank with any suit.
     #[display("{_0}")]
     CA(RankConst),
 }
 
 impl SpanElem {
+    /// Returns the rank.
     pub const fn rank(self) -> RankConst {
         match self {
             Self::CC(r, _) | Self::CA(r) => r,
         }
     }
 
+    /// Returns the suit, or `None` when unspecified.
     pub const fn suit(self) -> Option<SuitConst> {
         match self {
             Self::CC(_, s) => Some(s),
@@ -49,12 +54,16 @@ impl TryFrom<(Loc, Loc, TermElem)> for SpanElem {
     }
 }
 
+/// Rank span across one or two endpoints.
 #[derive(Clone, PartialEq, Eq, Debug, Display)]
 pub enum Span {
+    /// Open-ended downward span like `AK-`.
     #[display("{}-", to_str(_0))]
     Down(Vec<SpanElem>),
+    /// Open-ended upward span like `AK+`.
     #[display("{}+", to_str(_0))]
     Up(Vec<SpanElem>),
+    /// Bounded span like `AK-QJ` from top to bottom.
     #[display("{}-{}", to_str(_0), to_str(_1))]
     To(Vec<SpanElem>, Vec<SpanElem>),
 }

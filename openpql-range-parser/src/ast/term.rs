@@ -1,5 +1,6 @@
 use super::{Display, From, List, RangeCard, Span, ToString};
 
+/// Product of cards, lists, and spans forming a range term.
 #[derive(Clone, PartialEq, Eq, Debug, derive_more::From, Display)]
 #[display("{}", to_str(_0))]
 pub struct Term(pub Vec<TermElem>);
@@ -10,12 +11,16 @@ impl From<Span> for Term {
     }
 }
 
+/// Single element within a [`Term`].
 #[derive(Clone, PartialEq, Eq, Debug, Display)]
 pub enum TermElem {
+    /// Single range card.
     #[display("{_0}")]
     Card(RangeCard),
+    /// Bracketed list of alternatives.
     #[display("{_0}")]
     List(List),
+    /// Rank span.
     #[display("{_0}")]
     Span(Span),
 }

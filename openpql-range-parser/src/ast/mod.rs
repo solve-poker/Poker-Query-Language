@@ -16,4 +16,5 @@ pub use term::{Term, TermElem};
 
 use super::{Display, Error, From, LalrError, Loc, LocInfo, ResultE, ToString};
 
+/// Signed integer form of a rank used for arithmetic.
 pub type RankInt = i8;

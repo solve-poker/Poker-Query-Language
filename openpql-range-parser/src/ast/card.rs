@@ -2,24 +2,34 @@ use super::{
     CardRank, CardSuit, Display, From, RankConst, RankVar, SuitConst, SuitVar,
 };
 
+/// Card pattern within a range, combining rank and suit as concrete, variable, or any.
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
 pub enum RangeCard {
+    /// Concrete rank and concrete suit.
     #[display("{_0}{_1}")]
     CC(RankConst, SuitConst),
+    /// Concrete rank and suit variable.
     #[display("{_0}{_1}")]
     CV(RankConst, SuitVar),
+    /// Concrete rank with any suit.
     #[display("{_0}")]
     CA(RankConst),
+    /// Rank variable and concrete suit.
     #[display("{_0}{_1}")]
     VC(RankVar, SuitConst),
+    /// Rank variable and suit variable.
     #[display("{_0}{_1}")]
     VV(RankVar, SuitVar),
+    /// Rank variable with any suit.
     #[display("{_0}")]
     VA(RankVar),
+    /// Any rank with concrete suit.
     #[display("{_0}")]
     AC(SuitConst),
+    /// Any rank with suit variable.
     #[display("{_0}")]
     AV(SuitVar),
+    /// Any card.
     #[display("*")]
     AA,
 }

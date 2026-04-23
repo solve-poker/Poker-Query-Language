@@ -1,10 +1,15 @@
 use super::{LocInfo, Term};
 
+/// Parsed range expression tree.
 #[derive(PartialEq, Eq, Debug)]
 pub enum Expr {
+    /// Exclusion `A!B`.
     Not(Box<Self>, Box<Self>),
+    /// Intersection `A:B`.
     And(Box<Self>, Box<Self>),
+    /// Union `A,B`.
     Or(Box<Self>, Box<Self>),
+    /// Leaf term with its source span.
     Term(Term, LocInfo),
 }
 
