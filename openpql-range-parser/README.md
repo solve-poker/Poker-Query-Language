@@ -5,11 +5,9 @@
 
 Parser for poker range notation.
 
-## Range Syntax
+## Syntax
 
-Open PQL uses a **generic, variable-based** syntax — not the classic `AKs`/`AKo` shorthand.
-
-Suit variables: `w`, `x`, `y`, `z`. Same letter = same suit, different letters = different suits.
+Variable-based, not the classic `AKs`/`AKo` shorthand. Suit variables `w`, `x`, `y`, `z` — same letter = same suit.
 
 | Notation | Meaning |
 | --- | --- |
@@ -17,20 +15,16 @@ Suit variables: `w`, `x`, `y`, `z`. Same letter = same suit, different letters =
 | `AwKw` | Suited AK |
 | `AxKy` | Offsuit AK |
 | `AK` | Any AK |
-| `TT` | Any pocket tens |
 | `QQ+` | Pocket pairs QQ+ |
-| `88-55` | Pairs from 88 down to 55 |
-| `AwJw+` | Suited aces from AJ up |
+| `88-55` | Pairs 88 down to 55 |
+| `AwJw+` | Suited aces AJ+ |
 | `[2,4,6,8,T]A` | A2, A4, A6, A8, AT |
 | `*` | Any two cards |
 
 Combine with commas: `AA, KK, AwKw, 77-55`.
 
-## License
-
-MIT — see [LICENSE](../LICENSE).
-
 ## Links
 
-- [Project repo](https://github.com/solve-poker/Poker-Query-Language)
-- [PQL docs](https://pql-docs.solve.poker)
+- [Repo](https://github.com/solve-poker/Poker-Query-Language) · [Docs](https://pql-docs.solve.poker)
+
+MIT — see [LICENSE](../LICENSE).

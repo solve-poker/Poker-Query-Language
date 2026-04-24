@@ -1,86 +1,87 @@
-# Open PQL (Poker Query Language)
+<h1 align="center">Open PQL</h1>
 
-> Made with ♥️
+<p align="center">
+  <strong>SQL for poker. Written in Rust.</strong>
+</p>
 
-> ⚠️ **Work in Progress**: This project is currently under active development and is not yet ready for production use.
+<p align="center">
+  <a href="https://crates.io/crates/openpql-runner"><img src="https://img.shields.io/crates/v/openpql-runner.svg?logo=rust" alt="crates.io"></a>
+  <a href="https://docs.rs/openpql-runner"><img src="https://img.shields.io/docsrs/openpql-runner?logo=docs.rs" alt="docs.rs"></a>
+  <a href="https://crates.io/crates/openpql-runner"><img src="https://img.shields.io/crates/d/openpql-runner.svg" alt="downloads"></a>
+  <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/rust-1.85+-blue.svg?logo=rust" alt="Rust 1.85+"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
 
-> 🌐 **Try it online**: An interactive demo is available at https://pql-playground.solve.poker/
+<p align="center">
+  <a href="https://pql-playground.solve.poker/"><img src="https://img.shields.io/badge/playground-live-brightgreen.svg" alt="Playground"></a>
+  <a href="https://pql-docs.solve.poker"><img src="https://img.shields.io/badge/docs-online-blue.svg" alt="PQL Docs"></a>
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Rust](https://img.shields.io/badge/rust-1.85+-blue.svg)](https://www.rust-lang.org)
+<p align="center">
+  <a href="https://pql-playground.solve.poker/">Playground</a> •
+  <a href="https://pql-docs.solve.poker">Docs</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#workspace">Workspace</a>
+</p>
 
-A high-performance Rust implementation of Poker Query Language (PQL), enabling SQL-like queries for poker analysis and calculations. This project is a spiritual successor to the original Java implementation developed by Odds Oracle.
+---
 
-## Overview
+> ⚠️ **Work in progress.** Active development; not yet production-ready.
 
-Open PQL provides a powerful query language for poker analysis, allowing users to perform complex calculations on poker scenarios using familiar SQL-like syntax. The library supports various poker variants and offers comprehensive hand evaluation, equity calculations, and range analysis capabilities.
+A high-performance Rust implementation of **Poker Query Language**, the SQL-like language for poker analysis. Spiritual successor to the original Java engine by Odds Oracle.
+
+```sql
+select equity
+from   hero='AhKh', villain='QQ+', board='Ah9s2c', game='holdem'
+```
 
 ## Features
 
-- **Comprehensive Poker Library**: Full-featured poker card and hand evaluation system
-- **SQL-like Query Language**: Intuitive PQL syntax for poker analysis
-- **High Performance**: Optimized Rust implementation for fast calculations
-- **Multi-game Support**: Texas Hold'em and other poker variants
-- **Range Analysis**: Advanced hand range evaluation and filtering
-- **Equity Calculations**: Precise equity computations for different scenarios
+- ♠️ **Familiar syntax** — SQL-like queries for equity, ranges, and board analysis
+- ⚡ **Fast** — bit-packed cards, Monte Carlo sampling, optimized evaluators
+- 🃏 **Multi-game** — Texas Hold'em, Omaha, Short Deck
+- 🎯 **Expressive ranges** — variable-based notation (`AwKw`, `QQ+`, `AwJw+`)
+- 🛠️ **Library + CLI** — embed the runner or use the `opql` binary
 
 ## Quick Start
 
-### Installation
-
-Add Open PQL to your `Cargo.toml`:
+Add to `Cargo.toml`:
 
 ```toml
 [dependencies]
-openpql-runner = "0.1.0"
+openpql-runner = "0.1"
 ```
 
-### CLI Usage
-
-The `opql` command-line tool provides direct access to PQL functionality:
+Or use the CLI:
 
 ```bash
-# Calculate average board suit count
-opql --run "select avg(boardsuitcount(river)) from hero='As9s', villain='*', board='2s3sJh', game='holdem'"
-
-# Analyze equity in specific scenarios
 opql --run "select equity from hero='AhKh', villain='QQ+', board='Ah9s2c', game='holdem'"
-# Ranges use generic syntax: AwKw (suited), AxKy (offsuit), AK (either)
 ```
 
-### WebAssembly Demo
+Try it in your browser at **[pql-playground.solve.poker](https://pql-playground.solve.poker/)**.
 
-Try Open PQL in your browser with the WebAssembly demo:
+## Workspace
 
-```bash
-# Install trunk (if not already installed)
-cargo install trunk
-
-# Run the WASM demo
-trunk serve --config ./open-pql-wasm/Trunk.toml
-
-# Open http://localhost:8080 in your browser
-```
-
-## Architecture
-
-This workspace contains the following crates:
-
-- **`openpql-prelude`**: Core poker types — cards, hands, evaluators
-- **`openpql-core`**: Game abstraction and query execution core
-- **`openpql-range-parser`**: Parser for poker range notation (e.g. `AA-TT`, `AwKw+`)
-- **`openpql-pql-parser`**: Parser for Poker Query Language (PQL) syntax
-- **`openpql-runner`**: Library and CLI tool (`opql`) for executing PQL queries
-- **`openpql-macro`**: Internal procedural macros
+| Crate | Purpose |
+| --- | --- |
+| [`openpql-runner`](./openpql-runner) | Library and `opql` CLI — start here |
+| [`openpql-pql-parser`](./openpql-pql-parser) | PQL syntax parser |
+| [`openpql-range-parser`](./openpql-range-parser) | Range notation parser |
+| [`openpql-core`](./openpql-core) | Game abstraction & execution core |
+| [`openpql-prelude`](./openpql-prelude) | Cards, hands, evaluators |
+| [`openpql-macro`](./openpql-macro) | Internal proc macros |
 
 ## Documentation
 
-- **PQL Guide & Tutorial**: [pql-docs.solve.poker](https://pql-docs.solve.poker)
+- 📖 **[PQL Guide & Tutorial](https://pql-docs.solve.poker)** — language reference and walkthroughs
+- 🎮 **[Playground](https://pql-playground.solve.poker/)** — run queries in your browser
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
 
 ## Acknowledgments
 
-Special thanks to the original Odds Oracle (propokertools.com) team for pioneering the PQL concept and providing inspiration for this Rust implementation.
+Thanks to the Odds Oracle ([propokertools.com](https://propokertools.com)) team for pioneering PQL.
+
+<p align="center">Made with ♥️</p>

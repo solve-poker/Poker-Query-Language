@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.85+-blue.svg)](https://www.rust-lang.org)
 
-Library and CLI (`opql`) for executing PQL queries.
+PQL query executor — library and `opql` CLI.
 
 ## CLI
 
@@ -24,12 +24,8 @@ PQLRunner::run(
 )?;
 ```
 
-## License
-
-MIT — see [LICENSE](../LICENSE).
-
 ## Links
 
-- [Project repo](https://github.com/solve-poker/Poker-Query-Language)
-- [PQL docs](https://pql-docs.solve.poker)
-- [Playground](https://pql-playground.solve.poker/)
+- [Repo](https://github.com/solve-poker/Poker-Query-Language) · [Docs](https://pql-docs.solve.poker) · [Playground](https://pql-playground.solve.poker/)
+
+MIT — see [LICENSE](../LICENSE).

@@ -3,10 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.85+-blue.svg)](https://www.rust-lang.org)
 
-Game abstraction and query execution core for Open PQL. Sits between `openpql-prelude` (card/hand primitives) and `openpql-runner` (CLI/library frontend).
+Game abstraction and query execution core. Sits between [`openpql-prelude`](../openpql-prelude) and [`openpql-runner`](../openpql-runner).
 
-Not typically depended on directly — use `openpql-runner`.
-
-## License
+Use [`openpql-runner`](../openpql-runner) instead unless you have a reason not to.
 
 MIT — see [LICENSE](../LICENSE).
