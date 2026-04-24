@@ -1,4 +1,8 @@
-use super::{CardCount, Display, FromStr, Hash, Idx, ParseError};
+use std::{hash::Hash, str::FromStr};
+
+use derive_more::Display;
+
+use crate::{CardCount, ParseError, card::Idx};
 
 /// Card suit (spades, hearts, diamonds, clubs).
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
@@ -35,6 +39,7 @@ impl Suit {
     pub const CHARS: [char; Self::N_SUITS as usize] = ['s', 'h', 'd', 'c'];
     /// Parses a suit from a character, returning `None` if invalid.
     #[inline]
+    #[must_use]
     pub const fn from_char(c: char) -> Option<Self> {
         match c {
             'S' | 's' => Some(Self::S),
@@ -47,6 +52,7 @@ impl Suit {
 
     /// Returns the display character.
     #[inline]
+    #[must_use]
     pub const fn to_char(self) -> char {
         Self::CHARS[self as usize]
     }

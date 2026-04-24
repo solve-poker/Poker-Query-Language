@@ -1,6 +1,9 @@
-use super::{
-    HandRatingView, HandType, IdxThreeRanks, IdxTwoRanks, Rank16, RatingInner,
-    fmt,
+use std::fmt;
+
+use crate::{
+    HandType, Rank16, RatingInner,
+    eval::index::{IdxThreeRanks, IdxTwoRanks},
+    rating::HandRatingView,
 };
 
 /// Bit-packed poker hand rating comparable by integer order.

@@ -15,6 +15,7 @@ fn count_chance(history: &[AnnotatedAction]) -> ChanceCount {
 }
 
 /// Returns the current `Street`, or `None` before the preflop chance.
+#[must_use]
 pub fn current_street(history: &[AnnotatedAction]) -> Option<Street> {
     match count_chance(history) {
         1 => Some(Street::Preflop),

@@ -1,4 +1,8 @@
-use super::{Display, FromStr, N_FLOP_CATEGORY, ParseError, cmp};
+use std::{cmp, str::FromStr};
+
+use derive_more::Display;
+
+use crate::{N_FLOP_CATEGORY, ParseError};
 
 /// Category of a hand relative to the flop.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
@@ -115,6 +119,7 @@ impl FlopHandCategory {
     }
 
     /// Compares two categories under Hold'em (`SD = false`) or Short Deck (`SD = true`) ordering.
+    #[must_use]
     pub fn compare<const SD: bool>(self, other: Self) -> cmp::Ordering {
         self.to_idx::<SD>().cmp(&other.to_idx::<SD>())
     }

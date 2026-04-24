@@ -1,4 +1,8 @@
-use super::{CardCount, Display, FromStr, Hash, Idx, ParseError};
+use std::{hash::Hash, str::FromStr};
+
+use derive_more::Display;
+
+use crate::{CardCount, ParseError, card::Idx};
 
 /// Card rank from `R2` to `RA`.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
@@ -104,6 +108,7 @@ impl Rank {
 
     /// Parses a rank from a character, returning `None` if invalid.
     #[inline]
+    #[must_use]
     pub const fn from_char(c: char) -> Option<Self> {
         match c {
             '2' => Some(Self::R2),
@@ -125,12 +130,14 @@ impl Rank {
 
     /// Returns the display character.
     #[inline]
+    #[must_use]
     pub const fn to_char(self) -> char {
         Self::CHARS[self as usize]
     }
 
     /// Returns every rank, short-deck when `SD` is true.
     #[inline]
+    #[must_use]
     pub const fn all<const SD: bool>() -> &'static [Self] {
         const {
             if SD {

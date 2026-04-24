@@ -8,16 +8,19 @@ use crate::tree::{
 };
 
 /// Returns the seat to the left of `i` in an `n`-seat table.
+#[must_use]
 pub const fn idx_next(n: PlayerIdx, i: PlayerIdx) -> PlayerIdx {
     (i + 1) % n
 }
 
 /// Returns the seat to the right of `i` in an `n`-seat table.
+#[must_use]
 pub const fn idx_prev(n: PlayerIdx, i: PlayerIdx) -> PlayerIdx {
     (i + n - 1) % n
 }
 
 /// Returns the number of seated players.
+#[must_use]
 pub fn num_players(history: &[AnnotatedAction]) -> PlayerIdx {
     filter_count(0, history, &|a: &AnnotatedAction| {
         matches!(a, AnnotatedAction::Join(_, _))
@@ -25,6 +28,7 @@ pub fn num_players(history: &[AnnotatedAction]) -> PlayerIdx {
 }
 
 /// Returns the seat to the left of `hero_id`.
+#[must_use]
 pub fn index_next(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -33,6 +37,7 @@ pub fn index_next(
 }
 
 /// Returns the seat of the last `Act` or `Post` in the current round.
+#[must_use]
 pub fn last_acted(history: &[AnnotatedAction]) -> Option<PlayerIdx> {
     match current_round(history) {
         [
@@ -56,6 +61,7 @@ pub fn players_after(
 
 // TODO: refactor; remove iter
 /// Returns the next seat to act, or `None` if the round is closed.
+#[must_use]
 pub fn next_to_act(history: &[AnnotatedAction]) -> Option<PlayerIdx> {
     if all_folded(history) {
         None

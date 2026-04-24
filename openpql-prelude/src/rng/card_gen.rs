@@ -12,6 +12,7 @@ pub struct CardGen {
 
 impl CardGen {
     /// Creates a generator seeded with every legal card except `dead_cards`.
+    #[must_use]
     pub fn new<const SD: bool>(dead_cards: Card64) -> Self {
         let all = Card64::all::<SD>() & !(dead_cards);
 

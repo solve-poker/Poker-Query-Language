@@ -1,28 +1,18 @@
-use super::{
-    Display, FromStr, N_FLOP_CATEGORY, N_HANDTYPE, ParseError, Rank16,
-    RatingInner, cmp, fmt,
-};
-
 mod flop_hand_category;
 mod hand_rating;
 mod hand_rating_view;
 mod hand_type;
-mod idx_three_ranks;
-mod idx_two_ranks;
-mod payoff;
 
 pub use flop_hand_category::*;
 pub use hand_rating::HandRating;
 pub use hand_rating_view::*;
 pub use hand_type::HandType;
-use idx_three_ranks::IdxThreeRanks;
-use idx_two_ranks::IdxTwoRanks;
-pub use payoff::calculate_payoffs;
 
 #[cfg(test)]
 pub mod tests {
     pub use crate::*;
 
+    #[must_use]
     pub fn mk_rating(ht: HandType, hi: &str, lo: &str) -> HandRating {
         let hi = r16!(hi);
         let lo = r16!(lo);
@@ -40,6 +30,7 @@ pub mod tests {
         }
     }
 
+    #[must_use]
     pub fn mk_ranking_sd(ht: HandType, hi: &str, lo: &str) -> HandRating {
         match ht {
             HandType::Flush => HandRating::new_flush_sd(r16!(hi)),

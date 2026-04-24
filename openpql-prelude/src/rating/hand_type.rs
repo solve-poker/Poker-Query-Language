@@ -1,4 +1,8 @@
-use super::{Display, FromStr, HandRating, N_HANDTYPE, ParseError, cmp};
+use std::{cmp, str::FromStr};
+
+use derive_more::Display;
+
+use crate::{HandRating, N_HANDTYPE, ParseError};
 
 /// Category of a poker hand, from `HighCard` to `StraightFlush`.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
@@ -70,6 +74,7 @@ impl HandType {
     }
 
     /// Compares two hand types under Hold'em (`SD = false`) or Short Deck (`SD = true`) ordering.
+    #[must_use]
     pub fn compare<const SD: bool>(self, other: Self) -> cmp::Ordering {
         self.to_idx::<SD>().cmp(&other.to_idx::<SD>())
     }

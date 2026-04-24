@@ -1,4 +1,8 @@
-use super::{Board, Card64, CardCount, Display, FromStr, ParseError};
+use std::str::FromStr;
+
+use derive_more::Display;
+
+use crate::{Board, Card64, CardCount, ParseError};
 
 /// Betting street of a poker hand.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
@@ -22,6 +26,7 @@ impl Street {
     /// Returns the number of board cards exposed on this street.
     // won't truncate since n ≤ 5
     #[allow(clippy::cast_possible_truncation)]
+    #[must_use]
     pub const fn board_card_count(self) -> CardCount {
         (match self {
             Self::Preflop => Board::N_PREFLOP,

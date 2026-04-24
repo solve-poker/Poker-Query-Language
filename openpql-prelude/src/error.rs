@@ -1,4 +1,6 @@
-use super::{Display, Error};
+use std::error::Error;
+
+use derive_more::Display;
 
 // Error type for `FromStr`
 /// Parse failure produced by a `FromStr` implementation.

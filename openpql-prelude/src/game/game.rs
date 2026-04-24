@@ -1,7 +1,11 @@
-use super::{
-    Board, Card64, CardCount, FlopHandCategory, FromStr, HandRating,
-    ParseError, eval_flop_holdem, eval_flop_omaha, eval_holdem, eval_omaha,
-    eval_shortdeck,
+use std::str::FromStr;
+
+use crate::{
+    Board, Card64, CardCount, FlopHandCategory, HandRating, ParseError,
+    eval::{
+        flop::{eval_flop_holdem, eval_flop_omaha},
+        rating::{eval_holdem, eval_omaha, eval_shortdeck},
+    },
 };
 
 /// Poker variant.
@@ -20,6 +24,7 @@ pub enum Game {
 
 impl Game {
     /// Returns the number of hole cards dealt to each player.
+    #[must_use]
     pub const fn player_cards_len(self) -> CardCount {
         match self {
             Self::Holdem | Self::ShortDeck => 2,
@@ -28,11 +33,13 @@ impl Game {
     }
 
     /// Returns `true` for Short Deck.
+    #[must_use]
     pub const fn is_shortdeck(self) -> bool {
         matches!(self, Self::ShortDeck)
     }
 
     /// Returns the rating of `player` against `board` for this variant.
+    #[must_use]
     pub fn eval_rating(self, player: Card64, board: Card64) -> HandRating {
         match self {
             Self::Holdem => eval_holdem(player | board),
@@ -42,6 +49,7 @@ impl Game {
     }
 
     /// Returns the flop-hand category of `player` against `board` for this variant.
+    #[must_use]
     pub fn eval_flop_category(
         self,
         player: Card64,

@@ -1,4 +1,4 @@
-use super::{Add, AddAssign, Display, Into};
+use derive_more::{Add, AddAssign, Display, Into};
 
 /// Numeric index identifying a player.
 pub type PlayerIdx = u8;

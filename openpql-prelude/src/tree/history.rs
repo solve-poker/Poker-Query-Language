@@ -33,6 +33,7 @@ pub struct History(Vec<Action>);
 
 impl History {
     /// Returns all actions except the last.
+    #[must_use]
     pub fn parent(&self) -> &[Action] {
         match self.0.split_last() {
             Some((_, parent)) => parent,
@@ -59,6 +60,7 @@ impl History {
     }
 
     /// Creates a history containing a single chance action.
+    #[must_use]
     pub fn root() -> Self {
         Self(vec![Action::Chance])
     }

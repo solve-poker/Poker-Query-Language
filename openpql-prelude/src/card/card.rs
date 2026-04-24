@@ -1,12 +1,13 @@
+use std::{hash::Hash, str::FromStr};
+
+use derive_more::Display;
 #[cfg(feature = "serde")]
 use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
     de::{self, Visitor},
 };
 
-use super::{
-    Card64, CardCount, Display, FromStr, Hash, ParseError, Rank, Suit,
-};
+use crate::{Card64, CardCount, ParseError, Rank, Suit};
 
 /// Parses a string literal into a [`Card`], panicking on failure.
 #[macro_export]
@@ -150,6 +151,7 @@ impl Card {
 
     /// Returns every card in the deck, short-deck when `SD` is true.
     #[inline]
+    #[must_use]
     pub const fn all<const SD: bool>() -> &'static [Self] {
         const {
             if SD {
@@ -209,7 +211,7 @@ impl Serialize for Card {
         if serializer.is_human_readable() {
             serializer.serialize_str(&self.to_string())
         } else {
-            use super::card_idx::CardIdx;
+            use crate::CardIdx;
 
             serializer.serialize_u8(CardIdx::from(*self).0 as u8)
         }
@@ -244,7 +246,7 @@ impl<'de> Deserialize<'de> for Card {
             where
                 E: de::Error,
             {
-                use super::card_idx::CardIdx;
+                use crate::CardIdx;
 
                 CardIdx(value.cast_signed()).to_card().map_or_else(
                     || Err(E::custom("invalid card")),

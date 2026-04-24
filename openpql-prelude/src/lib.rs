@@ -4,20 +4,9 @@
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 #![cfg_attr(test, allow(clippy::needless_pass_by_value))]
 
-use std::{
-    cmp, error::Error, fmt, hash::Hash, mem::transmute, ops, ops::Not,
-    str::FromStr,
-};
-
-use derive_more::{
-    Add, AddAssign, BitAnd, BitAndAssign, BitOr, BitOrAssign, Deref, Display,
-    Index, Into,
-};
-
 mod card;
 mod error;
-mod eval_flop;
-mod eval_rating;
+mod eval;
 mod game;
 mod rating;
 #[cfg(feature = "rand")]
@@ -31,11 +20,9 @@ pub use card::{
     SuitIdx, SuitMapping,
 };
 pub use error::ParseError;
-use eval_flop::{eval_flop_holdem, eval_flop_omaha};
-use eval_rating::{eval_holdem, eval_omaha, eval_shortdeck};
+pub use eval::calculate_payoffs;
 pub use game::{Game, Player, PlayerIdx, Street};
-use rating::HandRatingView;
-pub use rating::{FlopHandCategory, HandRating, HandType, calculate_payoffs};
+pub use rating::{FlopHandCategory, HandRating, HandType};
 #[cfg(feature = "rand")]
 pub use rng::CardGen;
 
@@ -46,10 +33,10 @@ const N_FLOP_CATEGORY: usize = 18;
 const N_HANDTYPE: usize = 9;
 
 #[cfg(any(test, feature = "quickcheck"))]
-mod distinct;
+mod testing;
 
 #[cfg(any(test, feature = "quickcheck"))]
-pub use {card::CardN, distinct::Distinct};
+pub use testing::*;
 
 #[cfg(test)]
 #[macro_use(quickcheck)]
@@ -86,10 +73,12 @@ pub mod tests {
     pub mod serde_utils {
         use super::super::{Card, CardIdx};
 
+        #[must_use]
         pub fn to_s(card: Card) -> &'static str {
             Box::leak(card.to_string().into_boxed_str())
         }
 
+        #[must_use]
         pub fn to_i(card: Card) -> u8 {
             CardIdx::from(card).0.cast_unsigned()
         }

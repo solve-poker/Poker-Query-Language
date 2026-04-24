@@ -1,4 +1,4 @@
-use super::{HandRating, HandType, Rank16};
+use crate::{HandRating, HandType, Rank16};
 
 /// Decoded view of a `HandRating`.
 #[derive(Clone, Debug)]

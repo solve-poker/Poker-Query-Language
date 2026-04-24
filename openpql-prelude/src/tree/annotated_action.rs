@@ -35,6 +35,7 @@ impl AnnotatedAction {
     /// Returns the join, preflop, ante, and blind actions for a hand.
     //// TODO: allin post
     //// Players: [SB,BB,UTG,UTG+1,CO,BTN]; [BB,BTN/SB]
+    #[must_use]
     pub fn new_prefix(
         stacks: &[Chip],
         sb: Chip,
@@ -82,6 +83,7 @@ impl AnnotatedAction {
     }
 
     /// Returns the bare `Action` for chance and player acts, `None` otherwise.
+    #[must_use]
     pub const fn to_action(&self) -> Option<Action> {
         match self {
             Self::Chance(_) => Some(Action::Chance),
@@ -153,6 +155,7 @@ mod tests {
     use crate::tree::{tests::*, *};
 
     impl AnnotatedAction {
+        #[must_use]
         pub const fn player_idx(self) -> Option<PlayerIdx> {
             match self {
                 Self::Chance(_) => None,

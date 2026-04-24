@@ -7,6 +7,7 @@ use crate::tree::{
 };
 
 /// Returns `true` if at most one player remains unfolded.
+#[must_use]
 pub fn all_folded(history: &[AnnotatedAction]) -> bool {
     fn inner(acc: PlayerIdx, history: &[AnnotatedAction]) -> PlayerIdx {
         match history {
@@ -24,6 +25,7 @@ pub fn all_folded(history: &[AnnotatedAction]) -> bool {
 }
 
 /// Returns `true` if a player has folded.
+#[must_use]
 pub fn player_folded(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
     filter_player_action(hero_id, history, |kind| {
         matches!(kind, AnnotatedActionKind::Fold)
@@ -31,6 +33,7 @@ pub fn player_folded(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
 }
 
 /// Returns `true` if a player has gone all in.
+#[must_use]
 pub fn player_shoved(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
     filter_player_action(hero_id, history, |kind| {
         matches!(
@@ -43,11 +46,13 @@ pub fn player_shoved(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
 }
 
 /// Returns `true` if a player has acted in the given round.
+#[must_use]
 pub fn player_acted(hero_id: PlayerIdx, round: &[AnnotatedAction]) -> bool {
     filter_player_action(hero_id, round, |_| true)
 }
 
 /// Returns `true` if a player still owes action this round.
+#[must_use]
 pub fn player_can_act(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
     !player_folded(hero_id, history)
         && !player_shoved(hero_id, history)
@@ -56,6 +61,7 @@ pub fn player_can_act(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
 }
 
 /// Returns `true` if a player is allowed to raise this round.
+#[must_use]
 pub fn player_can_raise(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -67,6 +73,7 @@ pub fn player_can_raise(
 }
 
 /// Returns a `true`/`false` flag per seat for unfolded players.
+#[must_use]
 pub fn active_player_status(history: &[AnnotatedAction]) -> Vec<bool> {
     (0..num_players(history))
         .map(|i| !player_folded(i, history))

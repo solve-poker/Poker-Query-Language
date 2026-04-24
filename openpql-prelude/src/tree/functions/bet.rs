@@ -3,6 +3,7 @@ use crate::tree::{
 };
 
 /// Returns a player's starting stack.
+#[must_use]
 pub fn player_initial_stack(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -15,6 +16,7 @@ pub fn player_initial_stack(
 }
 
 /// Returns a player's stack after pot contributions.
+#[must_use]
 pub fn player_remaining_stack(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -23,6 +25,7 @@ pub fn player_remaining_stack(
 }
 
 /// Returns the all-in amount: remaining stack plus current-round commitment.
+#[must_use]
 pub fn player_shove_amount(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -32,6 +35,7 @@ pub fn player_shove_amount(
 }
 
 /// Returns a player's total chips contributed across all rounds.
+#[must_use]
 pub fn pot_contribution(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -62,6 +66,7 @@ pub fn pot_contribution(
 }
 
 /// Returns a player's chips committed in the current round.
+#[must_use]
 pub fn player_committed(
     hero_id: PlayerIdx,
     history: &[AnnotatedAction],
@@ -77,6 +82,7 @@ pub fn player_committed(
 }
 
 /// Returns the largest bet in the current round.
+#[must_use]
 pub fn current_bet(history: &[AnnotatedAction]) -> Chip {
     fn inner(acc: Chip, history: &[AnnotatedAction]) -> Chip {
         match history {
@@ -93,6 +99,7 @@ pub fn current_bet(history: &[AnnotatedAction]) -> Chip {
 }
 
 /// Returns the minimum legal raise increment.
+#[must_use]
 pub fn minimum_raise(history: &[AnnotatedAction]) -> Chip {
     fn inner(acc: Chip, history: &[AnnotatedAction]) -> Chip {
         match history {
@@ -123,6 +130,7 @@ pub fn minimum_raise(history: &[AnnotatedAction]) -> Chip {
 }
 
 /// Returns per-player total contributions indexed by seat.
+#[must_use]
 pub fn total_pot(history: &[AnnotatedAction]) -> Vec<Chip> {
     (0..num_players(history))
         .map(|i| pot_contribution(i, history))
