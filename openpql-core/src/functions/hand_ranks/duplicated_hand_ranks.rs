@@ -1,5 +1,6 @@
 use crate::{PQLCard, PQLCardSet, PQLRankSet, util};
 
+/// Returns the set of ranks that appear at least twice in the hand.
 pub fn duplicated_hand_ranks(hand: &[PQLCard]) -> PQLRankSet {
     let [_, has2, _, _] = util::rank_cardinality(PQLCardSet::from(hand));
 

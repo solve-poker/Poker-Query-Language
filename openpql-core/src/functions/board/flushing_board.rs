@@ -1,5 +1,6 @@
 use crate::{PQLBoard, PQLCardSet, PQLSuit};
 
+/// Returns `true` when the board has three or more cards of a single suit.
 pub fn flushing_board(board: PQLBoard) -> bool {
     let board = PQLCardSet::from(board);
 

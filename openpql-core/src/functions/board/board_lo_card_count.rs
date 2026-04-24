@@ -1,6 +1,8 @@
 use crate::{PQLBoard, PQLCardCount, PQLRankSet, functions::board_ranks};
 
-// note AsAhAdAcKs returns 1 card (one A)
+/// Counts the distinct low ranks on the board (A, 2..8).
+///
+/// Duplicated ranks are collapsed; e.g. `AsAhAdAcKs` returns `1`.
 pub fn board_lo_card_count(board: PQLBoard) -> PQLCardCount {
     (board_ranks(board) & PQLRankSet::ALL_LO).count()
 }

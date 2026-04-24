@@ -1,5 +1,6 @@
 use crate::{PQLCard, PQLRankSet};
 
+/// Returns the set of ranks present in the hand.
 pub fn hand_ranks(hand: &[PQLCard]) -> PQLRankSet {
     PQLRankSet::from(hand)
 }

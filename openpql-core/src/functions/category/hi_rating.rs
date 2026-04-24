@@ -1,5 +1,6 @@
 use crate::{PQLBoard, PQLCard, PQLCardSet, PQLGame, PQLHiRating};
 
+/// Returns the high-hand rating of the hand given the board.
 pub fn hi_rating(
     game: PQLGame,
     hand: &[PQLCard],

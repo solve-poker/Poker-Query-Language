@@ -1,5 +1,6 @@
 use crate::{PQLBoard, PQLCardSet, PQLRankSet};
 
+/// Returns `true` when any rank appears more than once on the board.
 pub fn paired_board(board: PQLBoard) -> bool {
     let rank_count = PQLRankSet::from(PQLCardSet::from(board)).count();
 

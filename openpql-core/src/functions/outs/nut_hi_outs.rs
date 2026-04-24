@@ -2,6 +2,7 @@ use openpql_prelude::HandN;
 
 use crate::{PQLBoard, PQLCard, PQLCardCount, PQLCardSet, PQLGame};
 
+/// Counts the unseen cards that would give the hand an unbeatable high hand.
 // TODO: optimize
 #[expect(clippy::cast_possible_truncation, reason = "num of cards < u8::MAX")]
 pub fn nut_hi_outs(

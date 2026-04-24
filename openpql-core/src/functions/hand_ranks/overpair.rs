@@ -3,6 +3,7 @@ use crate::{
     functions::{board_ranks, duplicated_hand_ranks},
 };
 
+/// Returns `true` when the hand has a pocket pair higher than every board rank.
 pub fn overpair(hand: &[PQLCard], board: PQLBoard) -> bool {
     let Some(top) = board_ranks(board).max_rank() else {
         return false;

@@ -2,6 +2,7 @@ use crate::{
     PQLBoard, PQLCard, PQLCardCount, functions::intersecting_hand_ranks,
 };
 
+/// Counts the number of ranks shared by the hand and the board.
 pub fn hand_board_intersections(
     hand: &[PQLCard],
     board: PQLBoard,

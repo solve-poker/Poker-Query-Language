@@ -1,5 +1,6 @@
 use crate::{PQLBoard, PQLCardSet, PQLRankSet, util};
 
+/// Returns the set of ranks that appear at least twice on the board.
 pub fn duplicated_board_ranks(board: PQLBoard) -> PQLRankSet {
     let [_, has2, _, _] = util::rank_cardinality(PQLCardSet::from(board));
 

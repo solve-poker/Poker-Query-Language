@@ -1,5 +1,6 @@
 use crate::{PQLBoard, PQLCard, PQLGame, PQLHiRating, functions::hi_rating};
 
+/// Returns `true` when the hand's high-hand rating is at least `rating`.
 pub fn min_hi_rating(
     game: PQLGame,
     hand: &[PQLCard],

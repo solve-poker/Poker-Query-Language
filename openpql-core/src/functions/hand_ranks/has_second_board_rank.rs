@@ -3,6 +3,7 @@ use crate::{
     functions::{board_ranks, hand_ranks},
 };
 
+/// Returns `true` when the hand contains the board's second-highest rank.
 pub fn has_second_board_rank(hand: &[PQLCard], board: PQLBoard) -> bool {
     board_ranks(board)
         .nth_rank(2)

@@ -1,6 +1,8 @@
 use crate::{PQLBoard, functions::board_suit_count};
 
-// note: river always false
+/// Returns `true` when every board card has a distinct suit.
+///
+/// Always `false` on the river since a 5-card board cannot be rainbow.
 pub fn rainbow_board(board: PQLBoard) -> bool {
     let len = board.len();
 

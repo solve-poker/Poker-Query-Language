@@ -1,5 +1,6 @@
 use crate::{PQLBoard, functions::board_suit_count};
 
+/// Returns `true` when the board uses exactly two suits.
 pub fn twotone_board(board: PQLBoard) -> bool {
     board_suit_count(board) == 2
 }

@@ -1,5 +1,6 @@
 use crate::{PQLBoard, PQLCard, PQLCardSet, PQLFlopHandCategory, PQLGame};
 
+/// Classifies a hand's relationship to the flop (top pair, overpair, ...).
 pub fn flop_hand_category(
     game: PQLGame,
     hand: &[PQLCard],

@@ -1,5 +1,6 @@
 use crate::{PQLBoard, functions::board_lo_card_count};
 
+/// Returns `true` when the board can complete a made low (three distinct low ranks).
 pub fn board_allows_made_lo(board: PQLBoard) -> bool {
     board_lo_card_count(board) >= 3
 }

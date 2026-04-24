@@ -3,7 +3,7 @@ use crate::{
     functions::{board_ranks, hand_ranks},
 };
 
-// note: player \ board
+/// Returns the hand ranks that do not appear on the board (hand \ board).
 pub fn nonintersecting_hand_ranks(
     hand: &[PQLCard],
     board: PQLBoard,

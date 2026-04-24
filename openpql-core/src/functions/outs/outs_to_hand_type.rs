@@ -2,6 +2,7 @@ use crate::{
     PQLBoard, PQLCard, PQLCardCount, PQLCardSet, PQLGame, PQLHandType,
 };
 
+/// Counts the unseen cards that improve the hand to exactly `target`.
 #[expect(clippy::cast_possible_truncation, reason = "num of cards < u8::MAX")]
 pub fn outs_to_hand_type(
     game: PQLGame,

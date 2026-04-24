@@ -2,6 +2,11 @@ use crate::{
     PQLBoard, PQLCard, PQLCardSet, PQLFraction, PQLGame, PQLPlayerCount,
 };
 
+/// Returns the hero's exact share of the pot on the river.
+///
+/// Returns zero if the hero does not hold the best hand; otherwise splits the
+/// pot evenly across all tied winners.
+///
 /// # Panics
 /// Panics if `player_cards.len()` is not a multiple of `game.player_cards_len()`,
 /// or if `hero_idx` is not a valid player index,

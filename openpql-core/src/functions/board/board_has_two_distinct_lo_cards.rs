@@ -1,5 +1,6 @@
 use crate::{PQLBoard, functions::board_lo_card_count};
 
+/// Returns `true` when exactly two distinct low ranks are present on the board.
 pub fn board_has_two_distinct_lo_cards(board: PQLBoard) -> bool {
     board_lo_card_count(board) == 2
 }

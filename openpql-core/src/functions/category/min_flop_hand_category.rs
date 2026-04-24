@@ -5,6 +5,7 @@ use crate::{
     functions::flop_hand_category,
 };
 
+/// Returns `true` when the hand's flop category is at least `category`.
 pub fn min_flop_hand_category(
     game: PQLGame,
     hand: &[PQLCard],

@@ -1,5 +1,6 @@
 use crate::{PQLCard, functions::duplicated_hand_ranks};
 
+/// Returns `true` when the hand contains at least one pocket pair.
 pub fn pocket_pair(hand: &[PQLCard]) -> bool {
     !duplicated_hand_ranks(hand).is_empty()
 }

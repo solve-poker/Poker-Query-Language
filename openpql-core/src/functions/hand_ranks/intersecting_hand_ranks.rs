@@ -3,6 +3,7 @@ use crate::{
     functions::{board_ranks, hand_ranks},
 };
 
+/// Returns the ranks appearing in both the hand and the board.
 pub fn intersecting_hand_ranks(
     hand: &[PQLCard],
     board: PQLBoard,

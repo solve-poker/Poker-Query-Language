@@ -3,6 +3,7 @@ use crate::{
     functions::fractional_river_equity,
 };
 
+/// Returns the hero's river equity as a `PQLEquity` in `[0.0, 1.0]`.
 pub fn river_equity(
     game: PQLGame,
     board: PQLBoard,

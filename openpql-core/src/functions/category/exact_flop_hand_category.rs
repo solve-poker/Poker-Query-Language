@@ -3,6 +3,7 @@ use crate::{
     functions::flop_hand_category,
 };
 
+/// Returns `true` when the hand's flop category matches `category` exactly.
 pub fn exact_flop_hand_category(
     game: PQLGame,
     hand: &[PQLCard],

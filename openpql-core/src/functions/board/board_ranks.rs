@@ -1,5 +1,6 @@
 use crate::{PQLBoard, PQLRankSet};
 
+/// Returns the set of ranks appearing anywhere on the board.
 pub fn board_ranks(board: PQLBoard) -> PQLRankSet {
     let mut res = PQLRankSet::default();
 

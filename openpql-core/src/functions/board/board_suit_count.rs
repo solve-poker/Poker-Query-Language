@@ -1,5 +1,6 @@
 use crate::{PQLBoard, PQLCardCount, PQLCardSet, PQLSuitSet};
 
+/// Counts the number of distinct suits present on the board.
 pub fn board_suit_count(board: PQLBoard) -> PQLCardCount {
     PQLSuitSet::from(PQLCardSet::from(board)).count()
 }

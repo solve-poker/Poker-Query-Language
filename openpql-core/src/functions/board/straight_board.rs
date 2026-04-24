@@ -7,6 +7,8 @@ fn has_straight_draw<const SD: bool>(ranks: PQLRankSet) -> bool {
         .any(|&bits| (bits & ranks).count() >= 3)
 }
 
+/// Returns `true` when the board ranks contain three cards of any straight
+/// for the given game.
 pub fn straight_board(game: PQLGame, board: PQLBoard) -> bool {
     let ranks = PQLRankSet::from(PQLCardSet::from(board));
 

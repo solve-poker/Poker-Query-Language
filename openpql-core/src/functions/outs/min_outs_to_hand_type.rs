@@ -3,6 +3,7 @@ use crate::{
     functions::outs_to_hand_type,
 };
 
+/// Returns `true` when the hand has at least `min` outs to reach `target`.
 pub fn min_outs_to_hand_type(
     game: PQLGame,
     hand: &[PQLCard],

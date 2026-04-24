@@ -3,6 +3,7 @@ use crate::{
     functions::{board_ranks, hand_ranks},
 };
 
+/// Returns `true` when the hand contains the highest rank on the board.
 pub fn has_top_board_rank(hand: &[PQLCard], board: PQLBoard) -> bool {
     board_ranks(board)
         .max_rank()
