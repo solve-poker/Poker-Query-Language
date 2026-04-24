@@ -1,11 +1,15 @@
 use super::{Expr, Ident, Loc, LocInfo, Spanned, String};
 
+/// Function call with its name, arguments, and source span.
 #[derive(Clone, PartialEq, derive_more::From, derive_more::Debug)]
 #[debug("{:?}({})", self.name, _to_str(&self.args))]
 pub struct FnCall<'i> {
+    /// Function name identifier.
     pub name: Ident<'i>,
+    /// Positional argument expressions.
     pub args: Vec<Expr<'i>>,
 
+    /// Source span covering the whole call.
     pub loc: (Loc, Loc),
 }
 

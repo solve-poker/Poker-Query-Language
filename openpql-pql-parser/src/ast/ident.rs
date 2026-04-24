@@ -1,9 +1,12 @@
 use super::{Loc, LocInfo, Spanned, str};
 
+/// Identifier token borrowed from the source.
 #[derive(Clone, PartialEq, Eq, derive_more::From, derive_more::Debug)]
 #[debug("{}", self.inner)]
 pub struct Ident<'i> {
+    /// Identifier text as it appears in the source.
     pub inner: &'i str,
+    /// Source span of the identifier.
     pub loc: (Loc, Loc),
 }
 

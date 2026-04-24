@@ -9,10 +9,13 @@ impl Spanned for Num {
     }
 }
 
+/// Numeric literal with its parsed value and source span.
 #[derive(Clone, PartialEq, derive_more::From, derive_more::Debug)]
 #[debug("{}", self.inner)]
 pub struct Num {
+    /// Parsed numeric value.
     pub inner: NumValue,
+    /// Source span of the literal.
     pub loc: (Loc, Loc),
 }
 
@@ -54,10 +57,13 @@ impl<'input> TryFrom<(&'input str, (Loc, Loc), bool)> for Num {
     }
 }
 
+/// Parsed numeric value, either integer or floating-point.
 #[derive(Clone, Copy, Debug, PartialEq, derive_more::From, Display)]
 pub enum NumValue {
+    /// Integer value.
     #[display("{_0}")]
     Int(NumValueInt),
+    /// Floating-point value.
     #[display("{_0}")]
     Float(NumValueFloat),
 }

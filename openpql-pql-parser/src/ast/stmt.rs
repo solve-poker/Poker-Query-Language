@@ -1,9 +1,13 @@
 use super::{Error, Expr, FromClause, FxHashSet, ResultE, Selector, user_err};
 
+/// A single `select ... from ... [where ...]` statement.
 #[derive(PartialEq, Debug)]
 pub struct Stmt<'i> {
+    /// Aggregate selectors in the `select` list.
     pub selectors: Vec<Selector<'i>>,
+    /// `from` clause.
     pub from: FromClause<'i>,
+    /// Optional `where` predicate.
     pub where_clause: Option<Expr<'i>>,
 }
 
@@ -22,6 +26,7 @@ fn ensure_uniq_names<'i>(selectors: &[Selector]) -> ResultE<'i, ()> {
 }
 
 impl<'i> Stmt<'i> {
+    /// Builds a statement, rejecting duplicate selector aliases.
     pub fn new(
         selectors: Vec<Selector<'i>>,
         from: FromClause<'i>,

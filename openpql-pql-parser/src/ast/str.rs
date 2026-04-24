@@ -1,9 +1,12 @@
 use super::{Loc, LocInfo, Spanned, str};
 
+/// String literal borrowed from the source with its surrounding quotes stripped.
 #[derive(Clone, PartialEq, Eq, derive_more::From, derive_more::Debug)]
 #[debug("{:?}", self.inner)]
 pub struct Str<'i> {
+    /// Literal content without the surrounding quotes.
     pub inner: &'i str,
+    /// Source span including the quotes.
     pub loc: (Loc, Loc),
 }
 

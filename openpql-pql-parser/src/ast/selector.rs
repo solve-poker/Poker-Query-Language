@@ -1,10 +1,14 @@
 use super::{Error, Expr, Ident, ResultE, SelectorKind, String};
 
+/// Aggregate selector such as `avg(expr) as alias`.
 #[derive(Clone, PartialEq, derive_more::Debug)]
 #[debug("{:?}({:?}){}", self.kind, self.expr, _alias_to_str(self.alias.as_ref()))]
 pub struct Selector<'i> {
+    /// Aggregate kind.
     pub kind: SelectorKind,
+    /// Inner expression the aggregate applies to.
     pub expr: Expr<'i>,
+    /// Optional `as` alias.
     pub alias: Option<Ident<'i>>,
 }
 
@@ -13,6 +17,7 @@ fn _alias_to_str(alias: Option<&Ident>) -> String {
 }
 
 impl<'i> Selector<'i> {
+    /// Builds a selector, resolving `kind` against the supported aggregates.
     pub fn new(
         kind: &Ident<'i>,
         expr: Expr<'i>,

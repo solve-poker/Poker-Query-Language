@@ -2,18 +2,25 @@ use super::{
     BinOp, FnCall, Ident, Loc, LocInfo, Num, Spanned, Str, UnaryOp, str,
 };
 
+/// Parsed expression tree.
 #[derive(Clone, PartialEq, derive_more::From, derive_more::Debug)]
 pub enum Expr<'i> {
+    /// Identifier reference.
     #[debug("{_0:?}")]
     Ident(Ident<'i>),
+    /// String literal.
     #[debug("{_0:?}")]
     Str(Str<'i>),
+    /// Function call.
     #[debug("{_0:?}")]
     FnCall(FnCall<'i>),
+    /// Numeric literal.
     #[debug("{_0:?}")]
     Num(Num),
+    /// Binary operation with its two operands.
     #[debug("{_1:?} {} {_2:?}", _to_op(*_0))]
     BinOp(BinOp, Box<Self>, Box<Self>),
+    /// Unary operation with its start offset and operand.
     #[debug("{} {_2:?}", _to_unary_op(*_0))]
     UnaryOp(UnaryOp, Loc, Box<Self>),
 }

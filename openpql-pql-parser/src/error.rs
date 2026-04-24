@@ -1,20 +1,31 @@
 use super::{Expected, Loc, LocInfo, ParseError, Token};
 
+/// Parse failure produced while parsing a PQL source.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
+    /// Token is not recognized by the lexer.
     InvalidToken(LocInfo),
+    /// Input ended before the parser expected.
     UnrecognizedEof(LocInfo, Expected),
+    /// Token is not valid in this position.
     UnrecognizedToken(LocInfo, Expected),
+    /// Trailing token after a complete parse.
     ExtraToken(LocInfo),
 
+    /// Selector name is not one of the supported aggregates.
     UnrecognizedSelector(LocInfo),
+    /// `from` clause contains the same key more than once.
     DuplicatedKeyInFrom(LocInfo),
+    /// Two selectors share the same alias.
     DuplicatedSelectorName(LocInfo),
+    /// Numeric literal is not a valid number.
     InvalidNumericValue(LocInfo),
 }
 
+/// LALRPOP parse error specialized for this grammar.
 pub type LalrError<'input> = ParseError<Loc, Token<'input>, Error>;
 
+/// Result alias for parser entry points.
 pub type ResultE<'input, T> = Result<T, LalrError<'input>>;
 
 pub const fn user_err<'input>(error: Error) -> LalrError<'input> {

@@ -3,9 +3,12 @@ use super::{
     String, fmt, user_err,
 };
 
+/// Parsed `from` clause, indexed by lowercased key.
 #[derive(PartialEq, Eq, Default)]
 pub struct FromClause<'i> {
+    /// Items keyed by their lowercased name.
     pub inner: FxHashMap<String, FromItem<'i>>,
+    /// Source span covering the whole clause.
     pub loc: (Loc, Loc),
 }
 
@@ -41,18 +44,22 @@ impl<'i> FromClause<'i> {
         self.inner.get(key).as_ref().map(|item| &item.value)
     }
 
+    /// Returns the `board` value, if provided.
     pub fn get_board_range(&self) -> Option<&Str<'_>> {
         self.get_val(Self::BOARD_KEY)
     }
 
+    /// Returns the `game` value, if provided.
     pub fn get_game(&self) -> Option<&Str<'_>> {
         self.get_val(Self::GAME_KEY)
     }
 
+    /// Returns the `dead` (dead-cards) value, if provided.
     pub fn get_dead(&self) -> Option<&Str<'_>> {
         self.get_val(Self::DEADCARD_KEY)
     }
 
+    /// Returns all player entries, i.e. items that are not reserved keys.
     pub fn get_players(&self) -> Vec<(&Ident<'_>, &Str<'_>)> {
         self.inner
             .keys()
@@ -81,9 +88,12 @@ impl Spanned for FromClause<'_> {
     }
 }
 
+/// Single `key = 'value'` entry in a `from` clause.
 #[derive(PartialEq, Eq, Debug)]
 pub struct FromItem<'i> {
+    /// Entry key.
     pub key: Ident<'i>,
+    /// Entry string value.
     pub value: Str<'i>,
 }
 

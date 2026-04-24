@@ -1,13 +1,18 @@
 use super::fmt;
 
+/// Aggregate kind used by a selector.
 #[derive(Clone, Copy, PartialEq, Eq, derive_more::Debug)]
 pub enum SelectorKind {
+    /// Mean over matching rows.
     #[debug("avg")]
     Avg,
+    /// Count of matching rows.
     #[debug("count")]
     Count,
+    /// Maximum value.
     #[debug("max")]
     Max,
+    /// Minimum value.
     #[debug("min")]
     Min,
 }

@@ -27,5 +27,7 @@ pub use stmt::Stmt;
 pub use str::Str;
 pub use unary_op::UnaryOp;
 
+/// Integer form used for numeric literals.
 pub type NumValueInt = i64;
+/// Floating-point form used for numeric literals.
 pub type NumValueFloat = f64;
