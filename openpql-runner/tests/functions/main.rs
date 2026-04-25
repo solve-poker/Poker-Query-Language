@@ -6,11 +6,9 @@
 //!
 //! **Rules** (see `../common/mod.rs` for the full list):
 //!
-//! 1. One selector per `select` statement. Runner bug: multi-selector
-//!    queries only give the first selector its N trials.
-//! 2. Use `assert_count_all` / `assert_count_none` for boolean functions;
+//! 1. Use `assert_count_all` / `assert_count_none` for boolean functions;
 //!    `run_count`, `run_trials`, `run_ok` for everything else.
-//! 3. Fully specify boards so results don't depend on trial count
+//! 2. Fully specify boards so results don't depend on trial count
 //!    (debug: 100, release: 60000).
 
 #[path = "../common/mod.rs"]

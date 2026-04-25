@@ -23,37 +23,42 @@ impl PQLRunner {
             None => None,
         };
 
-        for (idx, selector) in stmt.selectors.iter().enumerate() {
-            let program = vm::compile_selector(&mut vm, selector)?;
-            while output.n_succ < n_trails {
-                if output.n_fail == n_trails {
-                    // TODO: fix this
-                    return Err(((0, 1), VmError::SamplingFailed).into());
-                }
+        let programs = stmt
+            .selectors
+            .iter()
+            .map(|s| vm::compile_selector(&mut vm, s))
+            .collect::<PQLResult<Vec<_>>>()?;
 
-                match vm.sample(&mut rng) {
-                    Some(()) => {
-                        if let Some(wp) = &where_program {
-                            let keep = matches!(
-                                wp.execute(&mut vm.as_context())?,
-                                VmStackValue::Bool(true)
-                            );
+        while output.n_succ < n_trails {
+            if output.n_fail == n_trails {
+                // TODO: fix this
+                return Err(((0, 1), VmError::SamplingFailed).into());
+            }
 
-                            if !keep {
-                                //TODO: refine this
-                                output.n_fail += 1;
-                                continue;
-                            }
+            match vm.sample(&mut rng) {
+                Some(()) => {
+                    if let Some(wp) = &where_program {
+                        let keep = matches!(
+                            wp.execute(&mut vm.as_context())?,
+                            VmStackValue::Bool(true)
+                        );
+
+                        if !keep {
+                            //TODO: refine this
+                            output.n_fail += 1;
+                            continue;
                         }
+                    }
 
+                    for (idx, program) in programs.iter().enumerate() {
                         output.push_value(
                             idx,
                             program.execute(&mut vm.as_context())?,
                         );
-                        output.n_succ += 1;
                     }
-                    None => output.n_fail += 1,
+                    output.n_succ += 1;
                 }
+                None => output.n_fail += 1,
             }
         }
 

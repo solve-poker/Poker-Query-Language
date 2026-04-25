@@ -5,19 +5,13 @@
 //!
 //! # Important runner quirks to know about
 //!
-//! 1. **One selector per `select` statement.** `PQLRunner::run` has a bug
-//!    where multi-selector queries only execute the first selector's N
-//!    trials, leaving later selectors with zero samples (`AVG = NaN`,
-//!    `COUNT = 0` regardless of reality). Always write queries as one
-//!    selector per statement, joined with `;` if you need several.
-//!
-//! 2. **Board ranges are predicates, not positional specs.** Even a fully
+//! 1. **Board ranges are predicates, not positional specs.** Even a fully
 //!    specified 5-card string like `'AhKhQhJhTh'` does not pin each card
 //!    to a fixed slot; the sampler just checks the predicate. Use
 //!    aggregations (`count`, `avg` on suit/rank-count) rather than
 //!    slot-equality assertions.
 //!
-//! 3. **Debug builds run 100 trials per statement, release runs 60000.**
+//! 2. **Debug builds run 100 trials per statement, release runs 60000.**
 //!    Write assertions that hold in both (e.g. a deterministic query that
 //!    always returns the same value, regardless of trial count).
 #![allow(dead_code)]
