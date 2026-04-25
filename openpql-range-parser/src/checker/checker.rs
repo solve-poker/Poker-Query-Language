@@ -139,6 +139,40 @@ mod tests {
             &["2s 3s 4s"],
         );
         assert_checker::<2, false>("AK-JT", &["Qs Jh"], &["Ts 9h"]);
+        assert_checker::<2, false>(
+            "KK+",
+            &["As Ah", "Ks Kh"],
+            &["As Kh", "Qs Qh"],
+        );
+    }
+
+    #[test]
+    fn test_span_partial_first_card() {
+        fn assert_partial<const N: usize>(s: &str, ok: &[&str], not_ok: &[&str])
+        where
+            [Idx; N]: Array<Item = Idx>,
+        {
+            let checker = Checker::<N, false, false>::from_src(s).unwrap();
+
+            for c in ok {
+                assert!(
+                    checker.is_satisfied(&cards![c]),
+                    "unexpected: partial {c} not in {s}"
+                );
+            }
+
+            for c in not_ok {
+                assert!(
+                    !checker.is_satisfied(&cards![c]),
+                    "unexpected: partial {c} in {s}"
+                );
+            }
+        }
+
+        // Pair-plus: only ranks at or above the floor are valid.
+        assert_partial::<2>("JJ+", &["Ac", "Kd", "Jh"], &["7c", "Th"]);
+        // KK-22 covers every pair from 22..KK; A is outside the range.
+        assert_partial::<2>("KK-22", &["Kc", "2d", "7h"], &["Ac"]);
     }
 
     #[test]

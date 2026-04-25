@@ -103,6 +103,7 @@ where
         let elems = span_elems(span);
         let len = elems.len();
         let mut res = Vec::with_capacity(len);
+        let depth = span_depth(span);
 
         res.push(Self::from_span_head(span));
 
@@ -113,6 +114,7 @@ where
                         prev_idx,
                         elems[i - 1].rank() as RankDiff
                             - elems[i].rank() as RankDiff,
+                        r16_from_depth(elems[i].rank() as u8, depth),
                     ),
                     ConstrainSuit::from(elems[i].suit()),
                 )

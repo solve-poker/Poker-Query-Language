@@ -9,7 +9,7 @@ where
     [Idx; N]: Array<Item = Idx>,
 {
     Match(Rank16),
-    Diff(Idx, RankDiff),
+    Diff(Idx, RankDiff, Rank16),
     Var(VarConditionRank<N>),
     #[default]
     Nil,
@@ -32,10 +32,12 @@ where
                 }
             }
 
-            Self::Diff(original_idx, d) => {
-                if let Some(j) = perm.iter().position(|k| original_idx == k)
-                    && rank_diff(cs[j], cs[i]) != *d
-                {
+            Self::Diff(original_idx, d, r16) => {
+                if let Some(j) = perm.iter().position(|k| original_idx == k) {
+                    if rank_diff(cs[j], cs[i]) != *d {
+                        return true;
+                    }
+                } else if !r16.contains_rank(cs[i].rank) {
                     return true;
                 }
             }
