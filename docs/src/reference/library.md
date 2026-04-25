@@ -1,43 +1,65 @@
 # Library Usage
 
-Open PQL's runner can be embedded in a Rust program to evaluate PQL strings without shelling out to the CLI.
+Open PQL's runner can be embedded in a Rust program to evaluate PQL strings without going through the CLI.
 
 ## Add the Dependency
 
 ```toml
 [dependencies]
-openpql-runner = "0.1.0"
+openpql-runner = "0.1"
 ```
 
-## Run a Query
+The library is exposed under the crate name `opql` (the Cargo package is `openpql-runner`, but the library target's name is `opql`).
+
+## Run a Query — Stream Output
+
+`PQLRunner::run` parses, compiles, and evaluates a query, streaming a human-readable report to the writers you provide:
 
 ```rust,ignore
 use std::io;
-use openpql_runner::PQLRunner;
+use opql::PQLRunner;
 
 fn main() -> io::Result<()> {
-    let query = "select equity from hero='AhKh', villain='QQ+', \
-                 board='Ah9s2c', game='holdem'";
+    let query = "select avg(equity(hero)) \
+                 from game='holdem', hero='AhKh', villain='QQ+', board='Ah9s2c'";
 
     PQLRunner::run(query, &mut io::stdout(), &mut io::stderr())
 }
 ```
 
-`PQLRunner::run` parses, compiles, and evaluates the query, streaming a human-readable report to the provided writers. Use `PQLRunner::try_run_stmt` if you want to handle the structured output yourself.
+The first writer receives result rows (one per selector), the second receives parse and runtime errors.
+
+## Run a Query — Structured Output
+
+If you need the per-selector values for further processing, parse the query first and then call `try_run_stmt`:
+
+```rust,ignore
+use opql::PQLRunner;
+use openpql_pql_parser::parse_pql;
+
+let stmts = parse_pql(
+    "select avg(equity(hero)) from game='holdem', hero='AhKh', villain='QQ+', board='Ah9s2c'",
+)?;
+
+for stmt in &stmts {
+    let output = PQLRunner::try_run_stmt(stmt)?;
+    // output.values, output.n_succ, etc.
+}
+```
+
+`try_run_stmt` is currently marked as a temporary API in the runner — see the source for the latest shape.
 
 ## Parsing Only
 
-The parser crates can be used independently:
+The parser crates can be used independently if you want to lint PQL strings, rewrite them, or generate queries programmatically:
 
 ```rust,ignore
 use openpql_pql_parser::parse_pql;
 
 let stmts = parse_pql(
-    "select equity from hero='AA', villain='KK', board='AhKh2c', game='holdem'"
+    "select equity(hero) from game='holdem', hero='AA', villain='KK', board='AhKh2c'",
 )?;
 ```
-
-Use this if you want to lint PQL strings in an editor, rewrite them, or generate queries programmatically.
 
 ## Range Parsing
 
@@ -45,4 +67,4 @@ Use this if you want to lint PQL strings in an editor, rewrite them, or generate
 
 ## API Docs
 
-Auto-generated API documentation lives at [API Docs](./api.md).
+Auto-generated reference documentation lives at [API Docs](./api.md).

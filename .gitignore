@@ -2,6 +2,9 @@ old/
 .data/
 tmp.*
 
+### Deploy ###
+.wrangler
+
 ### Editor ###
 *.sw[p|o]
 

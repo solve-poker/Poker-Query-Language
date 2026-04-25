@@ -29,6 +29,11 @@ book:
 book-serve:
     mdbook serve docs
 
+# Build and deploy the book to Cloudflare Pages (project: openpql-docs)
+book-deploy:
+    mdbook build docs
+    wrangler pages deploy docs/book --project-name=openpql-docs --branch=main
+
 doc:
     cargo doc --no-deps
 

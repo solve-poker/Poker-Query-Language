@@ -1,42 +1,69 @@
 # Selectors
 
-A selector is an expression that produces a value for each simulation trial. Multiple selectors are separated by commas and may be aliased with `as`.
+A **selector** is an aggregate that reduces an inner expression evaluated over each trial into a single report value. Every PQL `select` list is one or more selectors separated by commas.
 
-## Scalar Selectors
+PQL supports four selectors:
 
-A scalar selector returns one value per trial. The simplest is `equity`, which yields hero's equity share on that trial.
+| Selector | Description | Example |
+| --- | --- | --- |
+| `avg(expr)`   | Mean of a numeric expression across all trials | `avg(equity(hero))` |
+| `count(pred)` | Fraction of trials for which a boolean expression is true (a probability) | `count(wins(hero))` |
+| `max(expr)`   | Largest value of an expression seen across trials | `max(handType(hero, river))` |
+| `min(expr)`   | Smallest value of an expression seen across trials | `min(fractionalRiverEquity(villain))` |
 
-```sql
-select equity from hero='AhKh', villain='QQ+', board='Ah9s2c', game='holdem'
-```
+> Note: a `histogram` selector exists in the original PQL spec but is **not yet implemented** in Open PQL.
 
-## Aggregates
+## Combining Selectors
 
-Aggregates reduce many trials into a single number.
-
-| Aggregate | Result |
-| --- | --- |
-| `avg(expr)` | Mean of `expr` across trials |
-| `count(predicate)` | Probability of `predicate` being true |
-
-Example — frequency the river is a spade:
+A query can ask for any number of selectors in a single shot:
 
 ```sql
-select count(riversuit = 's') as pct_spade_river
-from   hero='AsKs', villain='*', board='2s3h7d', game='holdem'
+select count(wins(hero))                 as heroWon,
+       avg(equity(hero))                 as heroEv,
+       count(handType(hero, river) = flush) as pctFlush
+from   game='holdem', hero='AwKw', villain='**'
 ```
 
-## Aliases
+Each selector is reported on its own line.
+
+## Aliases (`as`)
 
 Use `as` to give a selector a readable name:
 
 ```sql
-select avg(boardsuitcount(river)) as river_suits
-from   hero='As9s', villain='*', board='2s3sJh', game='holdem'
+select avg(boardSuitCount(river)) as river_suits
+from   game='holdem', hero='As9s', villain='*', board='2s3sJh'
 ```
 
-Aliases must be unique inside a query.
+If `as` is omitted, a default name is generated from the expression.
 
-## Nesting
+## Inner Expressions
 
-Functions can be composed — an aggregate can wrap a function of a board function, etc. See [Built-in Functions](../functions/overview.md) for the list of operators you can combine.
+The expression inside a selector can be any combination of:
+
+- **Function calls** — `equity(hero)`, `handType(hero, flop)`, `boardSuitCount(river)`, …
+- **Constants** — numbers, single-quoted strings, hand-type and category keywords (`pair`, `flopset`, …)
+- **Comparisons and boolean operators** — `handType(hero, river) = flush`, `equity(hero) > 0.5 and hasTopBoardRank(hero, flop)`
+- **Arithmetic** — `equity(hero) - equity(villain)`
+
+See [Built-in Functions](../built-ins/overview.md) for the available primitives.
+
+## Common Recipes
+
+Probability of an event:
+
+```sql
+select count(<predicate>) from ...
+```
+
+Average value of a metric:
+
+```sql
+select avg(<numeric expression>) from ...
+```
+
+Worst-case value over the simulation:
+
+```sql
+select min(<numeric expression>) from ...
+```

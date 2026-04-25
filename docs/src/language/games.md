@@ -1,30 +1,42 @@
 # Supported Games
 
-The `game='…'` binding selects the poker variant. Each variant changes the number of hole cards and the hand evaluator.
+The `game='…'` binding selects the poker variant. Each variant changes the deck, the number of hole cards, and the hand evaluator.
 
-| Value | Variant | Hole cards | Deck |
-| --- | --- | --- | --- |
-| `holdem` | Texas Hold'em | 2 | Full 52 |
-| `omaha` | Omaha Hi | 4 | Full 52 |
-| `shortdeck` | Short-Deck Hold'em | 2 | 36 (6s–As) |
+| Value       | Variant            | Hole cards | Deck         |
+| ----------- | ------------------ | ---------- | ------------ |
+| `holdem`    | Texas Hold'em      | 2          | Full 52      |
+| `omaha`     | Pot-Limit Omaha    | 4          | Full 52      |
+| `shortdeck` | Short-Deck Hold'em | 2          | 36 (6s–As)   |
 
-## Holdem
+`holdem` is the default if `game` is omitted. Open PQL is currently a **Hi-only** implementation — Hi/Lo splits (Omaha 8, Stud 8) and stud variants (Stud Hi, Razz) are not supported.
 
-The default. Players are dealt two hole cards, share a five-card board, and use any combination of seven cards to make the best five-card hand.
+## Hold'em
+
+Players are dealt two hole cards, share a five-card board, and use any combination of seven cards to make the best five-card hand.
+
+```sql
+select equity(hero)
+from   game='holdem', hero='AhKh', villain='QQ+', board='Ah9s2c'
+```
 
 ## Omaha
 
-Four hole cards per player, but each player **must** use exactly two from their hand and three from the board. Range strings still use the same notation; hand literals require four cards (e.g. `AhAsKhKs`).
+Four hole cards per player. Each player **must** use exactly two of their hole cards and three of the board cards. Range strings still use the same notation; concrete hands require four cards (e.g. `AhAsKhKs`):
+
+```sql
+select equity(hero)
+from   game='omaha', hero='AhAsKhKs', villain='**'
+```
 
 ## Short Deck
 
-A 36-card deck (deuces through fives removed). Straights use A-6-7-8-9 as the low straight, and flushes beat full houses in some rulesets. The prelude crate's evaluator implements the common short-deck ranking.
-
-## Changing the Game
-
-Each query picks a single game. You cannot mix variants inside one query.
+A 36-card deck (deuces through fives removed). Common Short-Deck rule choices apply: A-6-7-8-9 is the wheel straight, and flushes beat full houses. The prelude crate's evaluator implements the standard ranking.
 
 ```sql
-select equity
-from   hero='AhAsKhKs', villain='*', board='', game='omaha'
+select equity(hero)
+from   game='shortdeck', hero='AwAx', villain='**'
 ```
+
+## One Game per Query
+
+Each query targets a single game. You cannot mix variants inside one query.

@@ -1,6 +1,6 @@
 # Installation
 
-Open PQL can be used in two ways: as a command-line tool (`opql`) or as a library embedded in a Rust program.
+Open PQL ships as a Cargo workspace. You can use it as a command-line tool (`opql`) or embed the runner crate in your own Rust program.
 
 ## Requirements
 
@@ -9,15 +9,15 @@ Open PQL can be used in two ways: as a command-line tool (`opql`) or as a librar
 
 ## Install the CLI
 
-Clone the repository and build the runner crate:
+Clone the repository and install the runner crate's binary:
 
 ```bash
 git clone https://github.com/solve-poker/Poker-Query-Language.git
 cd Poker-Query-Language
-cargo install --path openpql-runner
+cargo install --path openpql-runner --features cli
 ```
 
-This installs the `opql` binary into `~/.cargo/bin/`. Check it's on your `PATH`:
+This installs the `opql` binary into `~/.cargo/bin/`. Verify that it's on your `PATH`:
 
 ```bash
 opql --help
@@ -29,10 +29,10 @@ Add the runner crate to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-openpql-runner = "0.1.0"
+openpql-runner = "0.1"
 ```
 
-See [Library Usage](../reference/library.md) for integration details.
+The library entry point is `opql::PQLRunner`. See [Library Usage](../reference/library.md) for integration details.
 
 ## Build From Source
 
