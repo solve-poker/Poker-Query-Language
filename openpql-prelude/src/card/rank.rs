@@ -1,14 +1,21 @@
 use std::{hash::Hash, str::FromStr};
 
-use derive_more::Display;
-
 use crate::{CardCount, ParseError, card::Idx};
 
 /// Card rank from `R2` to `RA`.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
-    Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    Debug,
+    Ord,
+    PartialOrd,
+    Hash,
+    derive_more::Display,
+    Default,
 )]
 pub enum Rank {
     /// Two.

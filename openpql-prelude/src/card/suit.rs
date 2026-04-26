@@ -1,7 +1,5 @@
 use std::{hash::Hash, str::FromStr};
 
-use derive_more::Display;
-
 use crate::{CardCount, ParseError, card::Idx};
 
 /// Card suit (spades, hearts, diamonds, clubs).
@@ -9,7 +7,16 @@ use crate::{CardCount, ParseError, card::Idx};
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "lowercase"))]
 #[derive(
-    Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    Debug,
+    Ord,
+    PartialOrd,
+    Hash,
+    derive_more::Display,
+    Default,
 )]
 pub enum Suit {
     /// Spades.

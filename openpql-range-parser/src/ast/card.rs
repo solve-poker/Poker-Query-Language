@@ -1,9 +1,7 @@
-use super::{
-    CardRank, CardSuit, Display, From, RankConst, RankVar, SuitConst, SuitVar,
-};
+use super::{CardRank, CardSuit, From, RankConst, RankVar, SuitConst, SuitVar};
 
 /// Card pattern within a range, combining rank and suit as concrete, variable, or any.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
 pub enum RangeCard {
     /// Concrete rank and concrete suit.
     #[display("{_0}{_1}")]

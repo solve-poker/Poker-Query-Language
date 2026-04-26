@@ -1,6 +1,5 @@
 use std::{fmt, hash::Hash};
 
-use derive_more::{Deref, Index, Into};
 #[cfg(feature = "serde")]
 use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
@@ -21,9 +20,9 @@ use crate::{Card, Card64, HandIter};
     Hash,
     PartialOrd,
     Ord,
-    Into,
-    Deref,
-    Index,
+    derive_more::Into,
+    derive_more::Deref,
+    derive_more::Index,
 )]
 #[debug("Hand<{}>({})", N, self)]
 pub struct HandN<const N: usize>(pub(crate) [Card; N]);

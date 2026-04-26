@@ -1,12 +1,10 @@
 use std::{cmp, str::FromStr};
 
-use derive_more::Display;
-
 use crate::{HandRating, N_HANDTYPE, ParseError};
 
 /// Category of a poker hand, from `HighCard` to `StraightFlush`.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Default, Display)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Default, derive_more::Display)]
 pub enum HandType {
     /// High card.
     #[default]

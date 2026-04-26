@@ -2,7 +2,7 @@ use super::*;
 
 type Count = usize;
 
-#[derive(Clone, Debug, derive_more::From, Display)]
+#[derive(Clone, Debug, derive_more::From, derive_more::Display)]
 #[display("{_0}")]
 pub enum OutputAggregator {
     Avg(OutputAggregatorAvg),
@@ -49,7 +49,7 @@ impl OutputAggregator {
     }
 }
 
-#[derive(Clone, Debug, Default, Display)]
+#[derive(Clone, Debug, Default, derive_more::Display)]
 #[display("{}", self.to_f())]
 pub struct OutputAggregatorAvg {
     num: PQLDouble,
@@ -68,7 +68,7 @@ impl OutputAggregatorAvg {
     }
 }
 
-#[derive(Clone, Debug, Default, Display)]
+#[derive(Clone, Debug, Default, derive_more::Display)]
 #[display("{_0}")]
 pub struct OutputAggregatorCount(Count);
 

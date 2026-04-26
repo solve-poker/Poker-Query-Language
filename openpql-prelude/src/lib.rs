@@ -50,7 +50,6 @@ use tests::*;
 pub mod tests {
     pub use std::{hash::Hasher, str::FromStr};
 
-    pub use derive_more::derive::{Index, Into};
     pub use itertools::Itertools;
     pub use quickcheck::{Arbitrary, TestResult};
     pub use regex::Regex;

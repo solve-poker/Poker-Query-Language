@@ -1,6 +1,5 @@
 use super::{
-    Display, Error, LalrError, Loc, LocInfo, NumValueFloat, NumValueInt,
-    Spanned, str,
+    Error, LalrError, Loc, LocInfo, NumValueFloat, NumValueInt, Spanned, str,
 };
 
 impl Spanned for Num {
@@ -58,7 +57,9 @@ impl<'input> TryFrom<(&'input str, (Loc, Loc), bool)> for Num {
 }
 
 /// Parsed numeric value, either integer or floating-point.
-#[derive(Clone, Copy, Debug, PartialEq, derive_more::From, Display)]
+#[derive(
+    Clone, Copy, Debug, PartialEq, derive_more::From, derive_more::Display,
+)]
 pub enum NumValue {
     /// Integer value.
     #[display("{_0}")]

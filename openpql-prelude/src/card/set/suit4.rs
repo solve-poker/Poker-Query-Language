@@ -1,7 +1,5 @@
 use std::{fmt, ops};
 
-use derive_more::{BitAnd, BitOr};
-
 use crate::{
     Card, Card64, CardCount, Suit,
     card::{Idx, Suit4Inner},
@@ -29,7 +27,14 @@ macro_rules! s4 {
 /// ```
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
-    Copy, Clone, derive_more::Debug, PartialEq, Eq, BitAnd, BitOr, Default,
+    Copy,
+    Clone,
+    derive_more::Debug,
+    PartialEq,
+    Eq,
+    derive_more::BitAnd,
+    derive_more::BitOr,
+    Default,
 )]
 #[debug("Suit4({})", self)]
 pub struct Suit4(pub(crate) Suit4Inner);

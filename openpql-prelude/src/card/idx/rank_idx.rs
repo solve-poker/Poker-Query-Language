@@ -1,13 +1,20 @@
 use std::hash::Hash;
 
-use derive_more::Display;
-
 use crate::{Rank, card::Idx};
 
 /// Numeric index of a rank in the range 0-12.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(
-    Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, Display, Default,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    Debug,
+    Ord,
+    PartialOrd,
+    Hash,
+    derive_more::Display,
+    Default,
 )]
 pub struct RankIdx(pub(crate) Idx);
 

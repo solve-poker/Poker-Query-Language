@@ -1,9 +1,9 @@
-use super::{Display, Error, LocInfo, ResultE};
+use super::{Error, LocInfo, ResultE};
 
 pub type SuitConst = openpql_prelude::Suit;
 
 /// Single-letter suit variable token.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
 pub enum SuitVar {
     /// Suit variable "w".
     #[display("w")]
@@ -20,7 +20,7 @@ pub enum SuitVar {
 }
 
 /// Suit slot in a range card: concrete or variable.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
 pub enum CardSuit {
     /// Concrete suit.
     #[display("{_0}")]

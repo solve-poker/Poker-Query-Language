@@ -1,7 +1,5 @@
 use std::{fmt, hash::Hash, ops, ops::Not};
 
-use derive_more::{BitAnd, BitAndAssign, BitOr, BitOrAssign};
-
 use crate::{
     Card, CardCount, CardIter, Rank, Rank16, Suit,
     card::{Card64Inner, Idx, Rank16Inner},
@@ -31,10 +29,10 @@ macro_rules! c64 {
     PartialEq,
     Eq,
     Hash,
-    BitAnd,
-    BitAndAssign,
-    BitOr,
-    BitOrAssign,
+    derive_more::BitAnd,
+    derive_more::BitAndAssign,
+    derive_more::BitOr,
+    derive_more::BitOrAssign,
     Default,
 )]
 pub struct Card64(pub(crate) Card64Inner);

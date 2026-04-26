@@ -60,7 +60,13 @@ macro_rules! sval {
 /// thin values that implement `Copy`
 /// the size is 128 bits
 #[derive(
-    Clone, Debug, Copy, PartialEq, derive_more::From, Display, TryInto,
+    Clone,
+    Debug,
+    Copy,
+    PartialEq,
+    derive_more::From,
+    derive_more::Display,
+    derive_more::TryInto,
 )]
 pub enum VmStackValue {
     Ref(HeapIdx),

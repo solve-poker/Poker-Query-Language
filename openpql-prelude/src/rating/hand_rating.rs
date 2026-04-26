@@ -42,7 +42,10 @@ use crate::{
 /// [15, 0]:   000rrrrr rrrrrrrr  // r: bitmask of 5 ranks
 /// ```
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
-#[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(
+    Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, derive_more::Debug,
+)]
+#[debug("{}", self)]
 pub struct HandRating(pub(crate) RatingInner);
 
 /// Returns the index of the highest set rank.
@@ -226,13 +229,6 @@ impl fmt::Display for HandRating {
             | HandType::FullHouse
             | HandType::Quads => write!(f, "{ht}({}, {})", view.high, view.low),
         }
-    }
-}
-
-impl fmt::Debug for HandRating {
-    #![cfg_attr(coverage_nightly, coverage(off))]
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        <Self as fmt::Display>::fmt(self, f)
     }
 }
 

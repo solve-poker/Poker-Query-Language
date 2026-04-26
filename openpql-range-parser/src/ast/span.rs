@@ -1,10 +1,10 @@
 use super::{
-    Display, Error, LalrError, Loc, RangeCard, RankConst, RankInt, ResultE,
-    SuitConst, TermElem, ToString,
+    Error, LalrError, Loc, RangeCard, RankConst, RankInt, ResultE, SuitConst,
+    TermElem, ToString,
 };
 
 /// One card in a span endpoint.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
 pub enum SpanElem {
     /// Concrete rank with concrete suit.
     #[display("{_0}{_1}")]
@@ -55,7 +55,7 @@ impl TryFrom<(Loc, Loc, TermElem)> for SpanElem {
 }
 
 /// Rank span across one or two endpoints.
-#[derive(Clone, PartialEq, Eq, Debug, Display)]
+#[derive(Clone, PartialEq, Eq, Debug, derive_more::Display)]
 pub enum Span {
     /// Open-ended downward span like `AK-`.
     #[display("{}-", to_str(_0))]

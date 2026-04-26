@@ -10,7 +10,7 @@ macro_rules! union {
 }
 
 bitflags! {
-  #[derive(Clone, Copy, Debug, PartialEq, Eq, Display)]
+  #[derive(Clone, Copy, Debug, PartialEq, Eq, derive_more::Display)]
   pub struct PQLType: u32 {
     const BOARDRANGE = 1;
     const BOOLEAN = 1 << 1;

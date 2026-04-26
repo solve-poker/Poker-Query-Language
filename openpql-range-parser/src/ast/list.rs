@@ -1,9 +1,7 @@
-use super::{
-    Display, Error, LalrError, Loc, RangeCard, RankConst, SuitConst, ToString,
-};
+use super::{Error, LalrError, Loc, RangeCard, RankConst, SuitConst, ToString};
 
 /// Element of a bracketed card list.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
 pub enum ListElem {
     /// Concrete rank and concrete suit.
     #[display("{_0}{_1}")]
@@ -28,7 +26,9 @@ fn to_str(elems: &[ListElem]) -> String {
 }
 
 /// Bracketed list of simple cards.
-#[derive(Clone, PartialEq, Eq, Debug, derive_more::From, Display)]
+#[derive(
+    Clone, PartialEq, Eq, Debug, derive_more::From, derive_more::Display,
+)]
 #[display("{}", to_str(_0))]
 pub struct List(pub Vec<ListElem>);
 

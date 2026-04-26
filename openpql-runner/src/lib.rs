@@ -15,7 +15,6 @@ use std::{
 };
 
 use bitflags::bitflags;
-use derive_more::{Display, Into, TryInto};
 use openpql_macro::*;
 pub use openpql_pql_parser::parse_pql;
 use openpql_pql_parser::{Error as SyntaxError, Spanned, *};

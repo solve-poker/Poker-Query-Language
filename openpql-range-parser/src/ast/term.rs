@@ -1,7 +1,9 @@
-use super::{Display, From, List, RangeCard, Span, ToString};
+use super::{From, List, RangeCard, Span, ToString};
 
 /// Product of cards, lists, and spans forming a range term.
-#[derive(Clone, PartialEq, Eq, Debug, derive_more::From, Display)]
+#[derive(
+    Clone, PartialEq, Eq, Debug, derive_more::From, derive_more::Display,
+)]
 #[display("{}", to_str(_0))]
 pub struct Term(pub Vec<TermElem>);
 
@@ -12,7 +14,7 @@ impl From<Span> for Term {
 }
 
 /// Single element within a [`Term`].
-#[derive(Clone, PartialEq, Eq, Debug, Display)]
+#[derive(Clone, PartialEq, Eq, Debug, derive_more::Display)]
 pub enum TermElem {
     /// Single range card.
     #[display("{_0}")]

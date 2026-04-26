@@ -1,14 +1,12 @@
 use std::str::FromStr;
 
-use derive_more::Display;
-
 use crate::tree::{Chip, TreeParseError};
 
 /// A game-tree action, either a chance event or a player bet.
 #[derive(
     Clone,
     Copy,
-    Display,
+    derive_more::Display,
     derive_more::Debug,
     PartialEq,
     Eq,

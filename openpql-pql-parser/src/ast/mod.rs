@@ -1,6 +1,6 @@
 use super::{
-    Display, Entry, Error, FxHashMap, FxHashSet, LalrError, Loc, LocInfo,
-    ResultE, Spanned, String, fmt, user_err,
+    Entry, Error, FxHashMap, FxHashSet, LalrError, Loc, LocInfo, ResultE,
+    Spanned, String, fmt, user_err,
 };
 
 mod bin_op;

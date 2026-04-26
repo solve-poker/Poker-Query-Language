@@ -1,5 +1,3 @@
-use derive_more::Display;
-
 pub use crate::PlayerIdx;
 
 /// Number of players at the table.
@@ -8,7 +6,15 @@ pub type PlayerCount = u8;
 /// Game-tree node actor: chance, a seated player, or terminal.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
-    Clone, Copy, Debug, Display, Default, Hash, PartialEq, Eq, derive_more::From,
+    Clone,
+    Copy,
+    Debug,
+    derive_more::Display,
+    Default,
+    Hash,
+    PartialEq,
+    Eq,
+    derive_more::From,
 )]
 pub enum Player {
     /// Dealer at a chance node.

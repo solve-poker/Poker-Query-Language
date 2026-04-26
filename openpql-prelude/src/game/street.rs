@@ -1,14 +1,20 @@
 use std::str::FromStr;
 
-use derive_more::Display;
-
 use crate::{Board, Card64, CardCount, ParseError};
 
 /// Betting street of a poker hand.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
-    Debug, Clone, PartialEq, Eq, Copy, PartialOrd, Ord, Default, Display,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    Copy,
+    PartialOrd,
+    Ord,
+    Default,
+    derive_more::Display,
 )]
 pub enum Street {
     /// Before the flop.

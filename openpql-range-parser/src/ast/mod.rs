@@ -14,7 +14,7 @@ pub use span::{Span, SpanElem};
 pub use suit::{CardSuit, SuitConst, SuitVar};
 pub use term::{Term, TermElem};
 
-use super::{Display, Error, From, LalrError, Loc, LocInfo, ResultE, ToString};
+use super::{Error, From, LalrError, Loc, LocInfo, ResultE, ToString};
 
 /// Signed integer form of a rank used for arithmetic.
 pub type RankInt = i8;

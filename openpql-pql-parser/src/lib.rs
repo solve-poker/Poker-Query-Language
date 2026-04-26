@@ -6,7 +6,6 @@
 
 use std::{collections::hash_map::Entry, fmt, string::String};
 
-use derive_more::Display;
 use lalrpop_util::{ParseError, lalrpop_mod, lexer::Token};
 use rustc_hash::{FxHashMap, FxHashSet};
 

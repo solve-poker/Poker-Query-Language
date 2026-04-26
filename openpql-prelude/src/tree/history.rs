@@ -1,8 +1,6 @@
 use core::{borrow, fmt};
 use std::str::FromStr;
 
-use derive_more::{Deref, DerefMut};
-
 use crate::tree::{Action, AnnotatedAction, TreeParseError};
 
 /// Builds a [`History`] from `c` (chance) and chip-amount tokens.
@@ -25,8 +23,8 @@ macro_rules! history {
     Ord,
     Hash,
     derive_more::From,
-    Deref,
-    DerefMut,
+    derive_more::Deref,
+    derive_more::DerefMut,
 )]
 #[repr(transparent)]
 pub struct History(Vec<Action>);

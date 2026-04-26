@@ -1,9 +1,15 @@
-use derive_more::{Deref, Index, Into, IntoIterator};
-
 use crate::{Card, Card64};
 
 /// Fixed array of `N` cards, short-deck when `SD` is true.
-#[derive(Debug, Clone, Index, derive_more::From, Into, Deref, IntoIterator)]
+#[derive(
+    Debug,
+    Clone,
+    derive_more::Index,
+    derive_more::From,
+    derive_more::Into,
+    derive_more::Deref,
+    derive_more::IntoIterator,
+)]
 pub struct CardN<const N: usize, const SD: bool = false>([Card; N]);
 
 impl<const N: usize, const S: bool> quickcheck::Arbitrary for CardN<N, S> {

@@ -1,6 +1,5 @@
 use std::{hash::Hash, str::FromStr};
 
-use derive_more::Display;
 #[cfg(feature = "serde")]
 use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
@@ -33,7 +32,17 @@ macro_rules! cards {
 
 /// Playing card with a rank and suit.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
-#[derive(Clone, Copy, Debug, Display, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    derive_more::Display,
+    Hash,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+)]
 #[display("{rank}{suit}")]
 pub struct Card {
     /// Card rank.

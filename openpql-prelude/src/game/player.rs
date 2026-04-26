@@ -1,5 +1,3 @@
-use derive_more::{Add, AddAssign, Display, Into};
-
 /// Numeric index identifying a player.
 pub type PlayerIdx = u8;
 
@@ -13,10 +11,10 @@ pub type PlayerIdx = u8;
     Eq,
     Default,
     derive_more::From,
-    Into,
-    Display,
-    Add,
-    AddAssign,
+    derive_more::Into,
+    derive_more::Display,
+    derive_more::Add,
+    derive_more::AddAssign,
 )]
 #[display("Player {_0}")]
 pub struct Player(PlayerIdx);

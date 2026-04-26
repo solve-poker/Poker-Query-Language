@@ -1,11 +1,16 @@
 use std::{any, hash::Hash};
 
-use derive_more::{Deref, Index, IntoIterator};
 use quickcheck::{Arbitrary, Gen};
 use rustc_hash::FxHashSet;
 
 /// Collection of `N` pairwise-distinct values.
-#[derive(Clone, Debug, Index, IntoIterator, Deref)]
+#[derive(
+    Clone,
+    Debug,
+    derive_more::Index,
+    derive_more::IntoIterator,
+    derive_more::Deref,
+)]
 pub struct Distinct<const N: usize, T>(pub Vec<T>);
 
 impl<const N: usize, T: Arbitrary + Eq + Hash + Clone> Arbitrary

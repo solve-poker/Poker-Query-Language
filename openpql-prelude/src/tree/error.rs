@@ -1,7 +1,5 @@
 use std::{error::Error, fmt};
 
-use derive_more::Display;
-
 use crate::tree::{Chip, PlayerIdx};
 
 type Bet = Chip;
@@ -9,7 +7,7 @@ type ToCall = Chip;
 type PlayerRemaining = Chip;
 
 /// Parse failure for tree types.
-#[derive(Clone, PartialEq, Eq, Display, Debug)]
+#[derive(Clone, PartialEq, Eq, derive_more::Display, Debug)]
 pub enum TreeParseError {
     /// Input is not a valid action.
     #[display("InvalidAction: {_0}")]
@@ -22,7 +20,7 @@ pub enum TreeParseError {
 impl Error for TreeParseError {}
 
 /// Rule violation detected while validating a game-tree action.
-#[derive(Clone, PartialEq, Eq, Display)]
+#[derive(Clone, PartialEq, Eq, derive_more::Display)]
 pub enum GameTreeError {
     /// Bet does not match the amount required to call.
     #[display("BetAmountInvalid P{_0} {_1} facing: {_2} stack: {_3}")]

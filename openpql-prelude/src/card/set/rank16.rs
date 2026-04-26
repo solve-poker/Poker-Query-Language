@@ -1,7 +1,5 @@
 use std::{fmt, hash::Hash, ops, ops::Not};
 
-use derive_more::{BitAnd, BitAndAssign, BitOr, BitOrAssign};
-
 use crate::{
     Card, Card64, CardCount, N_STRAIGHT, N_STRAIGHT_SD, Rank, RankIdx, Suit,
     card::{Idx, Rank16Inner},
@@ -34,14 +32,14 @@ macro_rules! r16 {
     derive_more::Debug,
     PartialEq,
     Eq,
-    BitAnd,
-    BitOr,
+    derive_more::BitAnd,
+    derive_more::BitOr,
     PartialOrd,
     Ord,
     Hash,
     Default,
-    BitOrAssign,
-    BitAndAssign,
+    derive_more::BitOrAssign,
+    derive_more::BitAndAssign,
 )]
 #[debug("Rank16({})", self)]
 pub struct Rank16(pub(crate) Rank16Inner);

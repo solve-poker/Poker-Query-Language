@@ -6,7 +6,6 @@ use std::{
     convert::From, marker::PhantomData, ops, string::ToString, sync::LazyLock,
 };
 
-use derive_more::Display;
 use itertools::Itertools;
 use lalrpop_util::{ParseError, lalrpop_mod, lexer::Token};
 use openpql_prelude::*;

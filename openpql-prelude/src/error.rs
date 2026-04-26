@@ -1,11 +1,9 @@
 use std::error::Error;
 
-use derive_more::Display;
-
 // Error type for `FromStr`
 /// Parse failure produced by a `FromStr` implementation.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
-#[derive(Debug, Clone, PartialEq, Eq, Display)]
+#[derive(Debug, Clone, PartialEq, Eq, derive_more::Display)]
 pub enum ParseError {
     /// Input is not a valid rank.
     InvalidRank(String),

@@ -1,12 +1,10 @@
 use std::{cmp, str::FromStr};
 
-use derive_more::Display;
-
 use crate::{N_FLOP_CATEGORY, ParseError};
 
 /// Category of a hand relative to the flop.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Display)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, derive_more::Display)]
 pub enum FlopHandCategory {
     /// No made hand on the flop.
     #[default]

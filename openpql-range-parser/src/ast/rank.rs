@@ -1,9 +1,9 @@
-use super::{Display, Error, LocInfo, ResultE};
+use super::{Error, LocInfo, ResultE};
 
 pub type RankConst = openpql_prelude::Rank;
 
 /// Single-letter rank variable token.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
 pub enum RankVar {
     /// Rank variable "B".
     #[display("B")]
@@ -47,7 +47,7 @@ pub enum RankVar {
 }
 
 /// Rank slot in a range card: concrete, variable, or wildcard.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Display)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, derive_more::Display)]
 pub enum CardRank {
     /// Concrete rank.
     #[display("{_0}")]
