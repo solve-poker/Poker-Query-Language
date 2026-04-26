@@ -24,11 +24,17 @@
   <a href="#workspace">Workspace</a>
 </p>
 
+<p align="center">
+  <a href="https://pql-playground.solve.poker/">
+    <img src="https://pql-playground.solve.poker/pql-playground.gif" alt="PQL Playground demo" width="720">
+  </a>
+</p>
+
 ---
 
 > ⚠️ **Work in progress.** Active development; not yet production-ready.
 
-A high-performance Rust implementation of **Poker Query Language**, the SQL-like language for poker analysis. Spiritual successor to the original Java engine by Odds Oracle.
+**Why this exists.** The original PQL — a Java tool released in 2014 by Odds Oracle — is no longer sold commercially, though free licenses are now available for download. Open PQL is a ground-up Rust rewrite that complements the original: free, open source, faster, and built to carry PQL forward for the next decade. It's a high-performance implementation of Poker Query Language, the SQL-like language for equity, range, and board analysis.
 
 ```sql
 select equity
