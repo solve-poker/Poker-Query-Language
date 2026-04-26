@@ -139,6 +139,13 @@ book-deploy:
     mdbook build {{ docs_dir }}
     wrangler pages deploy {{ docs_dir }}/book --project-name=openpql-docs --branch=main
 
+# ── Release ───────────────────────────────────────────────────────────────────
+
+# Set the workspace version in Cargo.toml (e.g. `just set-version 0.1.5`)
+set-version version:
+    sed -i -E 's/^version = "[^"]+"/version = "{{ version }}"/' Cargo.toml
+    sed -i -E 's/(openpql-[a-z-]+ = \{ path = "[^"]+", version = )"[^"]+"/\1"{{ version }}"/' Cargo.toml
+
 # ── CI ────────────────────────────────────────────────────────────────────────
 
 # Parallel local-dev rebuild: test + fmt + coverage + book in parallel
