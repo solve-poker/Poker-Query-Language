@@ -74,6 +74,20 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_from_usize() {
+        let p = Player::from(5usize);
+        assert_eq!(p.0, 5);
+        assert_eq!(usize::from(p), 5);
+    }
+
+    #[test]
+    fn test_from_i32() {
+        let p = Player::from(7i32);
+        assert_eq!(p.0, 7);
+        assert_eq!(usize::from(p), 7);
+    }
+
     #[quickcheck]
     fn test_iter(n: PlayerIdx) {
         let n_players = n % 10;

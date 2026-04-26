@@ -179,4 +179,20 @@ mod tests {
 
         assert!(format!("{obj:?}").find(r#"hero": "AA"#).is_some());
     }
+
+    #[test]
+    fn test_loc() {
+        let src = "from game='holdem', hero='AA', dead='2c'";
+        let obj = parse_from_clause(src).unwrap();
+
+        assert!(obj.loc().1 == src.len());
+    }
+
+    #[test]
+    fn test_from_item_loc() {
+        let src = "from key='val'";
+        let obj = parse_from_clause(src).unwrap();
+        let item = obj.inner.get("key").unwrap();
+        assert_eq!(item.loc(), (item.key.loc.0, item.value.loc.1));
+    }
 }

@@ -84,6 +84,15 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "board must have 5 cards")]
+    fn test_invalid_board() {
+        let game = PQLGame::Holdem;
+        let bad = board!("Ad 7c 2d Jh");
+        let player = cards!("As Ah Ks");
+        let _ = fractional_river_equity(game, bad, &player, 0);
+    }
+
+    #[test]
     #[should_panic(expected = "not a multiple")]
     fn test_invalid_player_cards_len() {
         let game = PQLGame::Holdem;

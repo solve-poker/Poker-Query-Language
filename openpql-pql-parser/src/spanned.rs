@@ -11,3 +11,14 @@ impl Spanned for LocInfo {
         *self
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_locinfo_loc() {
+        let li: LocInfo = (3, 7);
+        assert_eq!(li.loc(), (3, 7));
+    }
+}

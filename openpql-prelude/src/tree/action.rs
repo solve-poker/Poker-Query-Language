@@ -122,6 +122,30 @@ pub mod tests {
         assert_eq!(Action::Chance.to_string(), "Chance");
         assert_eq!(Action::PlayerBet(99).to_string(), "Bet(99)");
     }
+
+    #[test]
+    fn test_from_str_chance() {
+        assert_eq!(Action::from_str("c"), Ok(Action::Chance));
+        assert_eq!(Action::from_str("C"), Ok(Action::Chance));
+        assert_eq!(Action::from_str("chance"), Ok(Action::Chance));
+        assert_eq!(Action::from_str("Chance"), Ok(Action::Chance));
+        assert_eq!(Action::from_str(" c "), Ok(Action::Chance));
+    }
+
+    #[test]
+    fn test_from_str_player_bet() {
+        assert_eq!(Action::from_str("0"), Ok(Action::PlayerBet(0)));
+        assert_eq!(Action::from_str("100"), Ok(Action::PlayerBet(100)));
+        assert_eq!(Action::from_str(" 42 "), Ok(Action::PlayerBet(42)));
+    }
+
+    #[test]
+    fn test_from_str_invalid() {
+        assert_eq!(
+            Action::from_str("bogus"),
+            Err(TreeParseError::InvalidAction("bogus".into()))
+        );
+    }
 }
 
 #[cfg(all(test, feature = "serde"))]

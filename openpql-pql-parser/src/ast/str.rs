@@ -45,4 +45,10 @@ mod tests {
             "\"content\""
         );
     }
+
+    #[test]
+    fn test_loc() {
+        let s = Str::from(("x", (1, 4)));
+        assert_eq!(s.loc(), (1, 4));
+    }
 }

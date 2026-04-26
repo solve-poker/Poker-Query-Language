@@ -259,6 +259,35 @@ mod tests {
 
         assert_eq!(format!("{history:?}"), "<C-1-100>");
     }
+
+    #[test]
+    fn test_from_str_empty() {
+        assert_eq!(History::from_str(""), Ok(History::default()));
+    }
+
+    #[test]
+    fn test_from_str_actions() {
+        assert_eq!(History::from_str("C-10-20"), Ok(history!(c, 10, 20)));
+    }
+
+    #[test]
+    fn test_from_str_invalid() {
+        assert!(History::from_str("c-bad").is_err());
+    }
+
+    #[test]
+    fn test_as_ref() {
+        let h = history!(c, 10);
+        let r: &[Action] = h.as_ref();
+        assert_eq!(r.len(), 2);
+    }
+
+    #[test]
+    fn test_from_iter() {
+        let actions = [Action::Chance, Action::PlayerBet(5)];
+        let h: History = actions.into_iter().collect();
+        assert_eq!(h, history!(c, 5));
+    }
 }
 
 #[cfg(all(test, feature = "serde"))]

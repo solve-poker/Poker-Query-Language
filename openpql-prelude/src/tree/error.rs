@@ -46,3 +46,34 @@ impl fmt::Debug for GameTreeError {
 }
 
 impl Error for GameTreeError {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_debug_matches_display() {
+        let cases = [
+            GameTreeError::BetAmountInvalid(0, 1, 2, 3),
+            GameTreeError::BetExceedsStack(1, 100, 50),
+            GameTreeError::RaiseTooSmall(2, 5),
+            GameTreeError::RaiseNotAllowed(3),
+            GameTreeError::ActionNotAllowed,
+        ];
+        for e in cases {
+            assert_eq!(format!("{e:?}"), e.to_string());
+        }
+    }
+
+    #[test]
+    fn test_tree_parse_error_display() {
+        assert_eq!(
+            TreeParseError::InvalidAction("x".into()).to_string(),
+            "InvalidAction: x"
+        );
+        assert_eq!(
+            TreeParseError::InvalidHistory("y".into()).to_string(),
+            "InvalidHistory: y"
+        );
+    }
+}

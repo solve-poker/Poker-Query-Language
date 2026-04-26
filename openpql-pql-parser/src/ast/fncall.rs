@@ -52,4 +52,11 @@ mod tests {
 
         assert_eq!(format!("{fncall:?}"), "equity(hero,1.23)");
     }
+
+    #[test]
+    fn test_loc() {
+        let src = "equity(hero, river)";
+        let fncall = parse_fn_call(src).unwrap();
+        assert_eq!(fncall.loc(), (0, src.len()));
+    }
 }

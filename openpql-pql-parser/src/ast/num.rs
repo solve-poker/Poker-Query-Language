@@ -109,4 +109,10 @@ mod tests {
     fn test_dbg() {
         assert_eq!(format!("{:?}", Num::from((-123, (0, 1)))), "-123");
     }
+
+    #[test]
+    fn test_loc() {
+        let n = Num::from((-1, (4, 6)));
+        assert_eq!(n.loc(), (4, 6));
+    }
 }

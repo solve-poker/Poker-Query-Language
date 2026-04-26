@@ -234,6 +234,17 @@ mod tests {
     fn test_default() {
         assert_eq!(AnnotatedAction::default(), PREFLOP);
     }
+
+    #[test]
+    fn test_player_idx() {
+        assert_eq!(AnnotatedAction::Chance(Street::Flop).player_idx(), None);
+        assert_eq!(AnnotatedAction::Join(2, 100).player_idx(), Some(2));
+        assert_eq!(AnnotatedAction::Post(1, 5).player_idx(), Some(1));
+        assert_eq!(
+            AnnotatedAction::Act(0, AnnotatedActionKind::Bet, 10).player_idx(),
+            Some(0)
+        );
+    }
 }
 
 #[cfg(all(test, feature = "serde"))]

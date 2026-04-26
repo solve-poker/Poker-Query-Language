@@ -62,4 +62,10 @@ mod tests {
             "content"
         );
     }
+
+    #[test]
+    fn test_loc() {
+        let id = Ident::from(("hero", (2, 6)));
+        assert_eq!(id.loc(), (2, 6));
+    }
 }

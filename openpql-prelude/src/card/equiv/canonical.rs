@@ -335,6 +335,32 @@ mod tests {
             CanonicalHand::new(pf, &cards!("AdKd7d2h")),
             "2*7sKsAs",
         );
+        assert_canonical_hand(
+            CanonicalHand::new(pf, &cards!("2s 3h 5s 7h")),
+            "2s3h5s7h",
+        );
+        assert_canonical_hand(
+            CanonicalHand::new(pf, &cards!("2s 3h 5h 7s")),
+            "2s3h5h7s",
+        );
+        assert_canonical_hand(
+            CanonicalHand::new(pf, &cards!("2s 3h 5d 7c")),
+            "2*3*5*7*",
+        );
+    }
+
+    #[test]
+    #[should_panic(
+        expected = "CanonicalHand only supports hand of 2 or 4 cards"
+    )]
+    fn test_canonical_hand_new_wrong_size_panics() {
+        let _ = CanonicalHand::new(Board::default(), &cards!("AsKsQs"));
+    }
+
+    #[test]
+    #[should_panic(expected = "internal error: entered unreachable code")]
+    fn test_preflop_wrong_size_panics() {
+        let _ = CanonicalHand::preflop(&cards!("AsKsQs"));
     }
 
     #[quickcheck]
