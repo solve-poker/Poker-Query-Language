@@ -32,6 +32,16 @@ impl SuitMapping {
         iso_suit
     }
 
+    /// Records an explicit `from -> to` suit substitution. First write wins;
+    /// subsequent calls for the same `from` are no-ops.
+    /// Does *not* advance `next_suit`.
+    pub const fn assign_pair(&mut self, from: Suit, to: Suit) {
+        let idx = from as usize;
+        if self.map[idx].is_none() {
+            self.map[idx] = Some(to);
+        }
+    }
+
     /// Returns the number of mapped suits.
     #[must_use]
     pub fn len(&self) -> usize {
