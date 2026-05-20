@@ -185,7 +185,7 @@ mod tests {
         let src = "from game='holdem', hero='AA', dead='2c'";
         let obj = parse_from_clause(src).unwrap();
 
-        assert!(obj.loc().1 == src.len());
+        assert_eq!(obj.loc().1, src.len());
     }
 
     #[test]

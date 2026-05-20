@@ -12,7 +12,10 @@ mod suit;
 
 pub use card::Card;
 pub use collection::{Board, Flop, HandN};
-pub use equiv::{CanonicalCard, CanonicalHand, SuitMapping};
+pub use equiv::{
+    FlushingSuit, IsomorphicCard, IsomorphicFlop, IsomorphicRiver,
+    IsomorphicTurn, SuitMap,
+};
 pub use idx::{CardIdx, RankIdx, SuitIdx};
 pub use iter::{CardIter, HandIter};
 pub use rank::Rank;

@@ -6,7 +6,7 @@ use crate::{Board, Card, Card64, HandN};
 #[macro_export]
 macro_rules! flop {
     ($s:expr) => {
-        $crate::Flop::from(<[$crate::Card; 3]>::try_from(cards!($s)).unwrap())
+        $crate::board!($s).flop.unwrap()
     };
 }
 

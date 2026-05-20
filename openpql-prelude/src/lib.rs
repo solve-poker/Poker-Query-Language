@@ -15,9 +15,9 @@ mod rng;
 pub mod tree;
 
 pub use card::{
-    Board, CanonicalCard, CanonicalHand, Card, Card64, CardCount, CardIdx,
-    CardIter, Flop, HandIter, HandN, Rank, Rank16, RankIdx, Suit, Suit4,
-    SuitIdx, SuitMapping,
+    Board, Card, Card64, CardCount, CardIdx, CardIter, Flop, FlushingSuit,
+    HandIter, HandN, Idx, IsomorphicCard, IsomorphicFlop, IsomorphicRiver,
+    IsomorphicTurn, Rank, Rank16, RankIdx, Suit, Suit4, SuitIdx, SuitMap,
 };
 pub use error::ParseError;
 pub use eval::calculate_payoffs;
@@ -36,7 +36,7 @@ const N_HANDTYPE: usize = 9;
 mod testing;
 
 #[cfg(any(test, feature = "quickcheck"))]
-pub use testing::*;
+pub use testing::{CardN, Distinct};
 
 #[cfg(test)]
 #[macro_use(quickcheck)]
