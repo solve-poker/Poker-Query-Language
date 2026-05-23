@@ -74,8 +74,8 @@ impl Card64 {
     /// Returns `true` if the set is a superset of `other`.
     #[must_use]
     #[inline]
-    pub fn contains(self, other: Self) -> bool {
-        other & self == other
+    pub const fn contains(self, other: Self) -> bool {
+        (other.0 & self.0) == other.0
     }
 
     /// Returns `true` if the set contains `card`.

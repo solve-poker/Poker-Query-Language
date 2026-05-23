@@ -69,12 +69,12 @@ impl Board {
 
     /// Returns the number of dealt cards (0, 3, 4, or 5).
     #[must_use]
-    pub fn len(&self) -> usize {
+    pub const fn len(&self) -> usize {
         match self.flop {
             Some(_) => {
                 Self::N_FLOP
-                    + self.turn.iter().count()
-                    + self.river.iter().count()
+                    + self.turn.is_some() as usize
+                    + self.river.is_some() as usize
             }
             None => 0,
         }
@@ -122,6 +122,34 @@ impl Board {
         }
 
         inner_eq(self.turn, card) || inner_eq(self.river, card)
+    }
+
+    /// Returns a copy of the board with `card` set as the turn.
+    #[must_use]
+    pub const fn with_turn(self, card: Card) -> Self {
+        Self {
+            flop: self.flop,
+            turn: Some(card),
+            river: self.river,
+        }
+    }
+
+    /// Returns a copy of the board with `card` set as the river.
+    #[must_use]
+    pub const fn with_river(self, card: Card) -> Self {
+        Self {
+            flop: self.flop,
+            turn: self.turn,
+            river: Some(card),
+        }
+    }
+
+    /// Returns the dealt cards packed into a [`Card64`] bitset.
+    #[must_use]
+    pub const fn to_card64(self) -> Card64 {
+        Card64(
+            self.to_c64_flop().0 | self.to_c64_turn().0 | self.to_c64_river().0,
+        )
     }
 
     /// Returns suits still able to make a flush by the river.
@@ -331,6 +359,27 @@ mod tests {
 
         assert_eq!(format!("{board}"), "QdKhAs3s2s");
         assert_eq!(format!("{board:?}"), "Board<QdKhAs3s2s>");
+    }
+
+    #[test]
+    fn test_with_turn_and_river() {
+        let flop = board!("QdKhAs");
+        let turned = flop.with_turn(card!("Jc"));
+        let rivered = turned.with_river(card!("Ts"));
+
+        assert_eq!(turned.turn, Some(card!("Jc")));
+        assert_eq!(turned.river, None);
+        assert_eq!(rivered.turn, Some(card!("Jc")));
+        assert_eq!(rivered.river, Some(card!("Ts")));
+        assert_eq!(rivered.flop, flop.flop);
+    }
+
+    #[test]
+    fn test_to_card64() {
+        let board = board!("QdKhAsJcTs");
+
+        assert_eq!(board.to_card64(), Card64::from(board));
+        assert_eq!(Board::default().to_card64(), Card64::EMPTY);
     }
 
     #[test]
