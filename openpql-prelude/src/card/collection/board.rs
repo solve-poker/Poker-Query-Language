@@ -37,6 +37,15 @@ impl Board {
     /// Card count through the river.
     pub const N_RIVER: usize = 5;
 
+    #[inline]
+    pub(crate) const fn new() -> Self {
+        Self {
+            flop: None,
+            turn: None,
+            river: None,
+        }
+    }
+
     /// Creates a board from a slice ordered flop, turn, river.
     #[must_use]
     pub fn from_slice(cards: &[Card]) -> Self {

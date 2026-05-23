@@ -31,15 +31,9 @@ impl FlopTexture {
         }
     }
 
-    /// Classifies the texture of a flop.
-    #[inline]
-    const fn from_flop(flop: Flop) -> Self {
-        Self::from_sorted(flop.0[0], flop.0[1], flop.0[2])
-    }
-
     /// Builds the [`SuitMap`] that relabels this texture's suits canonically.
     #[inline]
-    const fn to_suit_map(self) -> SuitMap {
+    pub(super) const fn to_suit_map(self) -> SuitMap {
         match self {
             Self::Monotone(s) => SuitMap::map1(s),
             Self::Twotone(dbl, s) => SuitMap::map2(dbl, s),
@@ -51,30 +45,38 @@ impl FlopTexture {
 /// Canonical suit-isomorphic representative of a flop.
 #[derive(Clone, Copy, derive_more::Debug, PartialEq, Eq, Hash)]
 #[debug("IsomorphicFlop({_0:?})")]
-pub struct IsomorphicFlop(pub(crate) [IsomorphicCard; Board::N_FLOP]);
+pub(super) struct IsomorphicFlop(pub(super) [IsomorphicCard; Board::N_FLOP]);
 
 impl IsomorphicFlop {
-    /// Builds the canonical representative of `flop`.
-    pub const fn from_flop(flop: Flop) -> Self {
-        let map = FlopTexture::from_flop(flop).to_suit_map();
+    /// Canonical representative of `flop` and the [`SuitMap`] that produced it.
+    #[inline]
+    pub(super) const fn from_flop(flop: Flop) -> (Self, SuitMap) {
+        let [f0, f1, f2] = flop.0;
+        let map = FlopTexture::from_sorted(f0, f1, f2).to_suit_map();
 
-        Self::from_3_cards(
-            map.iso_card(flop.0[0]),
-            map.iso_card(flop.0[1]),
-            map.iso_card(flop.0[2]),
-        )
+        (Self::relabel(f0, f1, f2, map), map)
     }
 
-    /// Builds an `IsomorphicFlop` from three relabeled cards, sorting them.
-    pub(crate) const fn from_3_cards(
+    /// Relabels three flop cards through `map`, then rank-sorts them.
+    #[inline]
+    pub(super) const fn relabel(
+        f0: Card,
+        f1: Card,
+        f2: Card,
+        map: SuitMap,
+    ) -> Self {
+        Self::sorted(map.iso_card(f0), map.iso_card(f1), map.iso_card(f2))
+    }
+
+    /// Sorts three rank-sorted relabeled cards, breaking rank ties by suit label.
+    const fn sorted(
         c0: IsomorphicCard,
         c1: IsomorphicCard,
         c2: IsomorphicCard,
     ) -> Self {
         Self(match (c0.lt(c1), c1.lt(c2), c0.lt(c2)) {
             (true, true, _) => [c0, c1, c2],
-            (true, _, true) => [c0, c2, c1],
-            (true, _, false) => [c2, c0, c1],
+            (true, _, _) => [c0, c2, c1],
             (false, true, true) => [c1, c0, c2],
             (false, true, _) => [c1, c2, c0],
             (false, _, _) => [c2, c1, c0],
@@ -82,16 +84,10 @@ impl IsomorphicFlop {
     }
 }
 
-impl Flop {
-    /// Returns the canonical suit-isomorphic representative of this flop.
-    #[must_use]
-    pub const fn to_isomorphic(self) -> IsomorphicFlop {
-        IsomorphicFlop::from_flop(self)
-    }
-}
-
 #[cfg(test)]
-pub mod tests {
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests {
+    use super::*;
     use crate::*;
 
     fn iso_flop(s: &str) -> IsomorphicFlop {
@@ -102,17 +98,20 @@ pub mod tests {
 
     fn assert_iso_flop(s: &str) {
         let (lhs, rhs) = s.split_once("->").unwrap();
+        let got = IsomorphicFlop::from_flop(flop!(lhs)).0;
+
         assert_eq!(
-            flop!(lhs).to_isomorphic(),
+            got,
             iso_flop(rhs),
-            "{:?}->{rhs}; but got {:?}",
-            flop!(lhs),
-            flop!(lhs).to_isomorphic()
+            "{:?}->{rhs}; but got {got:?}",
+            flop!(lhs)
         );
     }
 
-    pub fn gen_iso_flop() -> FxHashSet<IsomorphicFlop> {
-        Flop::iter_all::<true>().map(Flop::to_isomorphic).collect()
+    fn gen_iso_flop() -> FxHashSet<IsomorphicFlop> {
+        Flop::iter_all::<true>()
+            .map(|flop| IsomorphicFlop::from_flop(flop).0)
+            .collect()
     }
 
     #[test]

@@ -26,6 +26,7 @@ macro_rules! isocards {
     }};
 }
 
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
 #[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Hash)]
 #[display("{rank}{suit}")]
 /// A card whose suit is relabeled to a flush-relevant [`FlushingSuit`].
@@ -71,5 +72,37 @@ impl FromStr for IsomorphicCard {
         }
 
         Err(ParseError::InvalidCard(s.into()))
+    }
+}
+
+#[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests {
+    use super::*;
+    use crate::*;
+
+    #[test]
+    fn test_from_str() {
+        assert_eq!(
+            isocard!("Ax"),
+            IsomorphicCard::new(Rank::RA, FlushingSuit::X)
+        );
+        assert!("An".parse::<IsomorphicCard>().is_ok());
+        assert!("A".parse::<IsomorphicCard>().is_err());
+        assert!("?x".parse::<IsomorphicCard>().is_err());
+        assert!("A?".parse::<IsomorphicCard>().is_err());
+        assert!("Axx".parse::<IsomorphicCard>().is_err());
+    }
+
+    #[test]
+    fn test_display() {
+        assert_eq!(isocard!("Ty").to_string(), "Ty");
+    }
+
+    #[test]
+    fn test_lt() {
+        assert!(isocard!("Kx").lt(isocard!("Ax")));
+        assert!(isocard!("Ax").lt(isocard!("Ay")));
+        assert!(!isocard!("Ay").lt(isocard!("Ax")));
     }
 }

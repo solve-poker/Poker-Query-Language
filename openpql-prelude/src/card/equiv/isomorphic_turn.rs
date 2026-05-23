@@ -1,12 +1,9 @@
 //! Suit-isomorphic canonical form of a flop-and-turn board.
 
 use crate::{
-    Board, Card, IsomorphicCard, IsomorphicFlop, Suit, SuitMap,
-    card::equiv::FlopTexture,
+    Board, Card, Flop, IsomorphicCard, Suit, SuitMap,
+    card::equiv::isomorphic_flop::{FlopTexture, IsomorphicFlop},
 };
-
-/// The flop cards followed by the turn card.
-type Turn = [Card; Board::N_TURN];
 
 /// Flush-relevant suit pattern across a flop and turn.
 #[derive(Clone, Copy)]
@@ -22,7 +19,12 @@ pub(super) enum TurnTexture {
 impl TurnTexture {
     /// Classifies the texture of three sorted flop cards plus the turn.
     #[inline]
-    pub(super) const fn from_turn([f0, f1, f2, t]: Turn) -> Self {
+    pub(super) const fn from_turn(
+        f0: Card,
+        f1: Card,
+        f2: Card,
+        t: Card,
+    ) -> Self {
         let t = t.suit;
 
         match FlopTexture::from_sorted(f0, f1, f2) {
@@ -49,53 +51,34 @@ impl TurnTexture {
 
 /// Canonical suit-isomorphic representative of a flop-and-turn board.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
-pub struct IsomorphicTurn {
+pub(super) struct IsomorphicTurn {
     /// The three flop cards, suit-relabeled and sorted.
-    pub flop: [IsomorphicCard; Board::N_FLOP],
+    pub(super) flop: [IsomorphicCard; Board::N_FLOP],
     /// The turn card, relabeled with the same suit map.
-    pub turn: IsomorphicCard,
+    pub(super) turn: IsomorphicCard,
 }
 
 impl IsomorphicTurn {
-    /// Builds the canonical representative from rank-sorted flop cards and a
-    /// turn card.
-    #[must_use]
-    const fn from_turn([f0, f1, f2, t]: Turn) -> Self {
-        let map = TurnTexture::from_turn([f0, f1, f2, t]).to_suit_map();
+    /// Canonical representative of `flop` plus `turn` and the [`SuitMap`] that produced it.
+    #[inline]
+    pub(super) const fn from_turn(flop: Flop, turn: Card) -> (Self, SuitMap) {
+        let [f0, f1, f2] = flop.0;
+        let map = TurnTexture::from_turn(f0, f1, f2, turn).to_suit_map();
 
-        Self {
-            flop: IsomorphicFlop::from_3_cards(
-                map.iso_card(f0),
-                map.iso_card(f1),
-                map.iso_card(f2),
-            )
-            .0,
-            turn: map.iso_card(t),
-        }
-    }
-
-    /// Builds the canonical representative from a board's flop and turn.
-    /// # Panics
-    /// Board must have valid flop and turn
-    #[must_use]
-    pub const fn from_board(board: Board) -> Self {
-        match (board.flop, board.turn) {
-            (Some(f), Some(t)) => Self::from_turn([f.0[0], f.0[1], f.0[2], t]),
-            _ => panic!("IsomorphicTurn requires a flop and a turn card"),
-        }
-    }
-}
-
-impl Board {
-    /// Returns the canonical suit-isomorphic representative of this flop-and-turn board.
-    #[must_use]
-    pub const fn to_isomorphic_turn(self) -> IsomorphicTurn {
-        IsomorphicTurn::from_board(self)
+        (
+            Self {
+                flop: IsomorphicFlop::relabel(f0, f1, f2, map).0,
+                turn: map.iso_card(turn),
+            },
+            map,
+        )
     }
 }
 
 #[cfg(test)]
-pub mod tests {
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests {
+    use super::*;
     use crate::*;
 
     fn iso_turn(s: &str) -> IsomorphicTurn {
@@ -107,23 +90,24 @@ pub mod tests {
         }
     }
 
-    fn assert_iso_turn(s: &str) {
-        let (lhs, rhs) = s.split_once("->").unwrap();
-        assert_eq!(
-            board!(lhs).to_isomorphic_turn(),
-            iso_turn(rhs),
-            "{:?}->{rhs}; but got {:?}",
-            board!(lhs),
-            board!(lhs).to_isomorphic_turn()
-        );
+    fn from_str(s: &str) -> IsomorphicTurn {
+        let b = board!(s);
+
+        IsomorphicTurn::from_turn(b.flop.unwrap(), b.turn.unwrap()).0
     }
 
-    pub fn gen_iso_turn() -> FxHashSet<IsomorphicTurn> {
+    fn assert_iso_turn(s: &str) {
+        let (lhs, rhs) = s.split_once("->").unwrap();
+
+        assert_eq!(from_str(lhs), iso_turn(rhs), "{lhs}->{rhs}");
+    }
+
+    fn gen_iso_turn() -> FxHashSet<IsomorphicTurn> {
         let mut set = FxHashSet::default();
         for flop in Flop::iter_all::<true>() {
             for &turn in Card::all::<true>() {
                 if !flop.contains_card(turn) {
-                    set.insert(IsomorphicTurn::new(flop, turn));
+                    set.insert(IsomorphicTurn::from_turn(flop, turn).0);
                 }
             }
         }
@@ -137,14 +121,12 @@ pub mod tests {
 
     #[test]
     fn test_monotone() {
-        // flop + turn all one suit.
         assert_iso_turn("AsKsQs Js -> QxKxAxJx");
         assert_iso_turn("AhKhQh Jh -> QxKxAxJx");
     }
 
     #[test]
     fn test_flop_monotone_turn_offsuit() {
-        // monotone flop, off-suit turn -> the lone suit is irrelevant.
         assert_iso_turn("AsKsQs Jh -> QxKxAxJn");
         assert_iso_turn("AsKsQs Jd -> QxKxAxJn");
     }
@@ -162,19 +144,13 @@ pub mod tests {
     }
 
     #[test]
-    fn test_flop_and_turn_not_interchangeable() {
-        let a = board!("AsKhQd Jc").to_isomorphic_turn();
-        let b = board!("AsKhJc Qd").to_isomorphic_turn();
-
-        assert_ne!(a, b);
+    fn test_twotone() {
+        assert_iso_turn("AcKcQs Jh -> QnKxAxJn");
     }
 
-    impl IsomorphicTurn {
-        #[must_use]
-        pub const fn new(flop: Flop, turn: Card) -> Self {
-            let [f0, f1, f2] = flop.0;
-            Self::from_turn([f0, f1, f2, turn])
-        }
+    #[test]
+    fn test_flop_and_turn_not_interchangeable() {
+        assert_ne!(from_str("AsKhQd Jc"), from_str("AsKhJc Qd"));
     }
 
     #[quickcheck]
@@ -198,8 +174,8 @@ pub mod tests {
         let permuted_flop = Flop::from_slice(&permuted);
 
         assert_eq!(
-            IsomorphicTurn::new(flop, turn),
-            IsomorphicTurn::new(permuted_flop, remap(turn)),
+            IsomorphicTurn::from_turn(flop, turn).0,
+            IsomorphicTurn::from_turn(permuted_flop, remap(turn)).0,
         );
     }
 }

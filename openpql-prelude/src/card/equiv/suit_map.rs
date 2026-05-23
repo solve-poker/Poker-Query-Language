@@ -5,13 +5,13 @@ use FlushingSuit::{N, X, Y, Z};
 use crate::{Card, FlushingSuit, IsomorphicCard, Suit};
 
 /// Permutation of the four [`Suit`]s used to map a board to its isomorphic form.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct SuitMap(pub [FlushingSuit; 4]);
 
 impl SuitMap {
     /// Returns the identity map, leaving every suit irrelevant ([`N`]).
     #[inline]
-    const fn new() -> Self {
+    pub(super) const fn new() -> Self {
         Self([N, N, N, N])
     }
 
