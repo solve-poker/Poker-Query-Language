@@ -15,7 +15,7 @@ homepage = "https://github.com/solve-poker/Poker-Query-Language"
 keywords = ["GTO", "PQL", "holdem", "poker", "shortdeck"]
 license = "MIT"
 repository = "https://github.com/solve-poker/Poker-Query-Language"
-version = "0.1.5"
+version = "0.1.6"
 
 [profile.release]
 codegen-units = 1
