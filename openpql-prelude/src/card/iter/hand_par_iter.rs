@@ -12,7 +12,8 @@ use crate::{Card, HandIter, HandN};
 /// Parallel iterator over every `N`-card combination, short-deck when `SD` is true.
 pub struct HandParIter<const SD: bool, const N: usize> {
     range: ops::Range<usize>,
-    cards: &'static [Card],
+    cards: [Card; Card::N_CARDS as usize],
+    n_cards: usize,
 }
 
 impl<const SD: bool, const N: usize> IntoParallelIterator for HandIter<SD, N> {
@@ -20,9 +21,19 @@ impl<const SD: bool, const N: usize> IntoParallelIterator for HandIter<SD, N> {
     type Iter = HandParIter<SD, N>;
 
     fn into_par_iter(self) -> Self::Iter {
+        let mut cards = [Card::default(); Card::N_CARDS as usize];
+        let mut n_cards = 0;
+        for &c in Card::all::<SD>() {
+            if !self.dead.contains_card(c) {
+                cards[n_cards] = c;
+                n_cards += 1;
+            }
+        }
+        let len = super::hand_iter::ncr(n_cards, N);
         HandParIter {
-            range: 0..self.len(),
-            cards: Card::all::<SD>(),
+            range: 0..len,
+            cards,
+            n_cards,
         }
     }
 }
@@ -69,12 +80,11 @@ impl<const SD: bool, const N: usize> Producer for HandParIter<SD, N> {
     type IntoIter = UnrankIter<N>;
 
     fn into_iter(self) -> Self::IntoIter {
-        let n_cards = self.cards.len();
         UnrankIter {
             range: self.range,
             cards: self.cards,
-            n_cards,
-            ncr_cache: NcrCache::new(n_cards),
+            n_cards: self.n_cards,
+            ncr_cache: NcrCache::new(self.n_cards),
         }
     }
 
@@ -84,10 +94,12 @@ impl<const SD: bool, const N: usize> Producer for HandParIter<SD, N> {
             Self {
                 range: self.range.start..mid,
                 cards: self.cards,
+                n_cards: self.n_cards,
             },
             Self {
                 range: mid..self.range.end,
                 cards: self.cards,
+                n_cards: self.n_cards,
             },
         )
     }
@@ -96,7 +108,7 @@ impl<const SD: bool, const N: usize> Producer for HandParIter<SD, N> {
 /// Sequential half of `HandParIter` that unranks combinations from an index range.
 pub struct UnrankIter<const N: usize> {
     range: ops::Range<usize>,
-    cards: &'static [Card],
+    cards: [Card; Card::N_CARDS as usize],
     n_cards: usize,
     ncr_cache: NcrCache,
 }
@@ -150,7 +162,7 @@ impl<const N: usize> Iterator for UnrankIter<N> {
         self.range.next().map(|rank| {
             unrank_combination_with_cards(
                 rank,
-                self.cards,
+                &self.cards[..self.n_cards],
                 self.n_cards,
                 &self.ncr_cache,
             )
@@ -167,7 +179,7 @@ impl<const N: usize> DoubleEndedIterator for UnrankIter<N> {
         self.range.next_back().map(|rank| {
             unrank_combination_with_cards(
                 rank,
-                self.cards,
+                &self.cards[..self.n_cards],
                 self.n_cards,
                 &self.ncr_cache,
             )
@@ -245,5 +257,26 @@ mod tests {
         const SD: bool = true;
         assert_eq!(handiter_set::<2, SD>(), pariter_set::<2, SD>());
         assert_eq!(handiter_set::<3, SD>(), pariter_set::<3, SD>());
+    }
+
+    #[test]
+    fn test_parallel_iter_with_dead() {
+        let dead = c64!("As Kd");
+        let seq_hands: FxHashSet<HandN<2>> =
+            HandN::<2>::iter_all::<false>().with_dead(dead).collect();
+        let par_hands: FxHashSet<HandN<2>> = HandN::<2>::iter_all::<false>()
+            .with_dead(dead)
+            .into_par_iter()
+            .collect();
+
+        assert_eq!(seq_hands, par_hands);
+        assert_eq!(par_hands.len(), super::super::hand_iter::ncr(50, 2));
+
+        let as_card = Card::from_str("As").unwrap();
+        let kd_card = Card::from_str("Kd").unwrap();
+        for hand in par_hands {
+            assert!(!hand.to_vec().contains(&as_card));
+            assert!(!hand.to_vec().contains(&kd_card));
+        }
     }
 }

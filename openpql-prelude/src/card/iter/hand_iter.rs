@@ -1,10 +1,11 @@
-use crate::{Card, CardCount, HandN};
+use crate::{Card, Card64, CardCount, HandN};
 
 /// Iterator over every `N`-card combination, short-deck when `SD` is true.
 #[derive(Debug, Clone)]
 pub struct HandIter<const SD: bool, const N: usize> {
     indices: [CardCount; N],
     done: bool,
+    pub(crate) dead: Card64,
 }
 
 #[allow(clippy::cast_possible_truncation)]
@@ -17,7 +18,17 @@ impl<const SD: bool, const N: usize> Default for HandIter<SD, N> {
         Self {
             indices,
             done: N == 0,
+            dead: Card64::EMPTY,
         }
+    }
+}
+
+impl<const SD: bool, const N: usize> HandIter<SD, N> {
+    /// Exclude hands containing any of these dead cards.
+    #[must_use]
+    pub fn with_dead(mut self, dead: impl Into<Card64>) -> Self {
+        self.dead |= dead.into();
+        self
     }
 }
 
@@ -25,43 +36,57 @@ impl<const SD: bool, const N: usize> Iterator for HandIter<SD, N> {
     type Item = HandN<N>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.done {
-            return None;
-        }
-
-        let all = Card::all::<SD>();
-        let max_i = all.len();
-
-        let mut cards = [Card::default(); N];
-        for i in 0..N {
-            cards[i] = all[self.indices[i] as usize];
-        }
-
-        let mut pos = N - 1;
-        self.indices[pos] += 1;
-
-        while self.indices[pos] as usize >= max_i - (N - 1 - pos) {
-            if pos == 0 {
-                self.done = true;
-                return Some(HandN::new(cards));
+        loop {
+            if self.done {
+                return None;
             }
 
-            pos -= 1;
+            let all = Card::all::<SD>();
+            let max_i = all.len();
+
+            let mut cards = [Card::default(); N];
+            for i in 0..N {
+                cards[i] = all[self.indices[i] as usize];
+            }
+
+            let mut pos = N - 1;
             self.indices[pos] += 1;
-        }
 
-        for i in (pos + 1)..N {
-            self.indices[i] = self.indices[i - 1] + 1;
-        }
+            while self.indices[pos] as usize >= max_i - (N - 1 - pos) {
+                if pos == 0 {
+                    self.done = true;
+                    let hand = HandN::new(cards);
+                    if (self.dead & Card64::from(hand)).is_empty() {
+                        return Some(hand);
+                    }
+                    return None;
+                }
 
-        Some(HandN::new(cards))
+                pos -= 1;
+                self.indices[pos] += 1;
+            }
+
+            for i in (pos + 1)..N {
+                self.indices[i] = self.indices[i - 1] + 1;
+            }
+
+            let hand = HandN::new(cards);
+            if (self.dead & Card64::from(hand)).is_empty() {
+                return Some(hand);
+            }
+        }
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
+        if self.done {
+            return (0, Some(0));
+        }
+
         let n = const { if SD { Card::N_CARDS_SD } else { Card::N_CARDS } };
+        let dead_count = (self.dead & Card64::all::<SD>()).count();
         let r = N;
 
-        let len = ncr(n as usize, r);
+        let len = ncr((n as usize).saturating_sub(dead_count as usize), r);
 
         (len, Some(len))
     }
@@ -117,6 +142,23 @@ mod tests {
         const SD: bool = true;
         assert_eq!(handiter_vec::<2, SD>(), itertool_vec::<2, SD>());
         assert_eq!(handiter_vec::<3, SD>(), itertool_vec::<3, SD>());
+    }
+
+    #[test]
+    fn test_hand_iter_with_dead() {
+        let dead = c64!("As Kd");
+        let iter = HandN::<2>::iter_all::<false>().with_dead(dead);
+        assert_eq!(iter.len(), ncr(50, 2));
+
+        let hands: Vec<_> = iter.collect();
+        assert_eq!(hands.len(), ncr(50, 2));
+
+        let as_card = Card::from_str("As").unwrap();
+        let kd_card = Card::from_str("Kd").unwrap();
+        for hand in hands {
+            assert!(!hand.to_vec().contains(&as_card));
+            assert!(!hand.to_vec().contains(&kd_card));
+        }
     }
 
     #[quickcheck]
