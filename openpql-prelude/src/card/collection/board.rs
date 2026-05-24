@@ -11,7 +11,7 @@ macro_rules! board {
 }
 
 /// Community cards across flop, turn, and river.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Copy, Clone, derive_more::Debug, PartialEq, Eq, Hash, Default)]
 #[debug("Board<{}>", self)]
 pub struct Board {

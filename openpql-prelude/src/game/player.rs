@@ -2,7 +2,7 @@
 pub type PlayerIdx = u8;
 
 /// Player identified by a zero-based index.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(
     Debug,
     Clone,

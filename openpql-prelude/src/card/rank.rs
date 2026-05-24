@@ -3,7 +3,7 @@ use std::{hash::Hash, str::FromStr};
 use crate::{CardCount, ParseError, card::Idx};
 
 /// Card rank from `R2` to `RA`.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
     Copy,

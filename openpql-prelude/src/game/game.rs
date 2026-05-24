@@ -9,7 +9,7 @@ use crate::{
 };
 
 /// Poker variant.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Game {

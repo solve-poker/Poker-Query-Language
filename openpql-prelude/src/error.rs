@@ -2,7 +2,7 @@ use std::error::Error;
 
 // Error type for `FromStr`
 /// Parse failure produced by a `FromStr` implementation.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Debug, Clone, PartialEq, Eq, derive_more::Display)]
 pub enum ParseError {
     /// Input is not a valid rank.

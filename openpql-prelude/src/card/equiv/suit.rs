@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use crate::ParseError;
 
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(
     Clone,
     Copy,

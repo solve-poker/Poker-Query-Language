@@ -1,7 +1,7 @@
 use crate::{Card, RankIdx, SuitIdx, card::Idx};
 
 /// Numeric index of a card in the range 0-51.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct CardIdx(pub(crate) Idx);
 

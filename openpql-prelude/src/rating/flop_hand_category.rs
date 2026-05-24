@@ -3,7 +3,7 @@ use std::{cmp, str::FromStr};
 use crate::{N_FLOP_CATEGORY, ParseError};
 
 /// Category of a hand relative to the flop.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, derive_more::Display)]
 pub enum FlopHandCategory {
     /// No made hand on the flop.

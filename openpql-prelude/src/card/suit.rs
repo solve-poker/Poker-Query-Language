@@ -3,7 +3,7 @@ use std::{hash::Hash, str::FromStr};
 use crate::{CardCount, ParseError, card::Idx};
 
 /// Card suit (spades, hearts, diamonds, clubs).
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "lowercase"))]
 #[derive(

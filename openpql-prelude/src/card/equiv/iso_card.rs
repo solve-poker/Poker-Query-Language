@@ -26,7 +26,7 @@ macro_rules! isocards {
     }};
 }
 
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Hash)]
 #[display("{rank}{suit}")]
 /// A card whose suit is relabeled to a flush-relevant [`FlushingSuit`].

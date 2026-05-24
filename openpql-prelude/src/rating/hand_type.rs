@@ -3,7 +3,7 @@ use std::{cmp, str::FromStr};
 use crate::{HandRating, N_HANDTYPE, ParseError};
 
 /// Category of a poker hand, from `HighCard` to `StraightFlush`.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Default, derive_more::Display)]
 pub enum HandType {
     /// High card.

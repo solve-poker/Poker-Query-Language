@@ -41,7 +41,7 @@ use crate::{
 /// HighCard:
 /// [15, 0]:   000rrrrr rrrrrrrr  // r: bitmask of 5 ranks
 /// ```
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(
     Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, derive_more::Debug,
 )]

@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::{Board, Card64, CardCount, ParseError};
 
 /// Betting street of a poker hand.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
     Debug,

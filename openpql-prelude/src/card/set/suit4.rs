@@ -25,7 +25,7 @@ macro_rules! s4 {
 /// ```text
 /// [8, 0]:   xxxxcdhs // x: unused
 /// ```
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(
     Copy,
     Clone,

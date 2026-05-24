@@ -3,7 +3,7 @@ use std::hash::Hash;
 use crate::{Suit, card::Idx};
 
 /// Numeric index of a suit in the range 0-3.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(
     Copy,
     Clone,

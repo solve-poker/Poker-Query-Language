@@ -3,7 +3,7 @@ use std::hash::Hash;
 use crate::{Rank, card::Idx};
 
 /// Numeric index of a rank in the range 0-12.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(
     Copy,
     Clone,

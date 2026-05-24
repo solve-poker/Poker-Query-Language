@@ -9,7 +9,7 @@ use crate::{
 };
 
 /// Canonical suit-isomorphic representative of a board at any street.
-#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))]
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Copy, Clone, derive_more::Debug, PartialEq, Eq, Hash, Default)]
 #[debug("IsomorphicBoard<{}>", self)]
 pub struct IsomorphicBoard {
@@ -286,5 +286,13 @@ mod tests {
         let (got, map) = IsomorphicBoard::to_isomorphic(Board::default());
         assert_eq!(got, IsomorphicBoard::default());
         assert_eq!(map.0, SuitMap::new().0);
+    }
+
+    #[test]
+    fn test_z_suit() {
+        let z = IsomorphicCard::new(Rank::RA, FlushingSuit::Z);
+
+        assert_eq!(n_flush_suits(&[z]), 1);
+        assert_eq!(place_card(z, 0), (Card::new(Rank::RA, Suit::D), 0));
     }
 }
