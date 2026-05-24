@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{Card64, CardCount, Rank16, Suit};
+use crate::{Card64, CardCount, Rank16, Suit, eval::count_ranks};
 
 mod holdem;
 mod omaha;
@@ -61,22 +61,6 @@ impl Rank16 {
         let head = self.retain_highest4();
 
         Self(head.0 | self.diff(head).retain_highest().0)
-    }
-}
-
-#[inline]
-const fn count_ranks(c: Card64) -> [Rank16; 4] {
-    // transmute is faster than calling to_le_bytes 4 times.
-    unsafe {
-        let [s, h, d, c]: [u16; 4] = transmute(c);
-
-        let has4 = s & h & d & c;
-        let has3 = s & h & d | s & h & c | s & d & c | h & d & c;
-
-        let has2 = s & h | s & d | s & c | h & d | h & c | d & c;
-        let has1 = s | h | d | c;
-
-        transmute([has1, has2, has3, has4])
     }
 }
 

@@ -1,8 +1,9 @@
 use std::{fmt, hash::Hash, ops, ops::Not};
 
 use crate::{
-    Card, CardCount, CardIter, Rank, Rank16, Suit,
+    Card, CardCount, CardIter, Rank, Rank16, Suit, Suit4,
     card::{Card64Inner, Idx, Rank16Inner},
+    eval::count_ranks,
 };
 
 /// Builds a [`Card64`] bitset from a string of cards.
@@ -156,6 +157,88 @@ impl Card64 {
 
     const fn from_card(card: Card) -> Self {
         Self::from_indices(card.rank as Idx, card.suit as Idx)
+    }
+
+    /// Returns the number of distinct suits present.
+    pub const fn unique_suit_count(self) -> CardCount {
+        !self.ranks_by_suit(Suit::S).is_empty() as CardCount
+            + !self.ranks_by_suit(Suit::H).is_empty() as CardCount
+            + !self.ranks_by_suit(Suit::D).is_empty() as CardCount
+            + !self.ranks_by_suit(Suit::C).is_empty() as CardCount
+    }
+
+    /// Returns the count of the most frequent suit.
+    pub const fn max_same_suit_count(self) -> CardCount {
+        const fn max4(
+            a: CardCount,
+            b: CardCount,
+            c: CardCount,
+            d: CardCount,
+        ) -> CardCount {
+            let ab = if a > b { a } else { b };
+            let cd = if c > d { c } else { d };
+            if ab > cd { ab } else { cd }
+        }
+
+        max4(
+            self.count_by_suit(Suit::S),
+            self.count_by_suit(Suit::H),
+            self.count_by_suit(Suit::D),
+            self.count_by_suit(Suit::C),
+        )
+    }
+
+    /// Returns the suits tied for the highest card count.
+    pub const fn most_frequent_suits(self) -> Suit4 {
+        let mut res = Suit4(0);
+        let max = self.max_same_suit_count();
+
+        if self.count_by_suit(Suit::S) == max {
+            res.set(Suit::S);
+        }
+        if self.count_by_suit(Suit::H) == max {
+            res.set(Suit::H);
+        }
+        if self.count_by_suit(Suit::D) == max {
+            res.set(Suit::D);
+        }
+        if self.count_by_suit(Suit::C) == max {
+            res.set(Suit::C);
+        }
+
+        res
+    }
+
+    /// Returns the count of the most frequent rank (0–4).
+    pub const fn max_same_rank_count(self) -> CardCount {
+        let [r1, r2, r3, r4] = count_ranks(self);
+
+        match (r4.0 != 0, r3.0 != 0, r2.0 != 0, r1.0 != 0) {
+            (true, _, _, _) => 4,
+            (_, true, _, _) => 3,
+            (_, _, true, _) => 2,
+            (_, _, _, true) => 1,
+            _ => 0,
+        }
+    }
+
+    /// Returns the ranks tied for the highest card count.
+    pub const fn most_frequent_ranks(self) -> Rank16 {
+        let [r1, r2, r3, r4] = count_ranks(self);
+
+        match (r4.0 != 0, r3.0 != 0, r2.0 != 0, r1.0 != 0) {
+            (true, _, _, _) => r4,
+            (_, true, _, _) => r3,
+            (_, _, true, _) => r2,
+            _ => r1,
+        }
+    }
+
+    /// Returns the highest rank that appears exactly once, if any.
+    pub const fn max_non_paired_rank(self) -> Option<Rank> {
+        let [r1, r2, _, _] = count_ranks(self);
+
+        Rank16(r1.0 & !r2.0).max_rank()
     }
 }
 
@@ -437,5 +520,73 @@ mod tests {
 
         assert_eq!(obj.0, i & mask);
         assert_eq!(i & mask, Card64Inner::from(obj));
+    }
+
+    #[test]
+    fn test_unique_suit_count() {
+        assert_eq!(Card64::EMPTY.unique_suit_count(), 0);
+        assert_eq!(c64!("As").unique_suit_count(), 1);
+        assert_eq!(c64!("As Kh").unique_suit_count(), 2);
+        assert_eq!(c64!("As Kh Qd").unique_suit_count(), 3);
+        assert_eq!(c64!("As Kh Qd Jc").unique_suit_count(), 4);
+    }
+
+    #[test]
+    fn test_max_same_suit_count() {
+        assert_eq!(Card64::EMPTY.max_same_suit_count(), 0);
+        assert_eq!(c64!("As").max_same_suit_count(), 1);
+        assert_eq!(c64!("As Kh").max_same_suit_count(), 1);
+        assert_eq!(c64!("As Ks").max_same_suit_count(), 2);
+        assert_eq!(c64!("As Ks Qs").max_same_suit_count(), 3);
+        assert_eq!(c64!("As Ks Qs Js Th").max_same_suit_count(), 4);
+    }
+
+    #[test]
+    fn test_most_frequent_suits() {
+        assert_eq!(c64!("As Kh").most_frequent_suits().count(), 2);
+        assert_eq!(c64!("As Ks").most_frequent_suits(), Suit4::from(Suit::S));
+        assert_eq!(c64!("Ah Kh").most_frequent_suits(), Suit4::from(Suit::H));
+        assert_eq!(c64!("Ad Kd").most_frequent_suits(), Suit4::from(Suit::D));
+        assert_eq!(c64!("Ac Kc").most_frequent_suits(), Suit4::from(Suit::C));
+        let all_suits = c64!("As Kh Qd Jc").most_frequent_suits();
+        assert_eq!(all_suits.count(), 4);
+    }
+
+    #[test]
+    fn test_max_same_rank_count() {
+        assert_eq!(Card64::EMPTY.max_same_rank_count(), 0);
+        assert_eq!(c64!("As").max_same_rank_count(), 1);
+        assert_eq!(c64!("As Ah").max_same_rank_count(), 2);
+        assert_eq!(c64!("As Ah Ad").max_same_rank_count(), 3);
+        assert_eq!(c64!("As Ah Ad Ac").max_same_rank_count(), 4);
+        assert_eq!(c64!("As Ah Kd").max_same_rank_count(), 2);
+    }
+
+    #[test]
+    fn test_most_frequent_ranks() {
+        assert_eq!(Card64::EMPTY.most_frequent_ranks(), Rank16::default());
+
+        let single = c64!("As").most_frequent_ranks();
+        assert!(single.contains_rank(Rank::RA));
+
+        let quads = c64!("As Ah Ad Ac").most_frequent_ranks();
+        assert!(quads.contains_rank(Rank::RA));
+
+        let trips = c64!("As Ah Ad Kc").most_frequent_ranks();
+        assert!(trips.contains_rank(Rank::RA));
+
+        let pair = c64!("As Ah Kd").most_frequent_ranks();
+        assert!(pair.contains_rank(Rank::RA));
+    }
+
+    #[test]
+    fn test_max_non_paired_rank() {
+        assert_eq!(Card64::EMPTY.max_non_paired_rank(), None);
+        assert_eq!(c64!("As Kh").max_non_paired_rank(), Some(Rank::RA));
+        assert_eq!(
+            c64!("As Ah Ad Kd Qc").max_non_paired_rank(),
+            Some(Rank::RK)
+        );
+        assert_eq!(c64!("As Ah").max_non_paired_rank(), None);
     }
 }
