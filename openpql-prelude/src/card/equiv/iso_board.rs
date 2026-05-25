@@ -3,8 +3,10 @@ use std::fmt;
 use crate::{
     Board, Card, FlushingSuit, HandN, IsomorphicCard, Suit, SuitMap,
     card::equiv::{
-        isomorphic_flop::IsomorphicFlop, isomorphic_river::IsomorphicRiver,
+        isomorphic_flop::IsomorphicFlop,
+        isomorphic_river::IsomorphicRiver,
         isomorphic_turn::IsomorphicTurn,
+        util::{n_flush_suits, place_card},
     },
 };
 
@@ -170,40 +172,6 @@ const fn to_suit(s: FlushingSuit) -> Suit {
     }
 }
 
-#[inline]
-const fn n_flush_suits(cards: &[IsomorphicCard]) -> usize {
-    let (mut x, mut y, mut z) = (false, false, false);
-    let mut idx = 0;
-
-    while idx < cards.len() {
-        match cards[idx].suit {
-            FlushingSuit::X => x = true,
-            FlushingSuit::Y => y = true,
-            FlushingSuit::Z => z = true,
-            FlushingSuit::N => {}
-        }
-        idx += 1;
-    }
-
-    x as usize + y as usize + z as usize
-}
-
-#[inline]
-const fn place_card(c: IsomorphicCard, next: usize) -> (Card, usize) {
-    const fn take(suit: FlushingSuit, next: usize) -> (Suit, usize) {
-        match suit {
-            FlushingSuit::X => (Suit::S, next),
-            FlushingSuit::Y => (Suit::H, next),
-            FlushingSuit::Z => (Suit::D, next),
-            FlushingSuit::N => (Suit::ARR_ALL[next], next + 1),
-        }
-    }
-
-    let (s, next) = take(c.suit, next);
-
-    (Card::new(c.rank, s), next)
-}
-
 impl fmt::Display for IsomorphicBoard {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.iter().try_for_each(|card| write!(f, "{card}"))
@@ -286,13 +254,5 @@ mod tests {
         let (got, map) = IsomorphicBoard::to_isomorphic(Board::default());
         assert_eq!(got, IsomorphicBoard::default());
         assert_eq!(map.0, SuitMap::new().0);
-    }
-
-    #[test]
-    fn test_z_suit() {
-        let z = IsomorphicCard::new(Rank::RA, FlushingSuit::Z);
-
-        assert_eq!(n_flush_suits(&[z]), 1);
-        assert_eq!(place_card(z, 0), (Card::new(Rank::RA, Suit::D), 0));
     }
 }

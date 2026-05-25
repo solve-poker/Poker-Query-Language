@@ -2,13 +2,20 @@
 
 mod iso_board;
 mod iso_card;
+mod iso_hand;
+mod iso_river_ev;
+mod iso_turn_ev;
 mod isomorphic_flop;
 mod isomorphic_river;
 mod isomorphic_turn;
 mod suit;
 mod suit_map;
+mod util;
 
 pub use iso_board::IsomorphicBoard;
 pub use iso_card::IsomorphicCard;
+pub use iso_hand::IsomorphicHandN;
+pub use iso_river_ev::IsomorphicRiverEv;
+pub use iso_turn_ev::IsomorphicTurnEv;
 pub use suit::FlushingSuit;
 pub use suit_map::SuitMap;

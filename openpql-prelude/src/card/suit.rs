@@ -68,6 +68,11 @@ impl Suit {
     pub(crate) const fn eq(self, other: Self) -> bool {
         self as Idx == other as Idx
     }
+
+    #[inline]
+    pub(crate) const fn lt(self, other: Self) -> bool {
+        (self as Idx) < other as Idx
+    }
 }
 
 impl TryFrom<char> for Suit {

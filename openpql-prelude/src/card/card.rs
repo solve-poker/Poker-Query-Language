@@ -183,6 +183,15 @@ impl Card {
     pub(crate) const fn eq(self, other: Self) -> bool {
         self.rank.eq(other.rank) && self.suit.eq(other.suit)
     }
+
+    #[inline]
+    pub(crate) const fn lt(self, other: Self) -> bool {
+        if self.rank.eq(other.rank) {
+            self.suit.lt(other.suit)
+        } else {
+            self.rank.lt(other.rank)
+        }
+    }
 }
 
 impl Default for Card {

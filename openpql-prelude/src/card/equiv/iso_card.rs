@@ -2,7 +2,7 @@
 
 use std::str::FromStr;
 
-use crate::{FlushingSuit, Idx, ParseError, Rank};
+use crate::{FlushingSuit, ParseError, Rank};
 
 /// Parses a single [`IsomorphicCard`] from a string, panicking on failure.
 #[macro_export]
@@ -27,7 +27,18 @@ macro_rules! isocards {
 }
 
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
-#[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Hash)]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    derive_more::Display,
+    PartialOrd,
+    Ord,
+    PartialEq,
+    Eq,
+    Hash,
+)]
 #[display("{rank}{suit}")]
 /// A card whose suit is relabeled to a flush-relevant [`FlushingSuit`].
 pub struct IsomorphicCard {
@@ -46,12 +57,10 @@ impl IsomorphicCard {
     /// Orders cards by rank, breaking ties by suit label.
     #[inline]
     pub(crate) const fn lt(self, other: Self) -> bool {
-        let rank_l = self.rank as Idx;
-        let rank_r = other.rank as Idx;
-        if rank_l == rank_r {
-            (self.suit as Idx) < (other.suit as Idx)
+        if self.rank.eq(other.rank) {
+            self.suit.lt(other.suit)
         } else {
-            rank_l < rank_r
+            self.rank.lt(other.rank)
         }
     }
 }
@@ -72,6 +81,42 @@ impl FromStr for IsomorphicCard {
         }
 
         Err(ParseError::InvalidCard(s.into()))
+    }
+}
+
+#[cfg(feature = "serde")]
+impl serde::Serialize for IsomorphicCard {
+    fn serialize<S: serde::Serializer>(
+        &self,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error> {
+        serializer.collect_str(self)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for IsomorphicCard {
+    fn deserialize<D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<Self, D::Error> {
+        use std::fmt;
+
+        use serde::de;
+
+        struct V;
+        impl de::Visitor<'_> for V {
+            type Value = IsomorphicCard;
+            fn expecting(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
+                f.write_str("an isomorphic card string like \"Ah\"")
+            }
+            fn visit_str<E: de::Error>(
+                self,
+                s: &str,
+            ) -> Result<Self::Value, E> {
+                s.parse().map_err(E::custom)
+            }
+        }
+        deserializer.deserialize_str(V)
     }
 }
 

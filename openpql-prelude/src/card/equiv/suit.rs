@@ -2,7 +2,7 @@
 
 use std::str::FromStr;
 
-use crate::ParseError;
+use crate::{Idx, ParseError};
 
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(
@@ -46,6 +46,11 @@ impl FlushingSuit {
             'n' => Some(Self::N),
             _ => None,
         }
+    }
+
+    #[inline]
+    pub(crate) const fn lt(self, other: Self) -> bool {
+        (self as Idx) < other as Idx
     }
 }
 
