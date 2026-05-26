@@ -28,11 +28,19 @@ const fn flush_suit(
     }
 }
 
+/// Canonical suit-isomorphic representative of a five-card river hand for equity evaluation.
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
-pub struct IsomorphicRiverEv(pub [IsomorphicCard; Board::N_RIVER]);
+pub struct IsomorphicRiverEv(
+    /// The relabeled and rank-sorted river cards.
+    pub [IsomorphicCard; Board::N_RIVER],
+);
 
 impl IsomorphicRiverEv {
-    /// panics if less than 5 cards
+    /// Canonical suit-isomorphic form of `cards` and the [`SuitMap`] that produced it.
+    ///
+    /// # Panics
+    /// Panics if `cards` contains fewer than 5 cards.
     pub const fn to_isomorphic(cards: &[Card]) -> (Self, SuitMap) {
         let map = match flush_suit(
             cards[0].suit,
@@ -54,6 +62,7 @@ impl IsomorphicRiverEv {
         (Self(sort5!(IsomorphicCard, c0, c1, c2, c3, c4)), map)
     }
 
+    /// Materializes this representative as a concrete card array with placed suits.
     pub const fn to_array(self) -> [Card; Board::N_RIVER] {
         let k = n_flush_suits(&self.0);
 

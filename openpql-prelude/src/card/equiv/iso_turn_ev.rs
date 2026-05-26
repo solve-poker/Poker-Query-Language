@@ -9,11 +9,19 @@ use crate::{
     },
 };
 
+/// Canonical suit-isomorphic representative of a four-card turn hand for equity evaluation.
+#[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
-pub struct IsomorphicTurnEv(pub [IsomorphicCard; Board::N_TURN]);
+pub struct IsomorphicTurnEv(
+    /// The relabeled and rank-sorted turn cards.
+    pub [IsomorphicCard; Board::N_TURN],
+);
 
 impl IsomorphicTurnEv {
-    /// panics if less than 4 cards
+    /// Canonical suit-isomorphic form of `cards` and the [`SuitMap`] that produced it.
+    ///
+    /// # Panics
+    /// Panics if `cards` contains fewer than 4 cards.
     pub const fn to_isomorphic(cards: &[Card]) -> (Self, SuitMap) {
         let [a, b, c, d] = sort4!(Card, cards[0], cards[1], cards[2], cards[3]);
         let map = TurnTexture::from_turn(a, b, c, d).to_suit_map();
@@ -26,6 +34,7 @@ impl IsomorphicTurnEv {
         (Self(sort4!(IsomorphicCard, c0, c1, c2, c3)), map)
     }
 
+    /// Materializes this representative as a concrete card array with placed suits.
     pub const fn to_array(self) -> [Card; Board::N_TURN] {
         let k = n_flush_suits(&self.0);
 

@@ -163,4 +163,12 @@ mod tests_serde {
     fn test_action_player_bet_ser_de() {
         assert_tokens(&Action::PlayerBet(100), &[Token::U16(100)]);
     }
+
+    #[test]
+    fn test_action_unknown_string_err() {
+        assert_de_tokens_error::<Action>(
+            &[Token::Str("bogus")],
+            "unknown action: bogus",
+        );
+    }
 }

@@ -30,9 +30,9 @@ macro_rules! isocards {
 #[derive(
     Clone,
     Copy,
-    Debug,
     Default,
     derive_more::Display,
+    derive_more::Debug,
     PartialOrd,
     Ord,
     PartialEq,
@@ -40,6 +40,7 @@ macro_rules! isocards {
     Hash,
 )]
 #[display("{rank}{suit}")]
+#[debug("{}", self)]
 /// A card whose suit is relabeled to a flush-relevant [`FlushingSuit`].
 pub struct IsomorphicCard {
     /// Card rank.
@@ -149,5 +150,31 @@ mod tests {
         assert!(isocard!("Kx").lt(isocard!("Ax")));
         assert!(isocard!("Ax").lt(isocard!("Ay")));
         assert!(!isocard!("Ay").lt(isocard!("Ax")));
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    #[test]
+    fn test_iso_card_ser_de() {
+        let card = isocard!("Ax");
+        assert_tokens(&card, &[Token::Str("Ax")]);
+    }
+
+    #[test]
+    fn test_iso_card_invalid() {
+        assert_de_tokens_error::<IsomorphicCard>(&[Token::Str("A?")], "A?");
+    }
+
+    #[test]
+    fn test_iso_card_unexpected_type() {
+        assert_de_tokens_error::<IsomorphicCard>(
+            &[Token::Bool(true)],
+            "invalid type: boolean `true`, expected an isomorphic card string like \"Ah\"",
+        );
     }
 }

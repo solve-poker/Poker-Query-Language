@@ -101,6 +101,7 @@ impl IsomorphicBoard {
         }
     }
 
+    /// Returns the set of ranks present on the board.
     pub const fn ranks(self) -> Rank16 {
         let mut res = Rank16(0);
 
@@ -253,7 +254,7 @@ const fn to_suit(s: FlushingSuit) -> Suit {
     match s {
         FlushingSuit::X => Suit::S,
         FlushingSuit::Y => Suit::H,
-        FlushingSuit::N => Suit::D,
+        FlushingSuit::N => Suit::D, // LCOV_EXCL_LINE — place_flop only sees X/Y/Z
         FlushingSuit::Z => Suit::C,
     }
 }
@@ -309,6 +310,11 @@ mod tests {
         let (back, _) = IsomorphicBoard::to_isomorphic(iso.to_board());
 
         assert_eq!(back, iso, "{s}: {iso} -> {} -> {back}", iso.to_board());
+    }
+
+    #[test]
+    fn test_place_river_suit_c_arm() {
+        assert_roundtrip("AsAhAd Kh Ac");
     }
 
     #[test]

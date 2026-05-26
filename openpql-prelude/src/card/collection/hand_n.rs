@@ -260,4 +260,43 @@ mod tests_serde {
             ],
         );
     }
+
+    #[test]
+    fn test_hand_de_short_seq_err() {
+        assert_de_tokens_error::<Compact<HandN<3>>>(
+            &[
+                Token::Tuple { len: 2 },
+                Token::U8(0),
+                Token::U8(1),
+                Token::TupleEnd,
+            ],
+            "expected 3 cards, got 2",
+        );
+    }
+
+    #[test]
+    fn test_hand_de_unexpected_type() {
+        assert_de_tokens_error::<Compact<HandN<3>>>(
+            &[Token::Bool(true)],
+            "invalid type: boolean `true`, expected a hand of 3 cards",
+        );
+    }
+}
+
+#[cfg(all(test, feature = "speedy"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_speedy {
+    use speedy::{Readable, Writable};
+
+    use super::*;
+    use crate::*;
+
+    #[test]
+    fn test_hand_speedy_roundtrip() {
+        let cards = cards!("2s Kc Ad");
+        let hand = HandN::<3>::from_slice(&cards);
+        let bytes = hand.write_to_vec().unwrap();
+        let back = HandN::<3>::read_from_buffer(&bytes).unwrap();
+        assert_eq!(hand, back);
+    }
 }

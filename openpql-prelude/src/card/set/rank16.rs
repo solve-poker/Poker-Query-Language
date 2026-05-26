@@ -51,16 +51,27 @@ impl Rank16 {
     /// Low straight candidates A-8.
     pub const ALL_LO: Self = Self(0b0001_0000_0111_1111);
 
+    /// Short-deck wheel straight: A-6-7-8-9.
     pub const STRAIGHT_A6789: Self = Self(0b0001_0000_1111_0000);
+    /// Wheel straight: A-2-3-4-5.
     pub const STRAIGHT_A2345: Self = Self(0b0001_0000_0000_1111);
+    /// Straight 2-3-4-5-6.
     pub const STRAIGHT_23456: Self = Self(0b0000_0000_0001_1111);
+    /// Straight 3-4-5-6-7.
     pub const STRAIGHT_34567: Self = Self(0b0000_0000_0011_1110);
+    /// Straight 4-5-6-7-8.
     pub const STRAIGHT_45678: Self = Self(0b0000_0000_0111_1100);
+    /// Straight 5-6-7-8-9.
     pub const STRAIGHT_56789: Self = Self(0b0000_0000_1111_1000);
+    /// Straight 6-7-8-9-T.
     pub const STRAIGHT_6789T: Self = Self(0b0000_0001_1111_0000);
+    /// Straight 7-8-9-T-J.
     pub const STRAIGHT_789TJ: Self = Self(0b0000_0011_1110_0000);
+    /// Straight 8-9-T-J-Q.
     pub const STRAIGHT_89TJQ: Self = Self(0b0000_0111_1100_0000);
+    /// Straight 9-T-J-Q-K.
     pub const STRAIGHT_9TJQK: Self = Self(0b0000_1111_1000_0000);
+    /// Broadway straight T-J-Q-K-A.
     pub const STRAIGHT_TJQKA: Self = Self(0b0001_1111_0000_0000);
 
     const ALL_STRAIGHT: [Self; N_STRAIGHT] = [

@@ -143,3 +143,119 @@ where
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests {
+    use super::*;
+    use crate::*;
+
+    fn mk_map() -> SuitMap {
+        IsomorphicBoard::to_isomorphic(board!("AsKhQd")).1
+    }
+
+    #[test]
+    fn test_from_slice_and_map() {
+        let cards = cards!("AsKhQd");
+        let hand = IsomorphicHandN::<3>::from_slice_and_map(&cards, mk_map());
+        assert!(hand.0.is_sorted());
+    }
+
+    #[test]
+    #[should_panic(expected = "from_slice: not enough cards for Hand")]
+    #[cfg(debug_assertions)]
+    fn test_from_slice_and_map_too_few() {
+        let cards = cards!("As");
+        let _ = IsomorphicHandN::<3>::from_slice_and_map(&cards, mk_map());
+    }
+
+    #[test]
+    fn test_display_and_debug() {
+        let cards = cards!("AsKhQd");
+        let hand = IsomorphicHandN::<3>::from_slice_and_map(&cards, mk_map());
+        let display = hand.to_string();
+        assert_eq!(display.len(), 6);
+        assert!(format!("{hand:?}").starts_with("IsomorphicHandN<3>("));
+    }
+
+    #[test]
+    fn test_into_and_index_and_deref() {
+        let cards = cards!("AsKhQd");
+        let hand = IsomorphicHandN::<3>::from_slice_and_map(&cards, mk_map());
+        let arr: [IsomorphicCard; 3] = hand.into();
+        assert_eq!(arr[0], hand[0]);
+        assert_eq!(hand.len(), 3);
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    fn mk_hand() -> IsomorphicHandN<3> {
+        let cards = cards!("AsKhQd");
+        let map = IsomorphicBoard::to_isomorphic(board!("AsKhQd")).1;
+        IsomorphicHandN::<3>::from_slice_and_map(&cards, map)
+    }
+
+    #[test]
+    fn test_iso_hand_ser_de() {
+        let hand = mk_hand();
+        let s0 = hand[0].to_string();
+        let s1 = hand[1].to_string();
+        let s2 = hand[2].to_string();
+
+        assert_tokens(
+            &hand,
+            &[
+                Token::Tuple { len: 3 },
+                Token::Str(Box::leak(s0.into_boxed_str())),
+                Token::Str(Box::leak(s1.into_boxed_str())),
+                Token::Str(Box::leak(s2.into_boxed_str())),
+                Token::TupleEnd,
+            ],
+        );
+    }
+
+    #[test]
+    fn test_iso_hand_de_short_seq_err() {
+        assert_de_tokens_error::<IsomorphicHandN<3>>(
+            &[
+                Token::Tuple { len: 2 },
+                Token::Str("Ax"),
+                Token::Str("Ky"),
+                Token::TupleEnd,
+            ],
+            "expected 3 isomorphic cards, got 2",
+        );
+    }
+
+    #[test]
+    fn test_iso_hand_de_unexpected_type() {
+        assert_de_tokens_error::<IsomorphicHandN<3>>(
+            &[Token::Bool(true)],
+            "invalid type: boolean `true`, expected an isomorphic hand of 3 cards",
+        );
+    }
+}
+
+#[cfg(all(test, feature = "speedy"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_speedy {
+    use speedy::{Readable, Writable};
+
+    use super::*;
+    use crate::*;
+
+    #[test]
+    fn test_iso_hand_speedy_roundtrip() {
+        let cards = cards!("AsKhQd");
+        let map = IsomorphicBoard::to_isomorphic(board!("AsKhQd")).1;
+        let hand = IsomorphicHandN::<3>::from_slice_and_map(&cards, map);
+        let bytes = hand.write_to_vec().unwrap();
+        let back = IsomorphicHandN::<3>::read_from_buffer(&bytes).unwrap();
+        assert_eq!(hand, back);
+    }
+}

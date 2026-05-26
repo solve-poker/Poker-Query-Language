@@ -374,4 +374,12 @@ mod tests_serde {
             "invalid card",
         );
     }
+
+    #[test]
+    fn test_card_unexpected_type() {
+        assert_de_tokens_error::<Compact<Card>>(
+            &[Token::Bool(true)],
+            "invalid type: boolean `true`, expected card index interger or card string",
+        );
+    }
 }

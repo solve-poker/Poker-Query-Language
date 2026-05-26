@@ -306,4 +306,12 @@ mod tests_serde {
 
         assert_tokens(&h, &[Token::Str("C-100-200")]);
     }
+
+    #[test]
+    #[should_panic(expected = "not implemented")]
+    fn test_history_deser_invalid_token_panics() {
+        use serde_test::assert_de_tokens;
+        let h = History::default();
+        assert_de_tokens(&h, &[Token::Str("bogus")]);
+    }
 }

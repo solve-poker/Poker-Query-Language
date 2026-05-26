@@ -397,4 +397,17 @@ mod tests {
             assert_eq!(card64.count() as usize, i);
         }
     }
+
+    #[quickcheck]
+    fn test_flush_suits_river(cs: CardN<5>) {
+        let board = Board::from_slice(cs.as_slice());
+        if board.to_card64().max_same_suit_count() >= 3 {
+            assert_eq!(
+                board.flush_suits(),
+                board.to_card64().most_frequent_suits()
+            );
+        } else {
+            assert!(board.flush_suits().is_empty());
+        }
+    }
 }

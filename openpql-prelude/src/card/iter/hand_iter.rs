@@ -179,4 +179,26 @@ mod tests {
         assert_eq!(ncr(52, 4), 270_725); // Omaha
         assert_eq!(ncr(52, 5), 2_598_960);
     }
+
+    #[test]
+    fn test_size_hint_when_done() {
+        let mut iter = HandN::<2>::iter_all::<false>().with_dead(c64!("Ad Ac"));
+        while iter.next().is_some() {}
+        assert_eq!(iter.size_hint(), (0, Some(0)));
+    }
+
+    #[test]
+    fn test_last_hand_filtered_by_dead() {
+        let dead = c64!("Ad Ac");
+        let hands: Vec<_> =
+            HandN::<2>::iter_all::<false>().with_dead(dead).collect();
+
+        let ad = Card::from_str("Ad").unwrap();
+        let ac = Card::from_str("Ac").unwrap();
+        for hand in &hands {
+            assert!(!hand.to_vec().contains(&ad));
+            assert!(!hand.to_vec().contains(&ac));
+        }
+        assert_eq!(hands.len(), ncr(50, 2));
+    }
 }

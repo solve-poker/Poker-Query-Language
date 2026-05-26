@@ -260,6 +260,21 @@ mod tests {
     }
 
     #[test]
+    fn test_unrank_iter_methods() {
+        use rayon::iter::plumbing::Producer;
+
+        let par = HandN::<2>::iter_all::<false>().into_par_iter();
+        let mut iter = Producer::into_iter(par);
+
+        assert_eq!(iter.len(), super::super::hand_iter::ncr(52, 2));
+        assert_eq!(iter.size_hint(), (iter.len(), Some(iter.len())));
+
+        let first = iter.next().unwrap();
+        let last = iter.next_back().unwrap();
+        assert_ne!(first, last);
+    }
+
+    #[test]
     fn test_parallel_iter_with_dead() {
         let dead = c64!("As Kd");
         let seq_hands: FxHashSet<HandN<2>> =
