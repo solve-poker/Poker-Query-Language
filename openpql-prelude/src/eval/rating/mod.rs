@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{Card64, CardCount, Rank16, Suit, eval::count_ranks};
+use crate::{Card64, CardCount, Rank16, Suit, eval::ranks_by_suit_count};
 
 mod holdem;
 mod omaha;

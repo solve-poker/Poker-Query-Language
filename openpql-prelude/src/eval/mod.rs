@@ -11,7 +11,7 @@ pub use payoff::calculate_payoffs;
 use crate::{Card64, Rank16};
 
 #[inline]
-pub const fn count_ranks(c: Card64) -> [Rank16; 4] {
+pub const fn ranks_by_suit_count(c: Card64) -> [Rank16; 4] {
     // transmute is faster than calling to_le_bytes 4 times.
     unsafe {
         let [s, h, d, c]: [u16; 4] = transmute(c);

@@ -1,18 +1,32 @@
 use std::fmt;
 
 use crate::{
-    Board, Card, FlushingSuit, HandN, IsomorphicCard, Suit, SuitMap,
-    card::equiv::{
-        isomorphic_flop::IsomorphicFlop,
-        isomorphic_river::IsomorphicRiver,
-        isomorphic_turn::IsomorphicTurn,
-        util::{n_flush_suits, place_card},
+    Board, Card, FlushingSuit, HandN, IsomorphicCard, Rank, Rank16, Suit,
+    Suit4, SuitMap,
+    card::{
+        Rank16Inner,
+        equiv::{
+            isomorphic_flop::IsomorphicFlop,
+            isomorphic_river::IsomorphicRiver,
+            isomorphic_turn::IsomorphicTurn,
+            util::{n_flush_suits, place_card},
+        },
     },
 };
 
 /// Canonical suit-isomorphic representative of a board at any street.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
-#[derive(Copy, Clone, derive_more::Debug, PartialEq, Eq, Hash, Default)]
+#[derive(
+    Copy,
+    Clone,
+    derive_more::Debug,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Default,
+)]
 #[debug("IsomorphicBoard<{}>", self)]
 pub struct IsomorphicBoard {
     /// The flop cards, suit-relabeled and sorted, or `None` preflop.
@@ -60,7 +74,7 @@ impl IsomorphicBoard {
     };
 
     /// Builds a flop-only board from relabeled flop cards.
-    const fn flop(flop: [IsomorphicCard; Board::N_FLOP]) -> Self {
+    pub const fn flop(flop: [IsomorphicCard; Board::N_FLOP]) -> Self {
         Self {
             flop: Some(flop),
             ..Self::EMPTY
@@ -68,15 +82,49 @@ impl IsomorphicBoard {
     }
 
     /// Adds a relabeled turn card.
-    const fn with_turn(mut self, turn: IsomorphicCard) -> Self {
-        self.turn = Some(turn);
-        self
+    #[must_use]
+    pub const fn with_turn(self, turn: IsomorphicCard) -> Self {
+        Self {
+            flop: self.flop,
+            turn: Some(turn),
+            river: self.river,
+        }
     }
 
     /// Adds a relabeled river card.
-    const fn with_river(mut self, river: IsomorphicCard) -> Self {
-        self.river = Some(river);
-        self
+    #[must_use]
+    pub const fn with_river(self, river: IsomorphicCard) -> Self {
+        Self {
+            flop: self.flop,
+            turn: self.turn,
+            river: Some(river),
+        }
+    }
+
+    pub const fn ranks(self) -> Rank16 {
+        let mut res = Rank16(0);
+
+        if let Some([f0, f1, f2]) = self.flop {
+            res.set(f0.rank);
+            res.set(f1.rank);
+            res.set(f2.rank);
+        }
+
+        if let Some(turn) = self.turn {
+            res.set(turn.rank);
+        }
+
+        if let Some(river) = self.river {
+            res.set(river.rank);
+        }
+
+        res
+    }
+
+    /// Returns the board ranks strictly above `rank`.
+    pub const fn ranks_above(self, rank: Rank) -> Rank16 {
+        let mask = !((1 << (rank as Rank16Inner + 1)) - 1);
+        Rank16(self.ranks().0 & mask)
     }
 
     /// Iterates the relabeled cards in board order.
@@ -159,7 +207,45 @@ const fn place_river(
 ) -> [Card; Board::N_RIVER] {
     let [c0, c1, c2, c3] = place_turn(flop, turn);
 
-    [c0, c1, c2, c3, Card::new(river.rank, to_suit(river.suit))]
+    let river_suit = match river.suit {
+        FlushingSuit::N => {
+            let n_flush = n_flush_suits(&[flop[0], flop[1], flop[2], turn]);
+            let taken = taken_by_rank(river.rank, [c0, c1, c2, c3]);
+
+            match (
+                n_flush,
+                taken.contains_suit(Suit::S),
+                taken.contains_suit(Suit::H),
+                taken.contains_suit(Suit::D),
+            ) {
+                (0, false, _, _) => Suit::S,
+                (0..=1, _, false, _) => Suit::H,
+                (0..=2, _, _, false) => Suit::D,
+                _ => Suit::C,
+            }
+        }
+        _ => to_suit(river.suit),
+    };
+
+    [c0, c1, c2, c3, Card::new(river.rank, river_suit)]
+}
+
+#[inline]
+const fn taken_by_rank(rank: Rank, cs: [Card; 4]) -> Suit4 {
+    let mut res = Suit4(0);
+    if rank.eq(cs[0].rank) {
+        res.set(cs[0].suit);
+    }
+    if rank.eq(cs[1].rank) {
+        res.set(cs[1].suit);
+    }
+    if rank.eq(cs[2].rank) {
+        res.set(cs[2].suit);
+    }
+    if rank.eq(cs[3].rank) {
+        res.set(cs[3].suit);
+    }
+    res
 }
 
 #[inline]
@@ -246,6 +332,10 @@ mod tests {
         let (iso, _) = IsomorphicBoard::to_isomorphic(board);
         let (back, _) = IsomorphicBoard::to_isomorphic(iso.to_board());
 
+        assert_eq!(
+            board.to_card64().count(),
+            iso.to_board().to_card64().count()
+        );
         assert_eq!(back, iso);
     }
 
@@ -254,5 +344,45 @@ mod tests {
         let (got, map) = IsomorphicBoard::to_isomorphic(Board::default());
         assert_eq!(got, IsomorphicBoard::default());
         assert_eq!(map.0, SuitMap::new().0);
+    }
+
+    #[test]
+    fn test_ranks_above() {
+        let (iso, _) = IsomorphicBoard::to_isomorphic(board!("AsKhQd Jc Ts"));
+
+        assert_eq!(iso.ranks_above(Rank::RA), Rank16::default());
+        assert_eq!(iso.ranks_above(Rank::RK), r16!("A"));
+        assert_eq!(iso.ranks_above(Rank::RQ), r16!("KA"));
+        assert_eq!(iso.ranks_above(Rank::RT), r16!("JQKA"));
+        assert_eq!(iso.ranks_above(Rank::R9), r16!("TJQKA"));
+        assert_eq!(iso.ranks_above(Rank::R2), r16!("TJQKA"));
+    }
+
+    #[test]
+    fn test_place_river() {
+        assert_eq!(
+            IsomorphicBoard::to_isomorphic(board!("AsKhQd Jc Js"))
+                .0
+                .to_board()
+                .to_card64()
+                .count(),
+            5
+        );
+
+        assert_eq!(
+            IsomorphicBoard::to_isomorphic(board!("AsKhQd Jc Qc"))
+                .0
+                .to_board()
+                .to_card64()
+                .count(),
+            5
+        );
+    }
+
+    #[test]
+    fn test_ranks_above_empty() {
+        let iso = IsomorphicBoard::default();
+        assert_eq!(iso.ranks_above(Rank::R2), Rank16::default());
+        assert_eq!(iso.ranks_above(Rank::RA), Rank16::default());
     }
 }

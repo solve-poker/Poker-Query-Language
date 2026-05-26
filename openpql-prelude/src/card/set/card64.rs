@@ -3,7 +3,7 @@ use std::{fmt, hash::Hash, ops, ops::Not};
 use crate::{
     Card, CardCount, CardIter, Rank, Rank16, Suit, Suit4,
     card::{Card64Inner, Idx, Rank16Inner},
-    eval::count_ranks,
+    eval::ranks_by_suit_count,
 };
 
 /// Builds a [`Card64`] bitset from a string of cards.
@@ -209,9 +209,14 @@ impl Card64 {
         res
     }
 
+    /// Returns the rankset of [Any, Pair, Trips, Quads].
+    pub const fn ranks_by_suit_count(self) -> [Rank16; 4] {
+        ranks_by_suit_count(self)
+    }
+
     /// Returns the count of the most frequent rank (0–4).
     pub const fn max_same_rank_count(self) -> CardCount {
-        let [r1, r2, r3, r4] = count_ranks(self);
+        let [r1, r2, r3, r4] = self.ranks_by_suit_count();
 
         match (r4.0 != 0, r3.0 != 0, r2.0 != 0, r1.0 != 0) {
             (true, _, _, _) => 4,
@@ -224,7 +229,7 @@ impl Card64 {
 
     /// Returns the ranks tied for the highest card count.
     pub const fn most_frequent_ranks(self) -> Rank16 {
-        let [r1, r2, r3, r4] = count_ranks(self);
+        let [r1, r2, r3, r4] = self.ranks_by_suit_count();
 
         match (r4.0 != 0, r3.0 != 0, r2.0 != 0, r1.0 != 0) {
             (true, _, _, _) => r4,
@@ -236,7 +241,7 @@ impl Card64 {
 
     /// Returns the highest rank that appears exactly once, if any.
     pub const fn max_non_paired_rank(self) -> Option<Rank> {
-        let [r1, r2, _, _] = count_ranks(self);
+        let [r1, r2, _, _] = ranks_by_suit_count(self);
 
         Rank16(r1.0 & !r2.0).max_rank()
     }
