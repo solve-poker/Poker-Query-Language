@@ -14,16 +14,16 @@ const fn flush_suit(
     s4: Suit,
 ) -> Option<Suit> {
     match (s0, s1, s2, s3, s4) {
-        (a, b, c, _, _) if a.eq(b) && b.eq(c) => Some(a),
-        (a, b, _, d, _) if a.eq(b) && b.eq(d) => Some(a),
-        (a, b, _, _, e) if a.eq(b) && b.eq(e) => Some(a),
-        (a, _, c, d, _) if a.eq(c) && c.eq(d) => Some(a),
-        (a, _, c, _, e) if a.eq(c) && c.eq(e) => Some(a),
-        (a, _, _, d, e) if a.eq(d) && d.eq(e) => Some(a),
-        (_, b, c, d, _) if b.eq(c) && c.eq(d) => Some(b),
-        (_, b, c, _, e) if b.eq(c) && c.eq(e) => Some(b),
-        (_, b, _, d, e) if b.eq(d) && d.eq(e) => Some(b),
-        (_, _, c, d, e) if c.eq(d) && d.eq(e) => Some(c),
+        (a, b, c, _, _) if a.const_eq(b) && b.const_eq(c) => Some(a),
+        (a, b, _, d, _) if a.const_eq(b) && b.const_eq(d) => Some(a),
+        (a, b, _, _, e) if a.const_eq(b) && b.const_eq(e) => Some(a),
+        (a, _, c, d, _) if a.const_eq(c) && c.const_eq(d) => Some(a),
+        (a, _, c, _, e) if a.const_eq(c) && c.const_eq(e) => Some(a),
+        (a, _, _, d, e) if a.const_eq(d) && d.const_eq(e) => Some(a),
+        (_, b, c, d, _) if b.const_eq(c) && c.const_eq(d) => Some(b),
+        (_, b, c, _, e) if b.const_eq(c) && c.const_eq(e) => Some(b),
+        (_, b, _, d, e) if b.const_eq(d) && d.const_eq(e) => Some(b),
+        (_, _, c, d, e) if c.const_eq(d) && d.const_eq(e) => Some(c),
         _ => None,
     }
 }

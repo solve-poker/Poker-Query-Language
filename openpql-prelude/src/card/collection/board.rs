@@ -110,7 +110,7 @@ impl Board {
         #[inline]
         const fn inner_eq(op: Option<Card>, rhs: Card) -> bool {
             match op {
-                Some(lhs) => lhs.eq(rhs),
+                Some(lhs) => lhs.const_eq(rhs),
                 None => false,
             }
         }
@@ -169,15 +169,15 @@ impl Board {
                     (flop.0[0].suit, flop.0[1].suit, flop.0[2].suit, turn.suit);
                 let mut suits = Suit4(0);
 
-                if (s1.eq(s2)) || (s1.eq(s3)) || (s1.eq(s4)) {
+                if (s1.const_eq(s2)) || (s1.const_eq(s3)) || (s1.const_eq(s4)) {
                     suits.set(s1);
                 }
 
-                if (s2.eq(s3)) || (s2.eq(s4)) {
+                if (s2.const_eq(s3)) || (s2.const_eq(s4)) {
                     suits.set(s2);
                 }
 
-                if s3.eq(s4) {
+                if s3.const_eq(s4) {
                     suits.set(s3);
                 }
 
@@ -186,7 +186,7 @@ impl Board {
             (Some(flop), Some(turn), Some(river)) => {
                 #[inline]
                 pub const fn count(l: Suit, r: Suit) -> CardCount {
-                    if l.eq(r) { 1 } else { 0 }
+                    if l.const_eq(r) { 1 } else { 0 }
                 }
                 const N_OTHER: CardCount = 2;
                 let (s1, s2, s3, s4, s5) = (

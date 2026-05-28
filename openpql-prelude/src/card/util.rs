@@ -1,6 +1,6 @@
 macro_rules! cas {
     ($a:ident, $b:ident) => {
-        if $b.lt($a) {
+        if $b.const_lt($a) {
             ::core::mem::swap(&mut $a, &mut $b);
         }
     };

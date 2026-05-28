@@ -155,13 +155,17 @@ impl Rank {
         }
     }
 
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
     #[inline]
-    pub(crate) const fn eq(self, other: Self) -> bool {
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
         self as Idx == other as Idx
     }
 
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
     #[inline]
-    pub(crate) const fn lt(self, other: Self) -> bool {
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
         (self as Idx) < other as Idx
     }
 }

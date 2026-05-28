@@ -234,16 +234,16 @@ const fn place_river(
 #[inline]
 const fn taken_by_rank(rank: Rank, cs: [Card; 4]) -> Suit4 {
     let mut res = Suit4(0);
-    if rank.eq(cs[0].rank) {
+    if rank.const_eq(cs[0].rank) {
         res.set(cs[0].suit);
     }
-    if rank.eq(cs[1].rank) {
+    if rank.const_eq(cs[1].rank) {
         res.set(cs[1].suit);
     }
-    if rank.eq(cs[2].rank) {
+    if rank.const_eq(cs[2].rank) {
         res.set(cs[2].suit);
     }
-    if rank.eq(cs[3].rank) {
+    if rank.const_eq(cs[3].rank) {
         res.set(cs[3].suit);
     }
     res

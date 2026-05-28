@@ -24,7 +24,9 @@ impl Flop {
     }
 
     pub(crate) const fn contains_card(self, card: Card) -> bool {
-        self.0[0].eq(card) || self.0[1].eq(card) || self.0[2].eq(card)
+        self.0[0].const_eq(card)
+            || self.0[1].const_eq(card)
+            || self.0[2].const_eq(card)
     }
 }
 

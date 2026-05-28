@@ -56,12 +56,15 @@ impl IsomorphicCard {
     }
 
     /// Orders cards by rank, breaking ties by suit label.
+    ///
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
     #[inline]
-    pub(crate) const fn lt(self, other: Self) -> bool {
-        if self.rank.eq(other.rank) {
-            self.suit.lt(other.suit)
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        if self.rank.const_eq(other.rank) {
+            self.suit.const_lt(other.suit)
         } else {
-            self.rank.lt(other.rank)
+            self.rank.const_lt(other.rank)
         }
     }
 }
@@ -147,9 +150,9 @@ mod tests {
 
     #[test]
     fn test_lt() {
-        assert!(isocard!("Kx").lt(isocard!("Ax")));
-        assert!(isocard!("Ax").lt(isocard!("Ay")));
-        assert!(!isocard!("Ay").lt(isocard!("Ax")));
+        assert!(isocard!("Kx").const_lt(isocard!("Ax")));
+        assert!(isocard!("Ax").const_lt(isocard!("Ay")));
+        assert!(!isocard!("Ay").const_lt(isocard!("Ax")));
     }
 }
 

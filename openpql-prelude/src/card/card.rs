@@ -179,17 +179,21 @@ impl Card {
         res
     }
 
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
     #[inline]
-    pub(crate) const fn eq(self, other: Self) -> bool {
-        self.rank.eq(other.rank) && self.suit.eq(other.suit)
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self.rank.const_eq(other.rank) && self.suit.const_eq(other.suit)
     }
 
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
     #[inline]
-    pub(crate) const fn lt(self, other: Self) -> bool {
-        if self.rank.eq(other.rank) {
-            self.suit.lt(other.suit)
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        if self.rank.const_eq(other.rank) {
+            self.suit.const_lt(other.suit)
         } else {
-            self.rank.lt(other.rank)
+            self.rank.const_lt(other.rank)
         }
     }
 }

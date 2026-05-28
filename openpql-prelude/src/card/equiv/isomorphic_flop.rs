@@ -24,7 +24,7 @@ impl FlopTexture {
     pub(super) const fn from_sorted(f0: Card, f1: Card, f2: Card) -> Self {
         let (s0, s1, s2) = (f0.suit, f1.suit, f2.suit);
 
-        match (s0.eq(s1), s0.eq(s2), s1.eq(s2)) {
+        match (s0.const_eq(s1), s0.const_eq(s2), s1.const_eq(s2)) {
             (true, true, _) => Self::Monotone(s0),
             (true, false, _) => Self::Twotone(s0, s2),
             (false, true, _) => Self::Twotone(s0, s1),
