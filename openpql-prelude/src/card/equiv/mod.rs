@@ -3,6 +3,7 @@
 mod iso_board;
 mod iso_card;
 mod iso_hand;
+mod iso_hand_preflop;
 mod iso_river_ev;
 mod iso_turn_ev;
 mod isomorphic_flop;

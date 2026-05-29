@@ -29,11 +29,19 @@ impl TurnTexture {
 
         match FlopTexture::from_sorted(f0, f1, f2) {
             FlopTexture::Monotone(s) => Self::FlushDraw(s),
-            FlopTexture::Twotone(f, s) if t.const_eq(s) => Self::DblFlushDraw(f, s),
+            FlopTexture::Twotone(f, s) if t.const_eq(s) => {
+                Self::DblFlushDraw(f, s)
+            }
             FlopTexture::Twotone(f, _) => Self::FlushDraw(f),
-            FlopTexture::Rainbow(s0, _, _) if s0.const_eq(t) => Self::FlushDraw(s0),
-            FlopTexture::Rainbow(_, s1, _) if s1.const_eq(t) => Self::FlushDraw(s1),
-            FlopTexture::Rainbow(_, _, s2) if s2.const_eq(t) => Self::FlushDraw(s2),
+            FlopTexture::Rainbow(s0, _, _) if s0.const_eq(t) => {
+                Self::FlushDraw(s0)
+            }
+            FlopTexture::Rainbow(_, s1, _) if s1.const_eq(t) => {
+                Self::FlushDraw(s1)
+            }
+            FlopTexture::Rainbow(_, _, s2) if s2.const_eq(t) => {
+                Self::FlushDraw(s2)
+            }
             FlopTexture::Rainbow(_, _, _) => Self::NoFlush,
         }
     }
