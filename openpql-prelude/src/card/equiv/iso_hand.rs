@@ -8,7 +8,10 @@ use serde::{
 #[cfg(feature = "speedy")]
 use speedy::{Context, Readable, Reader, Writable, Writer};
 
-use crate::{Card, IsomorphicCard, SuitMap};
+use crate::{
+    Card, IsomorphicCard, Rank, Suit, SuitMap,
+    card::equiv::util::{n_flush_suits, place_card},
+};
 
 /// Sorted hand of exactly `N` cards.
 #[derive(
@@ -106,6 +109,23 @@ impl<const N: usize> IsomorphicHandN<N> {
 
         Self(inner)
     }
+
+    /// Materializes this representative as a concrete card array with placed suits.
+    #[must_use]
+    pub const fn to_array(self) -> [Card; N] {
+        let mut out = [Card::new(Rank::R2, Suit::S); N];
+        let mut k = n_flush_suits(&self.0);
+        let mut i = 0;
+
+        while i < N {
+            let (card, next) = place_card(self.0[i], k);
+            out[i] = card;
+            k = next;
+            i += 1;
+        }
+
+        out
+    }
 }
 
 impl<const N: usize> fmt::Display for IsomorphicHandN<N> {
@@ -176,6 +196,16 @@ mod tests {
         let display = hand.to_string();
         assert_eq!(display.len(), 6);
         assert!(format!("{hand:?}").starts_with("IsomorphicHandN<3>("));
+    }
+
+    #[test]
+    fn test_to_array_roundtrip_preflop() {
+        for cs in HandN::<2>::iter_all::<false>() {
+            let iso = IsomorphicHandN::<2>::from_slice_preflop(cs.as_slice());
+            let back =
+                IsomorphicHandN::<2>::from_slice_preflop(&iso.to_array());
+            assert_eq!(back, iso, "{cs:?}: {iso} -> {:?}", iso.to_array());
+        }
     }
 
     #[test]

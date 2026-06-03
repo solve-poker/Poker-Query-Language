@@ -28,7 +28,7 @@ fastrand = { workspace = true, optional = true }
 quickcheck = { workspace = true, optional = true }
 rand = { workspace = true, optional = true }
 rayon = { workspace = true, optional = true }
-rustc-hash = { workspace = true, optional = true }
+rustc-hash = { workspace = true }
 serde = { workspace = true, optional = true }
 speedy = { workspace = true, optional = true }
 
@@ -40,12 +40,11 @@ itertools.workspace = true
 quickcheck.workspace = true
 quickcheck_macros.workspace = true
 regex.workspace = true
-rustc-hash.workspace = true
 serde_test.workspace = true
 
 [features]
 default = ["rand"]
-quickcheck = ["dep:quickcheck", "fastrand", "rustc-hash"]
+quickcheck = ["dep:quickcheck", "fastrand"]
 rand = ["dep:rand"]
 rayon = ["dep:rayon"]
 serde = ["dep:serde"]

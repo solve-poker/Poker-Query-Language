@@ -6,6 +6,7 @@ mod collection;
 mod equiv;
 mod idx;
 mod iter;
+mod matrix;
 mod rank;
 mod set;
 mod suit;
@@ -19,6 +20,7 @@ pub use equiv::{
 };
 pub use idx::{CardIdx, RankIdx, SuitIdx};
 pub use iter::{CardIter, HandIter};
+pub use matrix::HandMatrix;
 pub use rank::Rank;
 pub use set::{Card64, Rank16, Suit4};
 pub use suit::Suit;

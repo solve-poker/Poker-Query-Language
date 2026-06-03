@@ -16,9 +16,9 @@ pub mod tree;
 
 pub use card::{
     Board, Card, Card64, CardCount, CardIdx, CardIter, Flop, FlushingSuit,
-    HandIter, HandN, Idx, IsomorphicBoard, IsomorphicCard, IsomorphicHandN,
-    IsomorphicRiverEv, IsomorphicTurnEv, Rank, Rank16, RankIdx, Suit, Suit4,
-    SuitIdx, SuitMap,
+    HandIter, HandMatrix, HandN, Idx, IsomorphicBoard, IsomorphicCard,
+    IsomorphicHandN, IsomorphicRiverEv, IsomorphicTurnEv, Rank, Rank16,
+    RankIdx, Suit, Suit4, SuitIdx, SuitMap,
 };
 pub use error::ParseError;
 pub use eval::calculate_payoffs;
