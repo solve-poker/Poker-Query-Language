@@ -5,7 +5,8 @@ use FlushingSuit::{N, X, Y, Z};
 use crate::{Card, FlushingSuit, IsomorphicCard, Suit};
 
 /// Permutation of the four [`Suit`]s used to map a board to its isomorphic form.
-#[derive(Clone, Copy, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct SuitMap(pub [FlushingSuit; 4]);
 
 impl SuitMap {
@@ -100,5 +101,40 @@ mod tests {
     fn test_const_context() {
         const M: SuitMap = SuitMap::map3(C, D, H);
         assert_eq!(M.0, [N, Z, Y, X]);
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::{Suit::*, *};
+
+    #[test]
+    fn test_suit_map_ser_de() {
+        assert_tokens(
+            &SuitMap::map2(H, C).compact(),
+            &[
+                Token::NewtypeStruct { name: "SuitMap" },
+                Token::Tuple { len: 4 },
+                Token::UnitVariant {
+                    name: "FlushingSuit",
+                    variant: "n",
+                },
+                Token::UnitVariant {
+                    name: "FlushingSuit",
+                    variant: "x",
+                },
+                Token::UnitVariant {
+                    name: "FlushingSuit",
+                    variant: "n",
+                },
+                Token::UnitVariant {
+                    name: "FlushingSuit",
+                    variant: "y",
+                },
+                Token::TupleEnd,
+            ],
+        );
     }
 }

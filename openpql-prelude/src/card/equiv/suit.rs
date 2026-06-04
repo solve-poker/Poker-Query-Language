@@ -5,6 +5,8 @@ use std::str::FromStr;
 use crate::{Idx, ParseError};
 
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "lowercase"))]
 #[derive(
     Clone,
     Copy,
@@ -116,5 +118,30 @@ mod tests {
         assert_eq!(FlushingSuit::Y.to_string(), "y");
         assert_eq!(FlushingSuit::Z.to_string(), "z");
         assert_eq!(FlushingSuit::N.to_string(), "n");
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+#[cfg_attr(coverage_nightly, coverage(off))]
+mod tests_serde {
+    use super::*;
+    use crate::*;
+
+    fn assert_flushing_suit(suit: FlushingSuit, s: &'static str) {
+        assert_tokens(
+            &suit.compact(),
+            &[Token::UnitVariant {
+                name: "FlushingSuit",
+                variant: s,
+            }],
+        );
+    }
+
+    #[quickcheck]
+    fn test_flushing_suit_ser_de() {
+        assert_flushing_suit(FlushingSuit::X, "x");
+        assert_flushing_suit(FlushingSuit::Y, "y");
+        assert_flushing_suit(FlushingSuit::Z, "z");
+        assert_flushing_suit(FlushingSuit::N, "n");
     }
 }
