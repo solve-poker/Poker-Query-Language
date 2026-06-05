@@ -103,6 +103,20 @@ impl Rank16 {
         const { if SD { Self::ALL_SD } else { Self::ALL } }
     }
 
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self.0 == other.0
+    }
+
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
+    #[inline]
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        self.0 < other.0
+    }
+
     /// Returns every straight, short-deck when `SD` is true.
     #[inline]
     #[must_use]
@@ -291,6 +305,12 @@ impl quickcheck::Arbitrary for Rank16 {
 mod tests {
     use super::*;
     use crate::*;
+
+    #[quickcheck]
+    fn test_const_cmp(a: Rank16, b: Rank16) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
 
     #[quickcheck]
     fn test_all(rank: Rank) {

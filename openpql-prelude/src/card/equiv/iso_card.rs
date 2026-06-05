@@ -55,8 +55,13 @@ impl IsomorphicCard {
         Self { rank, suit }
     }
 
-    /// Orders cards by rank, breaking ties by suit label.
-    ///
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self.rank.const_eq(other.rank) && self.suit.const_eq(other.suit)
+    }
+
     /// Const-context less-than, equivalent to [`PartialOrd::lt`].
     #[inline]
     #[must_use]
@@ -124,11 +129,24 @@ impl<'de> serde::Deserialize<'de> for IsomorphicCard {
     }
 }
 
+#[cfg(any(test, feature = "quickcheck"))]
+impl quickcheck::Arbitrary for IsomorphicCard {
+    fn arbitrary(g: &mut quickcheck::Gen) -> Self {
+        Self::new(Rank::arbitrary(g), FlushingSuit::arbitrary(g))
+    }
+}
+
 #[cfg(test)]
 #[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
     use crate::*;
+
+    #[quickcheck]
+    fn test_const_cmp(a: IsomorphicCard, b: IsomorphicCard) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
 
     #[test]
     fn test_from_str() {

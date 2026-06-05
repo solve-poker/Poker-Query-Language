@@ -206,6 +206,12 @@ mod tests {
     use super::*;
 
     #[quickcheck]
+    fn test_const_cmp(a: Rank, b: Rank) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
+
+    #[quickcheck]
     fn test_all(rank: Rank) {
         if rank >= Rank::R6 {
             assert!(Rank::all::<true>().contains(&rank));

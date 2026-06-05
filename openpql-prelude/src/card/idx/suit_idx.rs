@@ -30,6 +30,20 @@ impl SuitIdx {
             _ => None,
         }
     }
+
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self.0 == other.0
+    }
+
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
+    #[inline]
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        self.0 < other.0
+    }
 }
 
 impl From<Suit> for SuitIdx {
@@ -38,10 +52,23 @@ impl From<Suit> for SuitIdx {
     }
 }
 
+#[cfg(any(test, feature = "quickcheck"))]
+impl quickcheck::Arbitrary for SuitIdx {
+    fn arbitrary(g: &mut quickcheck::Gen) -> Self {
+        Suit::arbitrary(g).into()
+    }
+}
+
 #[cfg(test)]
 #[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
+
+    #[quickcheck]
+    fn test_const_cmp(a: SuitIdx, b: SuitIdx) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
 
     #[test]
     fn test_from_suit() {

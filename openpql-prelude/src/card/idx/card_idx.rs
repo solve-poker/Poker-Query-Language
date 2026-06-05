@@ -2,7 +2,7 @@ use crate::{Card, RankIdx, SuitIdx, card::Idx};
 
 /// Numeric index of a card in the range 0-51.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CardIdx(pub(crate) Idx);
 
 impl CardIdx {
@@ -13,6 +13,20 @@ impl CardIdx {
             (Some(r), Some(s)) => Some(Card::new(r, s)),
             _ => None,
         }
+    }
+
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self.0 == other.0
+    }
+
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
+    #[inline]
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        self.0 < other.0
     }
 }
 
@@ -25,10 +39,23 @@ impl From<Card> for CardIdx {
     }
 }
 
+#[cfg(any(test, feature = "quickcheck"))]
+impl quickcheck::Arbitrary for CardIdx {
+    fn arbitrary(g: &mut quickcheck::Gen) -> Self {
+        Card::arbitrary(g).into()
+    }
+}
+
 #[cfg(test)]
 #[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
+
+    #[quickcheck]
+    fn test_const_cmp(a: CardIdx, b: CardIdx) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
 
     #[test]
     #[allow(clippy::cast_possible_wrap)]

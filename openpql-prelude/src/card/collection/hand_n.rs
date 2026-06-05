@@ -61,6 +61,30 @@ impl<const N: usize> HandN<N> {
     }
 }
 
+impl HandN<3> {
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self.0[0].const_eq(other.0[0])
+            && self.0[1].const_eq(other.0[1])
+            && self.0[2].const_eq(other.0[2])
+    }
+
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
+    #[inline]
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        if !self.0[0].const_eq(other.0[0]) {
+            return self.0[0].const_lt(other.0[0]);
+        }
+        if !self.0[1].const_eq(other.0[1]) {
+            return self.0[1].const_lt(other.0[1]);
+        }
+        self.0[2].const_lt(other.0[2])
+    }
+}
+
 impl<const N: usize> fmt::Display for HandN<N> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.iter().try_for_each(|card| write!(f, "{card}"))
@@ -166,6 +190,16 @@ where
 mod tests {
     use super::*;
     use crate::*;
+
+    #[test]
+    fn test_const_cmp() {
+        assert!(flop!("QsKsAs").const_lt(flop!("QhKhAh")));
+        assert!(flop!("QsKsAs").const_lt(flop!("QsKhAh")));
+        assert!(flop!("QsKsAs").const_lt(flop!("QsKsAh")));
+
+        assert!(flop!("QsKsAs").const_eq(flop!("QsKsAs")));
+        assert!(!flop!("QsKsAs").const_eq(flop!("QsKsAh")));
+    }
 
     #[test]
     #[should_panic(expected = "Hand initialized from unsorted array")]

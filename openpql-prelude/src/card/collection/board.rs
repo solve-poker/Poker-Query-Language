@@ -1,6 +1,8 @@
 use std::{fmt, hash::Hash};
 
-use crate::{Card, Card64, CardCount, Flop, Suit, Suit4};
+use crate::{
+    Card, Card64, CardCount, Flop, Suit, Suit4, card::util::const_cmp_opt,
+};
 
 /// Builds a [`Board`] from a string of cards.
 #[macro_export]
@@ -12,7 +14,17 @@ macro_rules! board {
 
 /// Community cards across flop, turn, and river.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
-#[derive(Copy, Clone, derive_more::Debug, PartialEq, Eq, Hash, Default)]
+#[derive(
+    Copy,
+    Clone,
+    derive_more::Debug,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Default,
+)]
 #[debug("Board<{}>", self)]
 pub struct Board {
     /// Three flop cards, or `None` preflop.
@@ -122,6 +134,42 @@ impl Board {
         }
 
         inner_eq(self.turn, card) || inner_eq(self.river, card)
+    }
+
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        const fn card_eq(a: Option<Card>, b: Option<Card>) -> bool {
+            match (a, b) {
+                (Some(x), Some(y)) => x.const_eq(y),
+                (None, None) => true,
+                _ => false,
+            }
+        }
+
+        let flop_eq = match (self.flop, other.flop) {
+            (Some(x), Some(y)) => x.const_eq(y),
+            (None, None) => true,
+            _ => false,
+        };
+
+        flop_eq
+            && card_eq(self.turn, other.turn)
+            && card_eq(self.river, other.river)
+    }
+
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
+    ///
+    /// Orders lexicographically by flop, turn, then river, with `None`
+    /// ordered before `Some`.
+    #[inline]
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        const_cmp_opt!(self.flop, other.flop);
+        const_cmp_opt!(self.turn, other.turn);
+        const_cmp_opt!(self.river, other.river);
+        false
     }
 
     /// Returns a copy of the board with `card` set as the turn.
@@ -278,6 +326,19 @@ impl quickcheck::Arbitrary for Board {
 mod tests {
     use super::*;
     use crate::*;
+
+    #[test]
+    fn test_const_cmp() {
+        assert!(board!("TsJsQsKsAs").const_lt(board!("TsJsQsKsAh")));
+        assert!(!board!("TsJsQsKsAs").const_lt(board!("TsJsQsKsAs")));
+
+        assert!(board!("").const_eq(board!("")));
+        assert!(board!("TsJsQs").const_eq(board!("TsJsQs")));
+        assert!(!board!("TsJsQs").const_eq(board!("")));
+        assert!(board!("TsJsQsKsAs").const_eq(board!("TsJsQsKsAs")));
+        assert!(!board!("TsJsQsKsAs").const_eq(board!("TsJsQsKsAh")));
+        assert!(!board!("TsJsQsKsAs").const_eq(board!("TsJsQsKs")));
+    }
 
     #[quickcheck]
     fn test_from_slice(cs: CardN<5>) {

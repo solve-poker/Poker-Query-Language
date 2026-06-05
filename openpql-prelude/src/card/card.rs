@@ -306,6 +306,12 @@ mod tests {
     use crate::*;
 
     #[quickcheck]
+    fn test_const_cmp(a: Card, b: Card) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
+
+    #[quickcheck]
     fn test_all(cards: CardN<3>) {
         for c in cards {
             if c.rank >= Rank::R6 {

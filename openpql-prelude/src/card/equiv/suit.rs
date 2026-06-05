@@ -50,6 +50,13 @@ impl FlushingSuit {
         }
     }
 
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self as Idx == other as Idx
+    }
+
     /// Const-context less-than, equivalent to [`PartialOrd::lt`].
     #[inline]
     #[must_use]
@@ -81,10 +88,23 @@ impl FromStr for FlushingSuit {
     }
 }
 
+#[cfg(any(test, feature = "quickcheck"))]
+impl quickcheck::Arbitrary for FlushingSuit {
+    fn arbitrary(g: &mut quickcheck::Gen) -> Self {
+        *g.choose(&[Self::X, Self::Y, Self::Z, Self::N]).unwrap()
+    }
+}
+
 #[cfg(test)]
 #[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
+
+    #[quickcheck]
+    fn test_const_cmp(a: FlushingSuit, b: FlushingSuit) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
 
     #[test]
     fn test_from_char() {

@@ -39,6 +39,20 @@ impl RankIdx {
             _ => None,
         }
     }
+
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self.0 == other.0
+    }
+
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
+    #[inline]
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        self.0 < other.0
+    }
 }
 
 impl From<Rank> for RankIdx {
@@ -47,10 +61,23 @@ impl From<Rank> for RankIdx {
     }
 }
 
+#[cfg(any(test, feature = "quickcheck"))]
+impl quickcheck::Arbitrary for RankIdx {
+    fn arbitrary(g: &mut quickcheck::Gen) -> Self {
+        Rank::arbitrary(g).into()
+    }
+}
+
 #[cfg(test)]
 #[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
     use super::*;
+
+    #[quickcheck]
+    fn test_const_cmp(a: RankIdx, b: RankIdx) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
 
     #[test]
     fn test_from_rank() {

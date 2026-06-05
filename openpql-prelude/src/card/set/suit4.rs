@@ -32,6 +32,8 @@ macro_rules! s4 {
     derive_more::Debug,
     PartialEq,
     Eq,
+    PartialOrd,
+    Ord,
     derive_more::BitAnd,
     derive_more::BitOr,
     Default,
@@ -47,6 +49,20 @@ impl Suit4 {
     #[must_use]
     pub const fn is_empty(self) -> bool {
         self.0 == 0
+    }
+
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self.0 == other.0
+    }
+
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
+    #[inline]
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        self.0 < other.0
     }
 
     /// Adds `s` to the set.
@@ -170,6 +186,12 @@ impl quickcheck::Arbitrary for Suit4 {
 mod tests {
     use super::*;
     use crate::*;
+
+    #[quickcheck]
+    fn test_const_cmp(a: Suit4, b: Suit4) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
 
     #[test]
     fn test_all() {

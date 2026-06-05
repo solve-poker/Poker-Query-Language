@@ -29,6 +29,8 @@ macro_rules! c64 {
     Clone,
     PartialEq,
     Eq,
+    PartialOrd,
+    Ord,
     Hash,
     derive_more::BitAnd,
     derive_more::BitAndAssign,
@@ -58,6 +60,20 @@ impl Card64 {
     #[inline]
     pub const fn is_empty(self) -> bool {
         self.0 == 0
+    }
+
+    /// Const-context equality, equivalent to [`PartialEq::eq`].
+    #[inline]
+    #[must_use]
+    pub const fn const_eq(self, other: Self) -> bool {
+        self.0 == other.0
+    }
+
+    /// Const-context less-than, equivalent to [`PartialOrd::lt`].
+    #[inline]
+    #[must_use]
+    pub const fn const_lt(self, other: Self) -> bool {
+        self.0 < other.0
     }
 
     /// Adds `card` to the set.
@@ -346,6 +362,12 @@ impl quickcheck::Arbitrary for Card64 {
 mod tests {
     use super::*;
     use crate::*;
+
+    #[quickcheck]
+    fn test_const_cmp(a: Card64, b: Card64) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
 
     #[test]
     fn test_all() {

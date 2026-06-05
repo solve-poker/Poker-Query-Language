@@ -114,6 +114,12 @@ impl quickcheck::Arbitrary for Suit {
 mod tests {
     use super::*;
 
+    #[quickcheck]
+    fn test_const_cmp(a: Suit, b: Suit) {
+        assert_eq!(a < b, a.const_lt(b));
+        assert_eq!(a == b, a.const_eq(b));
+    }
+
     #[test]
     fn test_all() {
         assert_eq!(Suit::ARR_ALL, [Suit::S, Suit::H, Suit::D, Suit::C]);
