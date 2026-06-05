@@ -171,7 +171,7 @@ mod tests {
     use crate::*;
 
     fn mk_map() -> SuitMap {
-        IsomorphicBoard::to_isomorphic(board!("AsKhQd")).1
+        board!("AsKhQd").to_isomorphic().1
     }
 
     #[test]
@@ -226,7 +226,7 @@ mod tests_serde {
 
     fn mk_hand() -> IsomorphicHandN<3> {
         let cards = cards!("AsKhQd");
-        let map = IsomorphicBoard::to_isomorphic(board!("AsKhQd")).1;
+        let map = board!("AsKhQd").to_isomorphic().1;
         IsomorphicHandN::<3>::from_slice_and_map(&cards, map)
     }
 
@@ -282,7 +282,7 @@ mod tests_speedy {
     #[test]
     fn test_iso_hand_speedy_roundtrip() {
         let cards = cards!("AsKhQd");
-        let map = IsomorphicBoard::to_isomorphic(board!("AsKhQd")).1;
+        let map = board!("AsKhQd").to_isomorphic().1;
         let hand = IsomorphicHandN::<3>::from_slice_and_map(&cards, map);
         let bytes = hand.write_to_vec().unwrap();
         let back = IsomorphicHandN::<3>::read_from_buffer(&bytes).unwrap();

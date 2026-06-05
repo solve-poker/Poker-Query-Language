@@ -30,6 +30,7 @@ rand = { workspace = true, optional = true }
 rayon = { workspace = true, optional = true }
 rustc-hash = { workspace = true }
 serde = { workspace = true, optional = true }
+smallvec = { workspace = true, features = ["const_new"] }
 speedy = { workspace = true, optional = true }
 
 [dev-dependencies]

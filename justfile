@@ -98,19 +98,25 @@ coverage:
     set -euo pipefail
 
     cov()   { {{ nightly }} llvm-cov "$@"; }
-    rs_lcov="{{ lcov_dir }}/lcov.raw"
+    dbg_lcov="{{ lcov_dir }}/lcov.debug.raw"
+    rel_lcov="{{ lcov_dir }}/lcov.release.raw"
     out_lcov="{{ lcov_dir }}/lcov"
 
-    echo "🧪 Running Rust tests with instrumentation..."
-    cov nextest --no-report
-
-    echo "📊 Generating coverage report..."
     mkdir -p {{ lcov_dir }}/
-    cov report --lcov --output-path "$rs_lcov"
 
+    echo "🧪 Running Rust tests with instrumentation (debug)..."
+    cov nextest --no-report
+    cov --examples --no-report
+    cov report --lcov --output-path "$dbg_lcov"
+
+    echo "🧪 Running ignored (slow) tests with instrumentation (release)..."
+    cov nextest --release --run-ignored ignored-only --no-report
+    cov report --release --lcov --output-path "$rel_lcov"
+
+    echo "📊 Merging coverage reports..."
     workspace_root=$(dirname "$(cargo locate-project --workspace --message-format plain)")
 
-    lcov -a "$rs_lcov" --filter region \
+    lcov -a "$dbg_lcov" -a "$rel_lcov" --filter region \
         --rc "c_file_extensions=c|h|cpp|cc|cxx|rs" \
         --ignore-errors inconsistent,corrupt,unsupported \
         --output-file "$out_lcov"

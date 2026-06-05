@@ -119,6 +119,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "slow"]
     fn test_iso_river() {
         assert_eq!(gen_iso_river().len(), 223_884);
     }

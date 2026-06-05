@@ -1,7 +1,7 @@
 use crate::{Card, CardCount, FlushingSuit, IsomorphicCard, Suit};
 
 #[inline]
-pub(super) const fn n_flush_suits(cards: &[IsomorphicCard]) -> CardCount {
+pub const fn n_flush_suits(cards: &[IsomorphicCard]) -> CardCount {
     let (mut x, mut y, mut z) = (false, false, false);
     let mut idx = 0;
 
@@ -19,7 +19,7 @@ pub(super) const fn n_flush_suits(cards: &[IsomorphicCard]) -> CardCount {
 }
 
 #[inline]
-pub(super) const fn place_card(
+pub const fn place_card(
     c: IsomorphicCard,
     next: CardCount,
 ) -> (Card, CardCount) {

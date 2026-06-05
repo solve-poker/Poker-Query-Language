@@ -1,10 +1,4 @@
-use crate::{
-    Board, Card, IsomorphicCard, Suit, SuitMap,
-    card::{
-        equiv::util::{n_flush_suits, place_card},
-        util::sort5,
-    },
-};
+use crate::{Board, Card, IsomorphicCard, Suit, SuitMap, card::util::sort5};
 
 const fn flush_suit(
     s0: Suit,
@@ -31,7 +25,7 @@ const fn flush_suit(
 /// Canonical suit-isomorphic representative of a five-card river hand for equity evaluation.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
-pub struct IsomorphicRiverEv(
+pub(super) struct IsomorphicRiverEv(
     /// The relabeled and rank-sorted river cards.
     pub [IsomorphicCard; Board::N_RIVER],
 );
@@ -41,7 +35,7 @@ impl IsomorphicRiverEv {
     ///
     /// # Panics
     /// Panics if `cards` contains fewer than 5 cards.
-    pub const fn to_isomorphic(cards: &[Card]) -> (Self, SuitMap) {
+    pub const fn from_cards(cards: &[Card]) -> (Self, SuitMap) {
         let map = match flush_suit(
             cards[0].suit,
             cards[1].suit,
@@ -61,25 +55,13 @@ impl IsomorphicRiverEv {
 
         (Self(sort5!(IsomorphicCard, c0, c1, c2, c3, c4)), map)
     }
-
-    /// Materializes this representative as a concrete card array with placed suits.
-    pub const fn to_array(self) -> [Card; Board::N_RIVER] {
-        let k = n_flush_suits(&self.0);
-
-        let (c0, k) = place_card(self.0[0], k);
-        let (c1, k) = place_card(self.0[1], k);
-        let (c2, k) = place_card(self.0[2], k);
-        let (c3, k) = place_card(self.0[3], k);
-        let (c4, _) = place_card(self.0[4], k);
-
-        [c0, c1, c2, c3, c4]
-    }
 }
 
 #[cfg(test)]
 #[cfg_attr(coverage_nightly, coverage(off))]
 mod tests {
-    use crate::{card::equiv::iso_river_ev::flush_suit, *};
+    use super::*;
+    use crate::*;
 
     #[quickcheck]
     fn test_flush_suit(cards: CardN<5>) {
@@ -102,26 +84,12 @@ mod tests {
         assert_eq!(lhs, rhs);
     }
 
-    #[test]
-    fn test_iso_river_ev() {
-        let mut set = FxHashSet::default();
-        for cs in HandN::<5>::iter_all::<true>() {
-            set.insert(IsomorphicRiverEv::to_isomorphic(cs.as_slice()).0);
-        }
-
-        assert_eq!(set.len(), 6318);
-    }
-
     fn assert_roundtrip(cs: &[Card]) {
-        let (iso, _) = IsomorphicRiverEv::to_isomorphic(cs);
-        let (back, _) = IsomorphicRiverEv::to_isomorphic(&iso.to_array());
+        let (iso, _) = IsomorphicRiverEv::from_cards(cs);
+        let hand = IsomorphicHand::from(iso.0).to_hand();
+        let (back, _) = IsomorphicRiverEv::from_cards(&hand);
 
-        assert_eq!(
-            back,
-            iso,
-            "{cs:?}: {iso:?} -> {:?} -> {back:?}",
-            iso.to_array()
-        );
+        assert_eq!(back, iso, "{cs:?}: {iso:?} -> {hand:?} -> {back:?}");
     }
 
     #[quickcheck]

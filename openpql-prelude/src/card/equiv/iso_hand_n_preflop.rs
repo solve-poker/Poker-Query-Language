@@ -1,5 +1,6 @@
 use crate::{
-    Card, FlushingSuit, IsomorphicCard, IsomorphicHandN, IsomorphicTurnEv,
+    Card, FlushingSuit, IsomorphicCard, IsomorphicHandN,
+    card::equiv::IsomorphicTurnEv,
 };
 
 const N_HOLDEM: usize = 2;
@@ -39,6 +40,6 @@ impl IsomorphicHandN<N_OMAHA> {
             "not enough cards for IsomorphicHandN<4>"
         );
 
-        Self(IsomorphicTurnEv::to_isomorphic(cards).0.0)
+        Self(IsomorphicTurnEv::from_cards(cards).0.0)
     }
 }

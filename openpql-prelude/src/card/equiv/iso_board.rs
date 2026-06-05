@@ -37,35 +37,37 @@ pub struct IsomorphicBoard {
     pub river: Option<IsomorphicCard>,
 }
 
-impl IsomorphicBoard {
-    /// Canonical suit-isomorphic form of `board` and the [`SuitMap`] that produced it.
-    pub const fn to_isomorphic(board: Board) -> (Self, SuitMap) {
-        match (board.flop, board.turn, board.river) {
+impl Board {
+    /// Canonical suit-isomorphic form (for GTO) of `board` and the [`SuitMap`] that produced it.
+    pub const fn to_isomorphic(self) -> (IsomorphicBoard, SuitMap) {
+        match (self.flop, self.turn, self.river) {
             (Some(flop), None, _) => {
                 let (flop, map) = IsomorphicFlop::from_flop(flop);
 
-                (Self::flop(flop.0), map)
+                (IsomorphicBoard::flop(flop.0), map)
             }
             (Some(flop), Some(turn), None) => {
                 let (turn, map) = IsomorphicTurn::from_turn(flop, turn);
 
-                (Self::flop(turn.flop).with_turn(turn.turn), map)
+                (IsomorphicBoard::flop(turn.flop).with_turn(turn.turn), map)
             }
             (Some(flop), Some(turn), Some(river)) => {
                 let (river, map) =
                     IsomorphicRiver::from_river(flop, turn, river);
 
                 (
-                    Self::flop(river.flop)
+                    IsomorphicBoard::flop(river.flop)
                         .with_turn(river.turn)
                         .with_river(river.river),
                     map,
                 )
             }
-            _ => (Self::EMPTY, SuitMap::new()),
+            _ => (IsomorphicBoard::EMPTY, SuitMap::new()),
         }
     }
+}
 
+impl IsomorphicBoard {
     /// The preflop board: no cards.
     const EMPTY: Self = Self {
         flop: None,
@@ -273,7 +275,7 @@ mod tests {
 
     fn assert_iso(s: &str) {
         let (lhs, rhs) = s.split_once("->").unwrap();
-        let (got, _) = IsomorphicBoard::to_isomorphic(board!(lhs));
+        let (got, _) = board!(lhs).to_isomorphic();
         assert_eq!(
             got.to_string(),
             rhs.replace(char::is_whitespace, ""),
@@ -306,8 +308,8 @@ mod tests {
 
     /// `to_board` must produce a board that re-isomorphizes to `iso`.
     fn assert_roundtrip(s: &str) {
-        let (iso, _) = IsomorphicBoard::to_isomorphic(board!(s));
-        let (back, _) = IsomorphicBoard::to_isomorphic(iso.to_board());
+        let (iso, _) = board!(s).to_isomorphic();
+        let (back, _) = iso.to_board().to_isomorphic();
 
         assert_eq!(back, iso, "{s}: {iso} -> {} -> {back}", iso.to_board());
     }
@@ -335,8 +337,8 @@ mod tests {
 
     #[quickcheck]
     fn test_to_board_roundtrip_all(board: Board) {
-        let (iso, _) = IsomorphicBoard::to_isomorphic(board);
-        let (back, _) = IsomorphicBoard::to_isomorphic(iso.to_board());
+        let (iso, _) = board.to_isomorphic();
+        let (back, _) = iso.to_board().to_isomorphic();
 
         assert_eq!(
             board.to_card64().count(),
@@ -347,14 +349,14 @@ mod tests {
 
     #[test]
     fn test_preflop_is_empty() {
-        let (got, map) = IsomorphicBoard::to_isomorphic(Board::default());
+        let (got, map) = Board::default().to_isomorphic();
         assert_eq!(got, IsomorphicBoard::default());
         assert_eq!(map.0, SuitMap::new().0);
     }
 
     #[test]
     fn test_ranks_above() {
-        let (iso, _) = IsomorphicBoard::to_isomorphic(board!("AsKhQd Jc Ts"));
+        let (iso, _) = board!("AsKhQd Jc Ts").to_isomorphic();
 
         assert_eq!(iso.ranks_above(Rank::RA), Rank16::default());
         assert_eq!(iso.ranks_above(Rank::RK), r16!("A"));
@@ -367,7 +369,8 @@ mod tests {
     #[test]
     fn test_place_river() {
         assert_eq!(
-            IsomorphicBoard::to_isomorphic(board!("AsKhQd Jc Js"))
+            board!("AsKhQd Jc Js")
+                .to_isomorphic()
                 .0
                 .to_board()
                 .to_card64()
@@ -376,7 +379,8 @@ mod tests {
         );
 
         assert_eq!(
-            IsomorphicBoard::to_isomorphic(board!("AsKhQd Jc Qc"))
+            board!("AsKhQd Jc Qc")
+                .to_isomorphic()
                 .0
                 .to_board()
                 .to_card64()
