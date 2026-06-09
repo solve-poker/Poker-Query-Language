@@ -1,5 +1,9 @@
-use crate::tree::{
-    AnnotatedAction, AnnotatedActionKind, Chip, PlayerIdx, num_players,
+use crate::{
+    Street,
+    tree::{
+        AnnotatedAction, AnnotatedActionKind, Chip, PlayerIdx, current_round,
+        current_street, num_players,
+    },
 };
 
 /// Returns a player's starting stack.
@@ -127,6 +131,80 @@ pub fn minimum_raise(history: &[AnnotatedAction]) -> Chip {
     }
 
     inner(0, history)
+}
+
+/// Returns the bet level of the current round in poker "N-bet" terms.
+///
+/// Preflop the big blind is the opening bet, so an open is a 2-bet, a
+/// re-raise a 3-bet, and so on; a limped pot stays at 1. Postflop counting
+/// starts from the first bet (1-bet), so a checked-through round is 0.
+#[must_use]
+pub fn num_of_raises(history: &[AnnotatedAction]) -> usize {
+    let blind = usize::from(current_street(history) == Some(Street::Preflop));
+
+    blind
+        + super::filter_count(
+            0,
+            current_round(history),
+            &|a: &AnnotatedAction| {
+                matches!(
+                    a,
+                    AnnotatedAction::Act(
+                        _,
+                        AnnotatedActionKind::Bet
+                            | AnnotatedActionKind::Raise
+                            | AnnotatedActionKind::ShoveBet
+                            | AnnotatedActionKind::ShoveRaise,
+                        _,
+                    )
+                )
+            },
+        )
+}
+
+/// Player who made the last bet or raise of the round, if any.
+#[must_use]
+fn aggressor(round: &[AnnotatedAction]) -> Option<PlayerIdx> {
+    match round {
+        [] => None,
+        [
+            ..,
+            AnnotatedAction::Act(
+                pid,
+                AnnotatedActionKind::Bet
+                | AnnotatedActionKind::Raise
+                | AnnotatedActionKind::ShoveBet
+                | AnnotatedActionKind::ShoveRaise,
+                _,
+            ),
+        ] => Some(*pid),
+        [init @ .., _] => aggressor(init),
+    }
+}
+
+/// Returns `true` if the last action is a donk bet.
+#[must_use]
+pub fn is_donk_bet(history: &[AnnotatedAction]) -> bool {
+    let [
+        init @ ..,
+        AnnotatedAction::Act(
+            pid,
+            AnnotatedActionKind::Bet | AnnotatedActionKind::ShoveBet,
+            _,
+        ),
+    ] = history
+    else {
+        return false;
+    };
+
+    let Some(last_chance) = init
+        .iter()
+        .rposition(|a| matches!(a, AnnotatedAction::Chance(_)))
+    else {
+        return false;
+    };
+
+    aggressor(current_round(&init[..last_chance])).is_some_and(|a| a != *pid)
 }
 
 /// Returns per-player total contributions indexed by seat.
@@ -300,6 +378,104 @@ mod tests {
         assert_eq!(minimum_raise(&h[..h.len() - 1]), 450);
         assert_eq!(minimum_raise(&h[..h.len() - 2]), 450);
         assert_eq!(minimum_raise(&h[..h.len() - 3]), 450);
+    }
+
+    #[test]
+    fn test_num_of_raises_preflop() {
+        let limp = actions!([6000; 4], 100/200
+          -> preflop
+          -> utg call 200
+        );
+        assert_eq!(num_of_raises(&limp), 1);
+
+        let h = actions!([6000; 4], 100/200
+          -> preflop
+          -> utg raise 600
+          -> btn raise 1600
+          -> sb raise 3600
+          -> bb raise 5600
+        );
+
+        assert_eq!(num_of_raises(&h), 5);
+        assert_eq!(num_of_raises(&h[..h.len() - 1]), 4);
+        assert_eq!(num_of_raises(&h[..h.len() - 2]), 3);
+        assert_eq!(num_of_raises(&h[..h.len() - 3]), 2);
+    }
+
+    #[test]
+    fn test_num_of_raises_postflop() {
+        let h = actions!([2000; 3], 100/200
+          -> turn
+          -> sb bet 300
+          -> bb raise 1000
+          -> btn shoveraise 1700
+        );
+
+        assert_eq!(num_of_raises(&h), 3);
+        assert_eq!(num_of_raises(&h[..h.len() - 1]), 2);
+        assert_eq!(num_of_raises(&h[..h.len() - 2]), 1);
+
+        let checked = actions!([100; 3], 1 / 2 -> flop);
+        assert_eq!(num_of_raises(&checked), 0);
+    }
+
+    #[test]
+    fn test_donk_bet() {
+        let h = actions!([1000; 3], 1/2
+          -> preflop
+          -> btn raise 6
+          -> sb call 6
+          -> bb call 6
+          -> flop
+          -> sb bet 10
+        );
+
+        assert!(is_donk_bet(&h));
+        assert!(!is_donk_bet(&h[..h.len() - 1]));
+
+        let h = actions!([1000; 3], 1/2
+          -> preflop
+          -> btn raise 6
+          -> sb call 6
+          -> bb call 6
+          -> flop
+          -> sb check
+          -> bb check
+          -> btn bet 10
+          -> sb call 10
+          -> bb fold
+          -> turn
+          -> sb bet 20
+        );
+
+        assert!(is_donk_bet(&h));
+    }
+
+    #[test]
+    fn test_not_donk_bet() {
+        let h = actions!([1000; 3], 1/2
+          -> preflop
+          -> btn raise 6
+          -> sb call 6
+          -> bb call 6
+          -> flop
+          -> sb check
+          -> bb check
+          -> btn bet 10
+        );
+
+        assert!(!is_donk_bet(&h));
+
+        let h = actions!([1000; 3], 1/2
+          -> preflop
+          -> btn call 2
+          -> sb call 2
+          -> bb check
+          -> flop
+          -> sb bet 10
+        );
+
+        assert!(!is_donk_bet(&h));
     }
 
     #[test]
