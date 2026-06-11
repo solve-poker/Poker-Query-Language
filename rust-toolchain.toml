@@ -1,0 +1,5 @@
+# Pinned nightly for the whole workspace (fmt unstable_features, clippy, builds).
+# Keep in sync with the matrix pin in .github/workflows/ci.yml.
+[toolchain]
+channel = "nightly-2026-06-10"
+components = ["rustfmt", "clippy", "rust-analyzer", "rust-src", "llvm-tools"]

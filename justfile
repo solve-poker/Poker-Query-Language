@@ -2,7 +2,9 @@
 
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
-nightly := "cargo +nightly"
+# Pinned nightly — single source of truth is rust-toolchain.toml
+toolchain := `sed -nE 's/^channel = "(.+)"$/\1/p' rust-toolchain.toml`
+nightly := "cargo +" + toolchain
 lcov_dir := "target/coverage"
 docs_dir := "docs"
 
@@ -35,11 +37,10 @@ checkhealth:
     section "Dev tools";         check just
 
     section "Toolchains"
-    if nightly_ver=$(rustup toolchain list 2>/dev/null | grep '^nightly' | head -1 | awk '{print $1}') \
-        && [[ -n "$nightly_ver" ]]; then
-        tick "nightly" "$nightly_ver"
+    if rustup toolchain list 2>/dev/null | grep -q '^{{ toolchain }}'; then
+        tick "{{ toolchain }}" "pinned via rust-toolchain.toml"
     else
-        cross "nightly" "not installed — run: rustup toolchain install nightly"
+        cross "{{ toolchain }}" "not installed — run: rustup toolchain install {{ toolchain }}"
     fi
 
     echo
@@ -56,11 +57,11 @@ checkhealth:
 install-tools:
     #!/usr/bin/env bash
     set -euo pipefail
-    for tc in stable nightly; do
+    for tc in stable {{ toolchain }}; do
         rustup toolchain list | grep -q "^$tc" || rustup toolchain install "$tc"
     done
     rustup component add rust-analyzer rust-src llvm-tools
-    rustup component add llvm-tools-preview --toolchain nightly
+    rustup component add llvm-tools-preview --toolchain {{ toolchain }}
     cargo binstall --no-confirm cargo-edit cargo-shear cargo-llvm-cov cargo-nextest
 
 # ── Rust ──────────────────────────────────────────────────────────────────────
