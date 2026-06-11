@@ -26,6 +26,21 @@ impl RunnerOutput {
         self.aggregators[idx].push_value(val);
     }
 
+    /// # Panics
+    /// both outputs must come from the same statement
+    pub fn merge(&mut self, other: Self) {
+        assert_eq!(self.aggregators.len(), other.aggregators.len());
+
+        for (agg, other_agg) in
+            self.aggregators.iter_mut().zip(other.aggregators)
+        {
+            agg.merge(other_agg);
+        }
+
+        self.n_fail += other.n_fail;
+        self.n_succ += other.n_succ;
+    }
+
     pub fn report_to_stream<W: io::Write>(
         &self,
         stmt: &ast::Stmt,

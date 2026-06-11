@@ -32,6 +32,7 @@ openpql-pql-parser = { workspace = true }
 openpql-prelude = { workspace = true }
 openpql-range-parser.workspace = true
 rand.workspace = true
+rustc-hash.workspace = true
 smallvec.workspace = true
 
 [dev-dependencies]

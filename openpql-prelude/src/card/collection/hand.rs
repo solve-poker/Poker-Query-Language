@@ -8,7 +8,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use smallvec::SmallVec;
 
 use crate::{
-    Card, IsomorphicCard,
+    Card, IsomorphicCard, IsomorphicHandN, SuitMap,
     card::equiv::{n_flush_suits, place_card},
 };
 
@@ -43,6 +43,21 @@ impl IsomorphicHand {
                 card
             })
             .collect()
+    }
+
+    /// Builds a suit-isomorphic hand from `cards`, relabeling suits via
+    /// `map`.
+    #[must_use]
+    pub fn from_slice_and_map(cards: &[Card], map: SuitMap) -> Self {
+        match cards.len() {
+            2 => Self::from_arr(
+                IsomorphicHandN::<2>::from_slice_and_map(cards, map).0,
+            ),
+            4 => Self::from_arr(
+                IsomorphicHandN::<4>::from_slice_and_map(cards, map).0,
+            ),
+            _ => unimplemented!(), // LCOV_EXCL_LINE
+        }
     }
 }
 
@@ -212,7 +227,7 @@ mod tests {
     use std::iter::once;
 
     use super::*;
-    use crate::{CardN, cards, isocard};
+    use crate::{CardN, FlushingSuit, cards, isocard, isocards};
 
     #[quickcheck]
     fn test_from_arr(cards: CardN<5>) {
@@ -245,6 +260,16 @@ mod tests {
         assert_eq!(hand[1], isocard!("Qx"));
         hand.deref_mut()[0] = isocard!("Jx");
         assert_eq!(hand.deref()[0], isocard!("Jx"));
+    }
+
+    #[test]
+    fn test_from_slice_and_map() {
+        use FlushingSuit::*;
+        let map = SuitMap([X, Y, N, N]);
+        assert_eq!(
+            IsomorphicHand::from_slice_and_map(&cards!("AsKhQdJc"), map),
+            isocards!("JnQnKyAx").into(),
+        );
     }
 
     #[test]

@@ -1,14 +1,38 @@
 use super::*;
 
-// TODO: remove cache here. use function wrapper.
 #[derive(Clone, Debug)]
 pub struct PQLFnContext<'vm> {
     pub game: PQLGame,
     pub sampled_cards: &'vm [PQLCard],
     pub n_players: PQLPlayerCount,
+    pub cache: &'vm VmCache,
 }
 
 impl PQLFnContext<'_> {
+    /// Cached [`PQLGame::eval_rating`]; hits are shared across functions,
+    /// trials and threads via [`VmCache`].
+    pub fn eval_current_rating(
+        &self,
+        player: PQLPlayer,
+        street: PQLStreet,
+    ) -> PQLHiRating {
+        self.cache.rating_or_insert_with(
+            self.game,
+            self.get_player_slice(player),
+            self.get_board(street),
+        )
+    }
+
+    /// Cached rating for an arbitrary `player`/`board`, sharing hits via
+    /// [`VmCache`].
+    pub fn eval_rating(
+        &self,
+        player: &[PQLCard],
+        board: PQLBoard,
+    ) -> PQLHiRating {
+        self.cache.rating_or_insert_with(self.game, player, board)
+    }
+
     const fn n_holecards(&self) -> PQLCardCount {
         self.game.player_cards_len()
     }
@@ -40,6 +64,11 @@ impl PQLFnContext<'_> {
 
     pub fn get_c64_player(&self, player: PQLPlayer) -> PQLCardSet {
         self.get_player_slice(player).into()
+    }
+
+    /// All players' hole cards as a single set.
+    pub fn get_c64_players(&self) -> PQLCardSet {
+        self.sampled_cards[..self.get_idx_board_start()].into()
     }
 
     pub fn get_board(&self, street: PQLStreet) -> PQLBoard {
@@ -80,11 +109,13 @@ pub mod tests {
     use crate::*;
 
     impl Default for PQLFnContext<'_> {
+        // TODO: replace Box::leak
         fn default() -> Self {
             Self {
                 game: PQLGame::default(),
                 sampled_cards: PQLCard::all::<true>(),
                 n_players: 2,
+                cache: Box::leak(Box::default()),
             }
         }
     }
@@ -94,6 +125,7 @@ pub mod tests {
         game: PQLGame,
         sampled_cards: Vec<PQLCard>,
         n_players: PQLPlayerCount,
+        cache: VmCache,
     }
 
     impl TestPQLFnContext {
@@ -102,6 +134,7 @@ pub mod tests {
                 game: self.game,
                 sampled_cards: &self.sampled_cards,
                 n_players: self.n_players,
+                cache: &self.cache,
             }
         }
 
@@ -110,6 +143,7 @@ pub mod tests {
                 game: PQLGame::default(),
                 sampled_cards: cards.to_vec(),
                 n_players: 0,
+                cache: VmCache::default(),
             }
         }
 
@@ -123,6 +157,7 @@ pub mod tests {
                 game,
                 sampled_cards: cards,
                 n_players,
+                cache: VmCache::default(),
             }
         }
     }
@@ -159,6 +194,7 @@ pub mod tests {
                 game,
                 sampled_cards,
                 n_players,
+                cache: VmCache::default(),
             }
         }
     }

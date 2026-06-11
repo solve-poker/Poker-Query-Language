@@ -1,4 +1,4 @@
-use crate::common::run_ok;
+use crate::common::{run_ok, run_ok_st};
 
 #[test]
 fn aces_win_on_river_equity_is_one() {
@@ -29,18 +29,18 @@ fn tied_hands_on_river_equity_is_half() {
 
 #[test]
 fn flop_equity_enumerates_runouts_deterministically() {
-    let out = run_ok(
+    let out = run_ok_st(
         "select avg(equity(hero, flop)) \
          from game='holdem', hero='AhAs', villain='KhKs', board='2c3d4s'",
     );
-    assert!(out.contains("AVG 0 = 0.914965986394559"), "stdout: {out}");
+    assert!(out.contains("AVG 0 = 0.9121212121212114"), "stdout: {out}");
 }
 
 #[test]
 fn turn_equity_enumerates_rivers_deterministically() {
-    let out = run_ok(
+    let out = run_ok_st(
         "select avg(equity(hero, turn)) \
          from game='holdem', hero='AhAs', villain='KhKs', board='2c3d4s7h'",
     );
-    assert!(out.contains("AVG 0 = 0.9583333333333325"), "stdout: {out}");
+    assert!(out.contains("AVG 0 = 0.9545454545454536"), "stdout: {out}");
 }

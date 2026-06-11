@@ -20,9 +20,24 @@ use opql::PQLRunner;
 
 /// Run `src` and return `(stdout, stderr)` as strings.
 pub fn run(src: &str) -> (String, String) {
+    run_with_threads(src, None)
+}
+
+/// Run `src` on a single thread, assert stderr is empty, return stdout.
+///
+/// Use for assertions on exact float output: multithreaded runs merge
+/// per-thread partial sums, so the accumulation order (and the last few
+/// digits) varies with the thread count.
+pub fn run_ok_st(src: &str) -> String {
+    let (out, err) = run_with_threads(src, Some(1));
+    assert!(err.is_empty(), "unexpected stderr: {err}");
+    out
+}
+
+fn run_with_threads(src: &str, n_threads: Option<usize>) -> (String, String) {
     let mut out = Vec::new();
     let mut err = Vec::new();
-    PQLRunner::run(src, &mut out, &mut err).unwrap();
+    PQLRunner::run(src, None, n_threads, &mut out, &mut err).unwrap();
     (
         String::from_utf8(out).unwrap(),
         String::from_utf8(err).unwrap(),

@@ -7,10 +7,5 @@ pub fn min_hi_rating(
     street: PQLStreet,
     rating: PQLHiRating,
 ) -> PQLBoolean {
-    core::min_hi_rating(
-        ctx.game,
-        ctx.get_player_slice(player),
-        ctx.get_board(street),
-        rating,
-    )
+    hi_rating(ctx, player, street) >= rating
 }

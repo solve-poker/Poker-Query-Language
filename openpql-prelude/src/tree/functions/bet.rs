@@ -197,12 +197,10 @@ pub fn is_donk_bet(history: &[AnnotatedAction]) -> bool {
         return false;
     };
 
-    let Some(last_chance) = init
+    let last_chance = init
         .iter()
         .rposition(|a| matches!(a, AnnotatedAction::Chance(_)))
-    else {
-        return false;
-    };
+        .unwrap_or(init.len());
 
     aggressor(current_round(&init[..last_chance])).is_some_and(|a| a != *pid)
 }
@@ -421,34 +419,20 @@ mod tests {
 
     #[test]
     fn test_donk_bet() {
-        let h = actions!([1000; 3], 1/2
-          -> preflop
-          -> btn raise 6
-          -> sb call 6
-          -> bb call 6
-          -> flop
-          -> sb bet 10
+        let h = actions!([100; 3], 1/2
+          -> preflop -> btn raise 20 -> sb call 20 -> bb call 20
+          -> flop -> sb check -> bb bet 20
         );
 
         assert!(is_donk_bet(&h));
         assert!(!is_donk_bet(&h[..h.len() - 1]));
+        assert!(!is_donk_bet(&h[..h.len() - 2]));
 
-        let h = actions!([1000; 3], 1/2
-          -> preflop
-          -> btn raise 6
-          -> sb call 6
-          -> bb call 6
-          -> flop
-          -> sb check
-          -> bb check
-          -> btn bet 10
-          -> sb call 10
-          -> bb fold
-          -> turn
-          -> sb bet 20
-        );
-
-        assert!(is_donk_bet(&h));
+        assert!(!is_donk_bet(&actions!([100; 3], 1/2
+          -> preflop -> btn raise 20 -> sb call 20 -> bb call 20
+          -> flop -> sb check -> bb check -> btn check
+          -> turn -> sb bet 20
+        )));
     }
 
     #[test]

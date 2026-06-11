@@ -16,7 +16,7 @@ pub fn hvhequity(
 
 // TODO: tmp; optimize
 pub fn turn_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
-    let b64 = ctx.get_c64_board(PQLStreet::Turn);
+    let turn = ctx.get_board(PQLStreet::Turn);
 
     let all = if ctx.game.is_shortdeck() {
         PQLCard::all::<true>()
@@ -26,18 +26,17 @@ pub fn turn_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
 
     let mut res: Vec<PQLFraction> = vec![];
 
-    for river in all {
-        if b64.contains_card(*river) {
+    let player_cards = ctx.get_c64_players();
+
+    for &river in all {
+        if turn.contains_card(river) || player_cards.contains_card(river) {
             continue;
         }
 
-        let mut board = b64;
-        board.set(*river);
+        let board = turn.with_river(river);
 
         let ratings: Vec<_> = PQLPlayer::iter(ctx.n_players)
-            .map(|player| {
-                ctx.game.eval_rating(ctx.get_c64_player(player), board)
-            })
+            .map(|player| ctx.eval_rating(ctx.get_player_slice(player), board))
             .collect();
 
         let max = *ratings.iter().max().unwrap();
@@ -64,25 +63,29 @@ pub fn flop_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
         hero: PQLPlayer,
         iter: I,
     ) -> PQLEquity {
-        let b64 = ctx.get_c64_board(PQLStreet::Flop);
+        let flop = ctx.get_board(PQLStreet::Flop);
 
         let mut res: Vec<PQLFraction> = vec![];
+
+        let player_cards = ctx.get_c64_players();
 
         for turn_river in iter {
             let turn = turn_river[0];
             let river = turn_river[1];
 
-            if b64.contains_card(turn) || b64.contains_card(river) {
+            if flop.contains_card(turn)
+                || flop.contains_card(river)
+                || player_cards.contains_card(turn)
+                || player_cards.contains_card(river)
+            {
                 continue;
             }
 
-            let mut board = b64;
-            board.set(turn);
-            board.set(river);
+            let board = flop.with_turn(turn).with_river(river);
 
             let ratings: Vec<_> = PQLPlayer::iter(ctx.n_players)
                 .map(|player| {
-                    ctx.game.eval_rating(ctx.get_c64_player(player), board)
+                    ctx.eval_rating(ctx.get_player_slice(player), board)
                 })
                 .collect();
 

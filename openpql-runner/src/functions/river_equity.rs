@@ -2,6 +2,7 @@ use super::*;
 
 #[pqlfn]
 pub fn river_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
+    // TODO: cache
     let idx_board = PQLFnContext::idx_board_start(
         ctx.n_players,
         ctx.game.player_cards_len(),

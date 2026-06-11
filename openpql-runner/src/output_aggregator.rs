@@ -47,9 +47,23 @@ impl OutputAggregator {
             Self::MinSd(inner) => inner.push_val(val),
         }
     }
+
+    /// # Panics
+    /// both aggregators must be of the same variant
+    pub fn merge(&mut self, other: Self) {
+        match (self, other) {
+            (Self::Avg(l), Self::Avg(r)) => l.merge(r),
+            (Self::Count(l), Self::Count(r)) => l.merge(r),
+            (Self::Max(l), Self::Max(r)) => l.merge(r),
+            (Self::Min(l), Self::Min(r)) => l.merge(r),
+            (Self::MaxSd(l), Self::MaxSd(r)) => l.merge(r),
+            (Self::MinSd(l), Self::MinSd(r)) => l.merge(r),
+            _ => unreachable!(),
+        }
+    }
 }
 
-#[derive(Clone, Debug, Default, derive_more::Display)]
+#[derive(Clone, Copy, Debug, Default, derive_more::Display)]
 #[display("{}", self.to_f())]
 pub struct OutputAggregatorAvg {
     num: PQLDouble,
@@ -63,12 +77,17 @@ impl OutputAggregatorAvg {
     }
 
     #[allow(clippy::cast_precision_loss)]
-    pub fn to_f(&self) -> PQLDouble {
+    pub fn to_f(self) -> PQLDouble {
         self.num / self.den as PQLDouble
+    }
+
+    pub fn merge(&mut self, other: Self) {
+        self.num += other.num;
+        self.den += other.den;
     }
 }
 
-#[derive(Clone, Debug, Default, derive_more::Display)]
+#[derive(Clone, Copy, Debug, Default, derive_more::Display)]
 #[display("{_0}")]
 pub struct OutputAggregatorCount(Count);
 
@@ -82,9 +101,13 @@ impl OutputAggregatorCount {
             _ => unreachable!(),
         }
     }
+
+    pub const fn merge(&mut self, other: Self) {
+        self.0 += other.0;
+    }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct OutputAggregatorCmp<const SD: bool, const MAX: bool>(
     Option<VmStackValue>,
 );
@@ -132,6 +155,12 @@ impl<const SD: bool, const MAX: bool> OutputAggregatorCmp<SD, MAX> {
                 }
             }
             None => self.0 = Some(rhs),
+        }
+    }
+
+    pub fn merge(&mut self, other: Self) {
+        if let Some(rhs) = other.0 {
+            self.push_val(rhs);
         }
     }
 }
@@ -222,6 +251,72 @@ mod tests {
             ],
             "PAIR",
         );
+    }
+
+    type Int = u16;
+    #[quickcheck]
+    fn test_merge_avg(lhs: Vec<Int>, rhs: Vec<Int>) {
+        fn mk_avg(vals: &[Int]) -> OutputAggregator {
+            let mut agg = OutputAggregator::new(
+                PQLGame::default(),
+                ast::SelectorKind::Avg,
+            );
+            for &v in vals {
+                agg.push_value(PQLDouble::from(v).into());
+            }
+            agg
+        }
+
+        if lhs.is_empty() && rhs.is_empty() {
+            return;
+        }
+
+        let mut merged = mk_avg(&lhs);
+        merged.merge(mk_avg(&rhs));
+
+        let all: Vec<_> = lhs.into_iter().chain(rhs).collect();
+
+        assert_eq!(merged.to_string(), mk_avg(&all).to_string());
+    }
+
+    #[quickcheck]
+    fn test_merge_count(lhs: Vec<bool>, rhs: Vec<bool>) {
+        fn mk_count(vals: &[bool]) -> OutputAggregator {
+            let mut agg = OutputAggregator::new(
+                PQLGame::default(),
+                ast::SelectorKind::Count,
+            );
+            for &v in vals {
+                agg.push_value(v.into());
+            }
+            agg
+        }
+
+        let mut merged = mk_count(&lhs);
+        merged.merge(mk_count(&rhs));
+
+        let all: Vec<_> = lhs.into_iter().chain(rhs).collect();
+
+        assert_eq!(merged.to_string(), mk_count(&all).to_string());
+    }
+
+    #[test]
+    fn test_merge_max() {
+        let mut lhs =
+            OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Max);
+        let mut rhs = lhs.clone();
+
+        lhs.merge(rhs.clone());
+        assert_eq!(lhs.to_string(), "None", "two empties stay empty");
+
+        rhs.push_value(PQLHandType::FullHouse.into());
+        lhs.merge(rhs.clone());
+        assert_eq!(lhs.to_string(), "FULL_HOUSE", "empty takes other's value");
+
+        rhs = OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Max);
+        rhs.push_value(PQLHandType::Pair.into());
+        lhs.merge(rhs);
+        assert_eq!(lhs.to_string(), "FULL_HOUSE", "keeps the max");
     }
 
     #[test]

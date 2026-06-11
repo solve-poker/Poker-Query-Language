@@ -12,7 +12,7 @@ pub fn nut_hi_for_hand_type(
     let b64 = ctx.get_c64_board(street);
     let known_cards = p64 | b64;
 
-    let player_rating = ctx.game.eval_rating(p64, b64);
+    let player_rating = ctx.eval_current_rating(player, street);
     let player_ht = PQLHandType::from(player_rating);
 
     for other in ctx.iter_c64_player() {
@@ -20,6 +20,7 @@ pub fn nut_hi_for_hand_type(
             continue;
         }
 
+        // TODO: cache
         let other_rating = ctx.game.eval_rating(other, b64);
 
         if PQLHandType::from(other_rating) == player_ht

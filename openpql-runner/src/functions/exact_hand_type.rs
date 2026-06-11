@@ -7,10 +7,5 @@ pub fn exact_hand_type(
     street: PQLStreet,
     ht: PQLHandType,
 ) -> PQLBoolean {
-    core::exact_hand_type(
-        ctx.game,
-        ctx.get_player_slice(player),
-        ctx.get_board(street),
-        ht,
-    )
+    hand_type(ctx, player, street) == ht
 }

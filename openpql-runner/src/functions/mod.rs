@@ -108,7 +108,7 @@ pub use twotone_board::*;
 pub use winning_hand_type::*;
 pub use wins_hi::*;
 
-pub trait PQLFn: fmt::Debug {
+pub trait PQLFn: fmt::Debug + Sync {
     fn arg_types(&self) -> Vec<PQLType>;
     fn rtn_type(&self) -> PQLType;
     fn execute(

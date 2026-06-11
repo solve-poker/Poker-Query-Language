@@ -5,13 +5,16 @@ use super::*;
 
 /// Simple Virtual Machine
 /// intended to be created and destroyed for each PQL statements
-/// and runs in a single thread
+/// and runs in a single thread;
+/// clones share `cache`, so trials can run on multiple threads
+/// with one clone each
 #[derive(Clone, Debug, Default)]
 pub struct Vm {
     pub static_data: VmStaticData,
     pub stack: VmStack,
     pub heap: VmHeap,
     pub sampled_data: VmSampledData,
+    pub cache: VmCache,
 }
 
 impl Vm {
@@ -39,6 +42,7 @@ impl Vm {
                 game: self.static_data.game,
                 sampled_cards: &self.sampled_data.cards,
                 n_players: self.static_data.n_players,
+                cache: &self.cache,
             },
         }
     }

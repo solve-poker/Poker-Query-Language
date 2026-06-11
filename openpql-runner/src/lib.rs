@@ -12,6 +12,7 @@ use std::{
     ops, ptr,
     rc::Rc,
     str::FromStr,
+    thread,
 };
 
 use bitflags::bitflags;
@@ -49,7 +50,7 @@ use vm::{
 type HeapIdx = usize;
 type FractionInner = i32;
 type RangeSrc = String;
-type FnCheckRange = Box<dyn Fn(&[PQLCard]) -> bool>;
+type FnCheckRange = Box<dyn Fn(&[PQLCard]) -> bool + Send + Sync>;
 
 fn parse_cards(text: &str) -> Option<PQLCardSet> {
     let mut res = PQLCardSet::default();

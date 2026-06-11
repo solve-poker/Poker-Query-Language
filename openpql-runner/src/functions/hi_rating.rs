@@ -6,9 +6,5 @@ pub fn hi_rating(
     player: PQLPlayer,
     street: PQLStreet,
 ) -> PQLHiRating {
-    core::hi_rating(
-        ctx.game,
-        ctx.get_player_slice(player),
-        ctx.get_board(street),
-    )
+    ctx.eval_current_rating(player, street)
 }
