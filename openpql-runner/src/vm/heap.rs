@@ -2,14 +2,7 @@ use super::*;
 
 /// Virtual Heap
 /// stores non-copy values
-#[derive(
-    Clone,
-    Debug,
-    Default,
-    derive_more::DerefMut,
-    derive_more::Deref,
-    derive_more::From,
-)]
+#[derive(Clone, Debug, Default, derive_more::DerefMut, derive_more::Deref, derive_more::From)]
 pub struct VmHeap {
     inner: Vec<VmHeapValue>,
 }

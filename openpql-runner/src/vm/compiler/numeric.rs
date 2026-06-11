@@ -6,14 +6,12 @@ pub fn push_num(
     expected_type: PQLType,
 ) -> PQLResult<PQLType> {
     let (value, rtn_type) = match (expected_type, num.inner) {
-        (PQLType::CARDCOUNT, ast::NumValue::Int(long)) => {
-            match PQLCardCount::try_from(long) {
-                Ok(v) => (v.into(), PQLType::CARDCOUNT),
-                Err(_) => {
-                    return Err(mk_err(num, PQLErrorKind::InvalidCardCount));
-                }
+        (PQLType::CARDCOUNT, ast::NumValue::Int(long)) => match PQLCardCount::try_from(long) {
+            Ok(v) => (v.into(), PQLType::CARDCOUNT),
+            Err(_) => {
+                return Err(mk_err(num, PQLErrorKind::InvalidCardCount));
             }
-        }
+        },
         (_, ast::NumValue::Int(long)) => (long.into(), PQLType::LONG),
         (_, ast::NumValue::Float(float)) => (float.into(), PQLType::DOUBLE),
     };
@@ -28,12 +26,7 @@ mod tests {
     use super::*;
     use crate::*;
 
-    fn assert_num(
-        type_hint: PQLType,
-        src: &str,
-        expected: VmStackValue,
-        expected_type: PQLType,
-    ) {
+    fn assert_num(type_hint: PQLType, src: &str, expected: VmStackValue, expected_type: PQLType) {
         let expr = parse_num(src).unwrap();
 
         let mut data = CompilerData::default();
@@ -60,12 +53,7 @@ mod tests {
 
     #[test]
     fn test_num_with_type_hint() {
-        assert_num(
-            PQLType::CARDCOUNT,
-            "1",
-            sval!(@count 1),
-            PQLType::CARDCOUNT,
-        );
+        assert_num(PQLType::CARDCOUNT, "1", sval!(@count 1), PQLType::CARDCOUNT);
         assert_num(PQLType::LONG, "-1", sval!(@long -1), PQLType::LONG);
         assert_num(PQLType::DOUBLE, "0.1", 0.1.into(), PQLType::DOUBLE);
     }

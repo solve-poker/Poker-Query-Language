@@ -1,15 +1,7 @@
 /// Kind of voluntary player action.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    derive_more::Display,
-    PartialOrd,
-    Ord,
-    PartialEq,
-    Eq,
-    derive_more::FromStr,
+    Debug, Clone, Copy, derive_more::Display, PartialOrd, Ord, PartialEq, Eq, derive_more::FromStr,
 )]
 pub enum AnnotatedActionKind {
     /// Fold.

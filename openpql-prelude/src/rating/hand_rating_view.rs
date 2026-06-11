@@ -41,9 +41,7 @@ impl From<HandRating> for HandRatingView {
             HandType::Flush => (ht, rating.parse_flush()).into(),
             HandType::FullHouse => (ht, rating.parse_fullhouse()).into(),
             HandType::Quads => (ht, rating.parse_quad()).into(),
-            HandType::StraightFlush => {
-                (ht, rating.parse_straightflush()).into()
-            }
+            HandType::StraightFlush => (ht, rating.parse_straightflush()).into(),
         }
     }
 }

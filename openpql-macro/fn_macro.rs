@@ -19,8 +19,8 @@ use proc_macro::TokenStream;
 use quote::{ToTokens, quote};
 use state::{arms, register_match_arm};
 use syn::{
-    FnArg, GenericArgument, Ident, ItemFn, LitStr, PathArguments, ReturnType,
-    Token, Type, TypeBareFn, TypePath,
+    FnArg, GenericArgument, Ident, ItemFn, LitStr, PathArguments, ReturnType, Token, Type,
+    TypeBareFn, TypePath,
     parse::{Parse, ParseStream, Result},
     parse_quote,
     punctuated::Punctuated,
@@ -33,11 +33,7 @@ pub fn pqlfn(attr: TokenStream, item: TokenStream) -> TokenStream {
     let metadata = FnMetadata::new(&attr, &item);
 
     if !metadata.no_parse {
-        register_match_arm(
-            &metadata.name,
-            &metadata.fn_type,
-            metadata.alias.as_deref(),
-        );
+        register_match_arm(&metadata.name, &metadata.fn_type, metadata.alias.as_deref());
     }
 
     let fndef = TokenStream2::from(item);
@@ -78,9 +74,7 @@ fn typepath_to_id(ty_path: &TypePath) -> Ident {
         .path
         .segments
         .last()
-        .unwrap_or_else(|| {
-            panic!("{} not supported", ty_path.to_token_stream())
-        })
+        .unwrap_or_else(|| panic!("{} not supported", ty_path.to_token_stream()))
         .ident
         .clone()
 }
@@ -94,8 +88,7 @@ fn type_to_id(ty: &Type) -> Ident {
         }
     }
 
-    inner(ty)
-        .unwrap_or_else(|| panic!("{} not supported", ty.to_token_stream()))
+    inner(ty).unwrap_or_else(|| panic!("{} not supported", ty.to_token_stream()))
 }
 
 fn id_to_pql_type(id: &Ident) -> TokenStream2 {

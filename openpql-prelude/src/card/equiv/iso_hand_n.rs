@@ -53,9 +53,7 @@ impl<'de, const N: usize> Deserialize<'de> for IsomorphicHandN<N> {
     {
         use std::marker::PhantomData;
 
-        struct IsomorphicHandNVisitor<const N: usize>(
-            PhantomData<[IsomorphicCard; N]>,
-        );
+        struct IsomorphicHandNVisitor<const N: usize>(PhantomData<[IsomorphicCard; N]>);
 
         impl<'de, const N: usize> Visitor<'de> for IsomorphicHandNVisitor<N> {
             type Value = IsomorphicHandN<N>;
@@ -153,10 +151,7 @@ impl<C: Context, const N: usize> Writable<C> for IsomorphicHandN<N>
 where
     IsomorphicCard: Writable<C>,
 {
-    fn write_to<W: Writer<C> + ?Sized>(
-        &self,
-        writer: &mut W,
-    ) -> Result<(), C::Error> {
+    fn write_to<W: Writer<C> + ?Sized>(&self, writer: &mut W) -> Result<(), C::Error> {
         for card in &self.0 {
             writer.write_value(card)?;
         }
@@ -202,8 +197,7 @@ mod tests {
     fn test_to_array_roundtrip_preflop() {
         for cs in HandN::<2>::iter_all::<false>() {
             let iso = IsomorphicHandN::<2>::from_slice_preflop(cs.as_slice());
-            let back =
-                IsomorphicHandN::<2>::from_slice_preflop(&iso.to_array());
+            let back = IsomorphicHandN::<2>::from_slice_preflop(&iso.to_array());
             assert_eq!(back, iso, "{cs:?}: {iso} -> {:?}", iso.to_array());
         }
     }

@@ -8,30 +8,21 @@ pub enum PQLNumeric {
     Frac(PQLFraction),
 }
 
-const fn int_add(
-    lhs: PQLLong,
-    rhs: PQLLong,
-) -> Result<PQLNumeric, RuntimeError> {
+const fn int_add(lhs: PQLLong, rhs: PQLLong) -> Result<PQLNumeric, RuntimeError> {
     match lhs.checked_add(rhs) {
         Some(v) => Ok(PQLNumeric::Long(v)),
         None => Err(RuntimeError::AddOverflow),
     }
 }
 
-const fn int_sub(
-    lhs: PQLLong,
-    rhs: PQLLong,
-) -> Result<PQLNumeric, RuntimeError> {
+const fn int_sub(lhs: PQLLong, rhs: PQLLong) -> Result<PQLNumeric, RuntimeError> {
     match lhs.checked_sub(rhs) {
         Some(v) => Ok(PQLNumeric::Long(v)),
         None => Err(RuntimeError::SubOverflow),
     }
 }
 
-const fn int_mul(
-    lhs: PQLLong,
-    rhs: PQLLong,
-) -> Result<PQLNumeric, RuntimeError> {
+const fn int_mul(lhs: PQLLong, rhs: PQLLong) -> Result<PQLNumeric, RuntimeError> {
     match lhs.checked_mul(rhs) {
         Some(v) => Ok(PQLNumeric::Long(v)),
         None => Err(RuntimeError::MulOverflow),
@@ -39,34 +30,22 @@ const fn int_mul(
 }
 
 #[allow(clippy::unnecessary_wraps)]
-const fn dbl_add(
-    lhs: PQLDouble,
-    rhs: PQLDouble,
-) -> Result<PQLNumeric, RuntimeError> {
+const fn dbl_add(lhs: PQLDouble, rhs: PQLDouble) -> Result<PQLNumeric, RuntimeError> {
     Ok(PQLNumeric::Double(lhs + rhs))
 }
 
 #[allow(clippy::unnecessary_wraps)]
-const fn dbl_sub(
-    lhs: PQLDouble,
-    rhs: PQLDouble,
-) -> Result<PQLNumeric, RuntimeError> {
+const fn dbl_sub(lhs: PQLDouble, rhs: PQLDouble) -> Result<PQLNumeric, RuntimeError> {
     Ok(PQLNumeric::Double(lhs - rhs))
 }
 
 #[allow(clippy::unnecessary_wraps)]
-const fn dbl_mul(
-    lhs: PQLDouble,
-    rhs: PQLDouble,
-) -> Result<PQLNumeric, RuntimeError> {
+const fn dbl_mul(lhs: PQLDouble, rhs: PQLDouble) -> Result<PQLNumeric, RuntimeError> {
     Ok(PQLNumeric::Double(lhs * rhs))
 }
 
 #[allow(clippy::unnecessary_wraps)]
-const fn dbl_div(
-    lhs: PQLDouble,
-    rhs: PQLDouble,
-) -> Result<PQLNumeric, RuntimeError> {
+const fn dbl_div(lhs: PQLDouble, rhs: PQLDouble) -> Result<PQLNumeric, RuntimeError> {
     Ok(PQLNumeric::Double(lhs / rhs))
 }
 

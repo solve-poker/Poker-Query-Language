@@ -1,12 +1,9 @@
 use super::{
-    Array, ConstrainRank, From, Idx, RangeCard, Rank, Rank16, RankVar, Term,
-    TermElem, VarCondition,
+    Array, ConstrainRank, From, Idx, RangeCard, Rank, Rank16, RankVar, Term, TermElem, VarCondition,
 };
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
-pub(super) struct VarConditionRank<const N: usize>(
-    pub(crate) VarCondition<Rank16, Rank, N>,
-)
+pub(super) struct VarConditionRank<const N: usize>(pub(crate) VarCondition<Rank16, Rank, N>)
 where
     [Idx; N]: Array<Item = Idx>;
 
@@ -70,11 +67,7 @@ mod tests {
     ) {
         assert!(self_idx < 4);
 
-        let cond = VarConditionRank::<4>::from((
-            &parse_term(term).unwrap(),
-            var,
-            self_idx,
-        ));
+        let cond = VarConditionRank::<4>::from((&parse_term(term).unwrap(), var, self_idx));
 
         assert_eq!(cond.0.equal.as_slice(), expected.0);
         assert_eq!(cond.0.not_equal.as_slice(), expected.1);

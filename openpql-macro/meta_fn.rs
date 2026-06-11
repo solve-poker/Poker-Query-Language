@@ -13,15 +13,13 @@ pub struct FnMetadata {
 
 impl FnMetadata {
     pub fn new(attr: &TokenStream, item: &TokenStream) -> Self {
-        let function: ItemFn =
-            syn::parse(item.clone()).expect("Failed to parse function");
+        let function: ItemFn = syn::parse(item.clone()).expect("Failed to parse function");
         let args = function.sig.inputs.iter().map(ArgMetadata::new).collect();
         let name = function.sig.ident.clone();
         let fn_type = Self::to_fn_type(&function);
         let rtn = RtnMetadata::new(&function.sig.output);
 
-        let attributes: AttrItems =
-            syn::parse(attr.clone()).expect("Failed to parse attributes");
+        let attributes: AttrItems = syn::parse(attr.clone()).expect("Failed to parse attributes");
         let (no_parse, alias) = attributes.into_meta();
 
         Self {

@@ -1,8 +1,6 @@
 use crate::{
     Board, HandN, IsomorphicHand, SuitMap,
-    card::equiv::{
-        IsomorphicRiverEv, IsomorphicTurnEv, isomorphic_flop::IsomorphicFlop,
-    },
+    card::equiv::{IsomorphicRiverEv, IsomorphicTurnEv, isomorphic_flop::IsomorphicFlop},
 };
 
 impl Board {
@@ -15,14 +13,12 @@ impl Board {
                 (IsomorphicHand::from_arr(flop.0), map)
             }
             (Some(HandN([f0, f1, f2])), Some(turn), None) => {
-                let (turn, map) =
-                    IsomorphicTurnEv::from_cards(&[f0, f1, f2, turn]);
+                let (turn, map) = IsomorphicTurnEv::from_cards(&[f0, f1, f2, turn]);
 
                 (IsomorphicHand::from_arr(turn.0), map)
             }
             (Some(HandN([f0, f1, f2])), Some(turn), Some(river)) => {
-                let (river, map) =
-                    IsomorphicRiverEv::from_cards(&[f0, f1, f2, turn, river]);
+                let (river, map) = IsomorphicRiverEv::from_cards(&[f0, f1, f2, turn, river]);
 
                 (IsomorphicHand::from_arr(river.0), map)
             }

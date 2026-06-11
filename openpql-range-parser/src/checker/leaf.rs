@@ -1,6 +1,4 @@
-use super::{
-    Array, Card, Constrain, Error, Idx, LocInfo, ast, range_cond_indices,
-};
+use super::{Array, Card, Constrain, Error, Idx, LocInfo, ast, range_cond_indices};
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub(super) struct Leaf<const N: usize, const B: bool>

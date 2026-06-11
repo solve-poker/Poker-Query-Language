@@ -185,12 +185,7 @@ impl Card64 {
 
     /// Returns the count of the most frequent suit.
     pub const fn max_same_suit_count(self) -> CardCount {
-        const fn max4(
-            a: CardCount,
-            b: CardCount,
-            c: CardCount,
-            d: CardCount,
-        ) -> CardCount {
+        const fn max4(a: CardCount, b: CardCount, c: CardCount, d: CardCount) -> CardCount {
             let ab = if a > b { a } else { b };
             let cd = if c > d { c } else { d };
             if ab > cd { ab } else { cd }
@@ -285,22 +280,10 @@ impl fmt::Debug for Card64 {
             write!(f, "Card64<{}>", self.iter().next().unwrap())
         } else {
             f.debug_tuple("Card64")
-                .field(&format_args!(
-                    "{}",
-                    ranks_str(self.ranks_by_suit(Suit::S))
-                ))
-                .field(&format_args!(
-                    "{}",
-                    ranks_str(self.ranks_by_suit(Suit::H))
-                ))
-                .field(&format_args!(
-                    "{}",
-                    ranks_str(self.ranks_by_suit(Suit::D))
-                ))
-                .field(&format_args!(
-                    "{}",
-                    ranks_str(self.ranks_by_suit(Suit::C))
-                ))
+                .field(&format_args!("{}", ranks_str(self.ranks_by_suit(Suit::S))))
+                .field(&format_args!("{}", ranks_str(self.ranks_by_suit(Suit::H))))
+                .field(&format_args!("{}", ranks_str(self.ranks_by_suit(Suit::D))))
+                .field(&format_args!("{}", ranks_str(self.ranks_by_suit(Suit::C))))
                 .finish()
         }
     }
@@ -610,10 +593,7 @@ mod tests {
     fn test_max_non_paired_rank() {
         assert_eq!(Card64::EMPTY.max_non_paired_rank(), None);
         assert_eq!(c64!("As Kh").max_non_paired_rank(), Some(Rank::RA));
-        assert_eq!(
-            c64!("As Ah Ad Kd Qc").max_non_paired_rank(),
-            Some(Rank::RK)
-        );
+        assert_eq!(c64!("As Ah Ad Kd Qc").max_non_paired_rank(), Some(Rank::RK));
         assert_eq!(c64!("As Ah").max_non_paired_rank(), None);
     }
 }

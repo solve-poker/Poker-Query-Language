@@ -6,16 +6,7 @@ use crate::{CardCount, ParseError, card::Idx};
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(
-    Copy,
-    Clone,
-    PartialEq,
-    Eq,
-    Debug,
-    Ord,
-    PartialOrd,
-    Hash,
-    derive_more::Display,
-    Default,
+    Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, derive_more::Display, Default,
 )]
 pub enum Rank {
     /// Two.

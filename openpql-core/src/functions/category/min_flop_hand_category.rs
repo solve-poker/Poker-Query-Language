@@ -1,9 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::{
-    PQLBoard, PQLCard, PQLFlopHandCategory, PQLGame,
-    functions::flop_hand_category,
-};
+use crate::{PQLBoard, PQLCard, PQLFlopHandCategory, PQLGame, functions::flop_hand_category};
 
 /// Returns `true` when the hand's flop category is at least `category`.
 pub fn min_flop_hand_category(
@@ -32,10 +29,7 @@ mod tests {
     use super::*;
 
     #[quickcheck]
-    fn test_min_flop_hand_category(
-        game: PQLGame,
-        cards: CardN<9>,
-    ) -> TestResult {
+    fn test_min_flop_hand_category(game: PQLGame, cards: CardN<9>) -> TestResult {
         let n = game.player_cards_len() as usize;
         let hand = &cards.as_ref()[..n];
         let board = PQLBoard::from(&cards.as_ref()[n..n + 5]);

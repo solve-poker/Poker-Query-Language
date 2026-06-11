@@ -1,9 +1,6 @@
 use super::*;
 
-fn resolve_player(
-    data: &VmStaticData,
-    ident: &ast::Ident<'_>,
-) -> PQLResult<VmStackValue> {
+fn resolve_player(data: &VmStaticData, ident: &ast::Ident<'_>) -> PQLResult<VmStackValue> {
     with_loc(ident, || {
         data.find_player(ident.inner)
             .map_or(Err(PQLErrorKind::InvalidPlayer), |p| Ok(p.into()))
@@ -28,19 +25,13 @@ pub fn push_ident(
     expected_type: PQLType,
 ) -> PQLResult<PQLType> {
     let (val, rtn_type) = match expected_type {
-        PQLType::PLAYER => {
-            (resolve_player(data.static_data, ident)?, PQLType::PLAYER)
-        }
-        PQLType::STREET => {
-            (resolve_ident::<PQLStreet>(ident)?, PQLType::STREET)
-        }
+        PQLType::PLAYER => (resolve_player(data.static_data, ident)?, PQLType::PLAYER),
+        PQLType::STREET => (resolve_ident::<PQLStreet>(ident)?, PQLType::STREET),
         PQLType::FLOPHANDCATEGORY => (
             resolve_ident::<PQLFlopHandCategory>(ident)?,
             PQLType::FLOPHANDCATEGORY,
         ),
-        PQLType::HANDTYPE => {
-            (resolve_ident::<PQLHandType>(ident)?, PQLType::HANDTYPE)
-        }
+        PQLType::HANDTYPE => (resolve_ident::<PQLHandType>(ident)?, PQLType::HANDTYPE),
         _ => {
             if let Ok(value) = resolve_ident::<PQLStreet>(ident)
                 .or_else(|_| resolve_ident::<PQLFlopHandCategory>(ident))
@@ -48,10 +39,7 @@ pub fn push_ident(
             {
                 (value, PQLType::from(value))
             } else {
-                return Err(mk_err(
-                    ident,
-                    PQLErrorKind::UnrecognizedIdentifier,
-                ));
+                return Err(mk_err(ident, PQLErrorKind::UnrecognizedIdentifier));
             }
         }
     };
@@ -74,12 +62,7 @@ mod tests {
         static_data
     }
 
-    fn assert_ident(
-        type_hint: PQLType,
-        src: &str,
-        expected: VmStackValue,
-        expected_type: PQLType,
-    ) {
+    fn assert_ident(type_hint: PQLType, src: &str, expected: VmStackValue, expected_type: PQLType) {
         let id = parse_ident(src).unwrap();
 
         let static_data = create_static_data();

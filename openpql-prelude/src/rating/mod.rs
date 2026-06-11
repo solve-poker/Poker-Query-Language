@@ -34,9 +34,7 @@ pub mod tests {
     pub fn mk_ranking_sd(ht: HandType, hi: &str, lo: &str) -> HandRating {
         match ht {
             HandType::Flush => HandRating::new_flush_sd(r16!(hi)),
-            HandType::FullHouse => {
-                HandRating::new_fullhouse_sd(r16!(hi), r16!(lo))
-            }
+            HandType::FullHouse => HandRating::new_fullhouse_sd(r16!(hi), r16!(lo)),
             _ => mk_rating(ht, hi, lo),
         }
     }

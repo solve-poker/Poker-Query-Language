@@ -14,9 +14,7 @@ mod util;
 
 pub use card::Card;
 pub use collection::{Board, Flop, Hand, HandN, IsomorphicHand, MAX_HOLECARDS};
-pub use equiv::{
-    FlushingSuit, IsomorphicBoard, IsomorphicCard, IsomorphicHandN, SuitMap,
-};
+pub use equiv::{FlushingSuit, IsomorphicBoard, IsomorphicCard, IsomorphicHandN, SuitMap};
 pub use idx::{CardIdx, RankIdx, SuitIdx};
 pub use iter::{CardIter, HandIter};
 pub use matrix::HandMatrix;

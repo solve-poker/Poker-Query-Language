@@ -1,8 +1,7 @@
 use std::fmt;
 
 use crate::{
-    Board, Card, FlushingSuit, HandN, IsomorphicCard, Rank, Rank16, Suit,
-    Suit4, SuitMap,
+    Board, Card, FlushingSuit, HandN, IsomorphicCard, Rank, Rank16, Suit, Suit4, SuitMap,
     card::{
         Rank16Inner,
         equiv::{
@@ -16,17 +15,7 @@ use crate::{
 
 /// Canonical suit-isomorphic representative of a board at any street.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
-#[derive(
-    Copy,
-    Clone,
-    derive_more::Debug,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Hash,
-    Default,
-)]
+#[derive(Copy, Clone, derive_more::Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 #[debug("IsomorphicBoard<{}>", self)]
 pub struct IsomorphicBoard {
     /// The flop cards, suit-relabeled and sorted, or `None` preflop.
@@ -52,8 +41,7 @@ impl Board {
                 (IsomorphicBoard::flop(turn.flop).with_turn(turn.turn), map)
             }
             (Some(flop), Some(turn), Some(river)) => {
-                let (river, map) =
-                    IsomorphicRiver::from_river(flop, turn, river);
+                let (river, map) = IsomorphicRiver::from_river(flop, turn, river);
 
                 (
                     IsomorphicBoard::flop(river.flop)
@@ -174,9 +162,7 @@ const fn create_board(cs: &[Card]) -> Board {
 }
 
 #[inline]
-const fn place_flop(
-    flop: [IsomorphicCard; Board::N_FLOP],
-) -> [Card; Board::N_FLOP] {
+const fn place_flop(flop: [IsomorphicCard; Board::N_FLOP]) -> [Card; Board::N_FLOP] {
     let [f0, f1, f2] = flop;
 
     [

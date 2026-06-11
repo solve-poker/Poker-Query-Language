@@ -46,9 +46,7 @@ where
                 Box::new((*l).try_into()?),
                 Box::new((*r).try_into()?),
             )),
-            ast::Expr::Term(t, loc) => {
-                Ok(Self::Leaf((t, Deps(loc)).try_into()?))
-            }
+            ast::Expr::Term(t, loc) => Ok(Self::Leaf((t, Deps(loc)).try_into()?)),
         }
     }
 }

@@ -23,9 +23,7 @@ pub fn nut_hi_for_hand_type(
         // TODO: cache
         let other_rating = ctx.game.eval_rating(other, b64);
 
-        if PQLHandType::from(other_rating) == player_ht
-            && other_rating > player_rating
-        {
+        if PQLHandType::from(other_rating) == player_ht && other_rating > player_rating {
             return false;
         }
     }

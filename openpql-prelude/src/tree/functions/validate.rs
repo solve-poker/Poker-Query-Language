@@ -1,9 +1,8 @@
 use std::cmp;
 
 use crate::tree::{
-    AnnotatedAction, AnnotatedActionKind, Chip, GameTreeError, PlayerIdx,
-    current_bet, minimum_raise, next_to_act, player_can_raise,
-    player_committed, player_shove_amount,
+    AnnotatedAction, AnnotatedActionKind, Chip, GameTreeError, PlayerIdx, current_bet,
+    minimum_raise, next_to_act, player_can_raise, player_committed, player_shove_amount,
 };
 
 /// Classifies `bet` for the next actor and returns the resulting action.
@@ -122,11 +121,7 @@ mod tests {
     fn assert_validate(mut h: Vec<AnnotatedAction>) {
         while let Some(action) = h.pop() {
             if let AnnotatedAction::Act(_, _, bet) = action {
-                assert_eq!(
-                    validate_bet(&h, bet),
-                    Ok(action),
-                    "{h:?} {action:?}"
-                );
+                assert_eq!(validate_bet(&h, bet), Ok(action), "{h:?} {action:?}");
             }
         }
     }

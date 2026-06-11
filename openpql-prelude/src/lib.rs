@@ -15,10 +15,9 @@ mod rng;
 pub mod tree;
 
 pub use card::{
-    Board, Card, Card64, CardCount, CardIdx, CardIter, Flop, FlushingSuit,
-    Hand, HandIter, HandMatrix, HandN, Idx, IsomorphicBoard, IsomorphicCard,
-    IsomorphicHand, IsomorphicHandN, MAX_HOLECARDS, Rank, Rank16, RankIdx,
-    Suit, Suit4, SuitIdx, SuitMap,
+    Board, Card, Card64, CardCount, CardIdx, CardIter, Flop, FlushingSuit, Hand, HandIter,
+    HandMatrix, HandN, Idx, IsomorphicBoard, IsomorphicCard, IsomorphicHand, IsomorphicHandN,
+    MAX_HOLECARDS, Rank, Rank16, RankIdx, Suit, Suit4, SuitIdx, SuitMap,
 };
 pub use error::ParseError;
 pub use eval::calculate_payoffs;
@@ -56,9 +55,7 @@ pub mod tests {
     pub use regex::Regex;
     pub use rustc_hash::{FxHashMap, FxHashSet};
     #[cfg(feature = "serde")]
-    pub use serde_test::{
-        Compact, Configure, Token, assert_de_tokens_error, assert_tokens,
-    };
+    pub use serde_test::{Compact, Configure, Token, assert_de_tokens_error, assert_tokens};
     #[cfg(feature = "serde")]
     pub use serde_utils::{to_i, to_s};
 

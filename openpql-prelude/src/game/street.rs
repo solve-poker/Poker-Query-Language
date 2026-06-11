@@ -5,17 +5,7 @@ use crate::{Board, Card64, CardCount, ParseError};
 /// Betting street of a poker hand.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Copy,
-    PartialOrd,
-    Ord,
-    Default,
-    derive_more::Display,
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Copy, PartialOrd, Ord, Default, derive_more::Display)]
 pub enum Street {
     /// Before the flop.
     #[default]
@@ -76,9 +66,7 @@ impl From<(Board, Street)> for Card64 {
             Street::Preflop => Self::EMPTY,
             Street::Flop => board.to_c64_flop(),
             Street::Turn => board.to_c64_flop() | board.to_c64_turn(),
-            Street::River => {
-                board.to_c64_flop() | board.to_c64_turn() | board.to_c64_river()
-            }
+            Street::River => board.to_c64_flop() | board.to_c64_turn() | board.to_c64_river(),
         }
     }
 }
@@ -96,10 +84,7 @@ impl quickcheck::Arbitrary for Street {
         #[allow(unused)]
         const fn completeness_check(e: Street) {
             match e {
-                Street::Preflop
-                | Street::Flop
-                | Street::Turn
-                | Street::River => (),
+                Street::Preflop | Street::Flop | Street::Turn | Street::River => (),
             }
         }
         *g.choose(&[Self::Preflop, Self::Flop, Self::Turn, Self::River])

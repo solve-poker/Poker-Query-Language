@@ -61,10 +61,7 @@ mod tests {
     #[allow(clippy::cast_possible_wrap)]
     fn test_from_card() {
         for i in 0..Card::N_CARDS {
-            assert_eq!(
-                CardIdx::from(Card::all::<false>()[i as usize]).0,
-                i as Idx
-            );
+            assert_eq!(CardIdx::from(Card::all::<false>()[i as usize]).0, i as Idx);
         }
     }
 

@@ -17,8 +17,8 @@ mod spanned;
 pub use error::Error;
 use error::{LalrError, ResultE, user_err};
 use parser::{
-    ExprParser, FnCallParser, FromClauseParser, IdentParser, NumParser,
-    PQLParser, SelectorParser, StrParser,
+    ExprParser, FnCallParser, FromClauseParser, IdentParser, NumParser, PQLParser, SelectorParser,
+    StrParser,
 };
 pub use spanned::Spanned;
 

@@ -16,24 +16,16 @@ pub enum OutputAggregator {
 impl OutputAggregator {
     pub fn new(game: PQLGame, kind: ast::SelectorKind) -> Self {
         match (kind, game) {
-            (ast::SelectorKind::Avg, _) => {
-                OutputAggregatorAvg::default().into()
-            }
-            (ast::SelectorKind::Count, _) => {
-                OutputAggregatorCount::default().into()
-            }
+            (ast::SelectorKind::Avg, _) => OutputAggregatorAvg::default().into(),
+            (ast::SelectorKind::Count, _) => OutputAggregatorCount::default().into(),
             (ast::SelectorKind::Max, PQLGame::ShortDeck) => {
                 OutputAggregatorCmp::<true, true>::default().into()
             }
             (ast::SelectorKind::Min, PQLGame::ShortDeck) => {
                 OutputAggregatorCmp::<true, false>::default().into()
             }
-            (ast::SelectorKind::Max, _) => {
-                OutputAggregatorCmp::<false, true>::default().into()
-            }
-            (ast::SelectorKind::Min, _) => {
-                OutputAggregatorCmp::<false, false>::default().into()
-            }
+            (ast::SelectorKind::Max, _) => OutputAggregatorCmp::<false, true>::default().into(),
+            (ast::SelectorKind::Min, _) => OutputAggregatorCmp::<false, false>::default().into(),
         }
     }
 
@@ -108,13 +100,9 @@ impl OutputAggregatorCount {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-pub struct OutputAggregatorCmp<const SD: bool, const MAX: bool>(
-    Option<VmStackValue>,
-);
+pub struct OutputAggregatorCmp<const SD: bool, const MAX: bool>(Option<VmStackValue>);
 
-impl<const SD: bool, const MAX: bool> fmt::Display
-    for OutputAggregatorCmp<SD, MAX>
-{
+impl<const SD: bool, const MAX: bool> fmt::Display for OutputAggregatorCmp<SD, MAX> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.0 {
             Some(v) => write!(f, "{v}"),
@@ -123,10 +111,7 @@ impl<const SD: bool, const MAX: bool> fmt::Display
     }
 }
 
-pub fn compare<const SD: bool>(
-    lhs: VmStackValue,
-    rhs: VmStackValue,
-) -> Option<cmp::Ordering> {
+pub fn compare<const SD: bool>(lhs: VmStackValue, rhs: VmStackValue) -> Option<cmp::Ordering> {
     let game = const {
         if SD {
             PQLGame::ShortDeck
@@ -171,8 +156,7 @@ mod tests {
 
     #[test]
     fn test_aggregator_avg() {
-        let mut agg =
-            OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Avg);
+        let mut agg = OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Avg);
         agg.push_value(10.0.into());
         agg.push_value(20.0.into());
         agg.push_value(30.0.into());
@@ -182,8 +166,7 @@ mod tests {
 
     #[quickcheck]
     fn test_aggregator_count(vals: Vec<bool>) {
-        let mut agg =
-            OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Count);
+        let mut agg = OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Count);
         for val in &vals {
             agg.push_value((*val).into());
         }
@@ -194,12 +177,8 @@ mod tests {
         );
     }
 
-    fn assert_cmp<T>(
-        game: PQLGame,
-        sel: ast::SelectorKind,
-        values: &[T],
-        expected: &str,
-    ) where
+    fn assert_cmp<T>(game: PQLGame, sel: ast::SelectorKind, values: &[T], expected: &str)
+    where
         T: Copy,
         VmStackValue: From<T>,
     {
@@ -257,10 +236,7 @@ mod tests {
     #[quickcheck]
     fn test_merge_avg(lhs: Vec<Int>, rhs: Vec<Int>) {
         fn mk_avg(vals: &[Int]) -> OutputAggregator {
-            let mut agg = OutputAggregator::new(
-                PQLGame::default(),
-                ast::SelectorKind::Avg,
-            );
+            let mut agg = OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Avg);
             for &v in vals {
                 agg.push_value(PQLDouble::from(v).into());
             }
@@ -282,10 +258,7 @@ mod tests {
     #[quickcheck]
     fn test_merge_count(lhs: Vec<bool>, rhs: Vec<bool>) {
         fn mk_count(vals: &[bool]) -> OutputAggregator {
-            let mut agg = OutputAggregator::new(
-                PQLGame::default(),
-                ast::SelectorKind::Count,
-            );
+            let mut agg = OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Count);
             for &v in vals {
                 agg.push_value(v.into());
             }
@@ -302,8 +275,7 @@ mod tests {
 
     #[test]
     fn test_merge_max() {
-        let mut lhs =
-            OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Max);
+        let mut lhs = OutputAggregator::new(PQLGame::default(), ast::SelectorKind::Max);
         let mut rhs = lhs.clone();
 
         lhs.merge(rhs.clone());

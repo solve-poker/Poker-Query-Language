@@ -26,10 +26,8 @@ fn run_trials(
         match vm.sample(&mut rng) {
             Some(()) => {
                 if let Some(wp) = where_program {
-                    let keep = matches!(
-                        wp.execute(&mut vm.as_context())?,
-                        VmStackValue::Bool(true)
-                    );
+                    let keep =
+                        matches!(wp.execute(&mut vm.as_context())?, VmStackValue::Bool(true));
 
                     if !keep {
                         //TODO: refine this
@@ -39,10 +37,7 @@ fn run_trials(
                 }
 
                 for (idx, program) in programs.iter().enumerate() {
-                    output.push_value(
-                        idx,
-                        program.execute(&mut vm.as_context())?,
-                    );
+                    output.push_value(idx, program.execute(&mut vm.as_context())?);
                 }
                 output.n_succ += 1;
             }
@@ -96,17 +91,10 @@ impl PQLRunner {
             (0..n_threads)
                 .map(|i| {
                     // distribute the remainder over the first few threads
-                    let quota = n_trails / n_threads
-                        + usize::from(i < n_trails % n_threads);
+                    let quota = n_trails / n_threads + usize::from(i < n_trails % n_threads);
 
                     scope.spawn(move || {
-                        run_trials(
-                            vm.clone(),
-                            quota,
-                            where_program,
-                            programs,
-                            selectors,
-                        )
+                        run_trials(vm.clone(), quota, where_program, programs, selectors)
                     })
                 })
                 .collect::<Vec<_>>()
@@ -145,11 +133,7 @@ impl PQLRunner {
                             writeln!(stream_out, "{} trials", output.n_succ)?;
                         }
                         Err(err) => {
-                            writeln!(
-                                stream_err,
-                                "{err:?} {}",
-                                &src[err.loc.0..err.loc.1]
-                            )?;
+                            writeln!(stream_err, "{err:?} {}", &src[err.loc.0..err.loc.1])?;
                         }
                     }
                 }

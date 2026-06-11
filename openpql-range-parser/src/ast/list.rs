@@ -26,18 +26,14 @@ fn to_str(elems: &[ListElem]) -> String {
 }
 
 /// Bracketed list of simple cards.
-#[derive(
-    Clone, PartialEq, Eq, Debug, derive_more::From, derive_more::Display,
-)]
+#[derive(Clone, PartialEq, Eq, Debug, derive_more::From, derive_more::Display)]
 #[display("{}", to_str(_0))]
 pub struct List(pub Vec<ListElem>);
 
 impl TryFrom<(Loc, Vec<RangeCard>, Loc)> for List {
     type Error = LalrError<'static>;
 
-    fn try_from(
-        (l, v, r): (Loc, Vec<RangeCard>, Loc),
-    ) -> Result<Self, Self::Error> {
+    fn try_from((l, v, r): (Loc, Vec<RangeCard>, Loc)) -> Result<Self, Self::Error> {
         let mut inner = vec![];
 
         for c in v {

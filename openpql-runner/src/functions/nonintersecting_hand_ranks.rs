@@ -6,8 +6,5 @@ pub fn nonintersecting_hand_ranks(
     player: PQLPlayer,
     street: PQLStreet,
 ) -> PQLRankSet {
-    core::nonintersecting_hand_ranks(
-        ctx.get_player_slice(player),
-        ctx.get_board(street),
-    )
+    core::nonintersecting_hand_ranks(ctx.get_player_slice(player), ctx.get_board(street))
 }

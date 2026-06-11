@@ -1,12 +1,9 @@
 use super::{
-    Array, ConstrainSuit, From, Idx, RangeCard, Suit, Suit4, SuitVar, Term,
-    TermElem, VarCondition,
+    Array, ConstrainSuit, From, Idx, RangeCard, Suit, Suit4, SuitVar, Term, TermElem, VarCondition,
 };
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
-pub(super) struct VarConditionSuit<const N: usize>(
-    pub(crate) VarCondition<Suit4, Suit, N>,
-)
+pub(super) struct VarConditionSuit<const N: usize>(pub(crate) VarCondition<Suit4, Suit, N>)
 where
     [Idx; N]: Array<Item = Idx>;
 
@@ -70,11 +67,7 @@ mod tests {
     ) {
         assert!(self_idx < 4);
 
-        let cond = VarConditionSuit::<4>::from((
-            &parse_term(term).unwrap(),
-            var,
-            self_idx,
-        ));
+        let cond = VarConditionSuit::<4>::from((&parse_term(term).unwrap(), var, self_idx));
 
         assert_eq!(cond.0.equal.as_slice(), expected.0);
         assert_eq!(cond.0.not_equal.as_slice(), expected.1);

@@ -1,12 +1,6 @@
 use crate::{Board, Card, IsomorphicCard, Suit, SuitMap, card::util::sort5};
 
-const fn flush_suit(
-    s0: Suit,
-    s1: Suit,
-    s2: Suit,
-    s3: Suit,
-    s4: Suit,
-) -> Option<Suit> {
+const fn flush_suit(s0: Suit, s1: Suit, s2: Suit, s3: Suit, s4: Suit) -> Option<Suit> {
     match (s0, s1, s2, s3, s4) {
         (a, b, c, _, _) if a.const_eq(b) && b.const_eq(c) => Some(a),
         (a, b, _, d, _) if a.const_eq(b) && b.const_eq(d) => Some(a),

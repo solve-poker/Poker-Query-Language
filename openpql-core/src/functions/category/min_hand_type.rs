@@ -3,12 +3,7 @@ use std::cmp::Ordering;
 use crate::{PQLBoard, PQLCard, PQLGame, PQLHandType, functions::hand_type};
 
 /// Returns `true` when the hand's made hand type is at least `ht`.
-pub fn min_hand_type(
-    game: PQLGame,
-    hand: &[PQLCard],
-    board: PQLBoard,
-    ht: PQLHandType,
-) -> bool {
+pub fn min_hand_type(game: PQLGame, hand: &[PQLCard], board: PQLBoard, ht: PQLHandType) -> bool {
     let computed = hand_type(game, hand, board);
 
     let order = if game.is_shortdeck() {

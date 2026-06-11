@@ -3,11 +3,7 @@ use super::*;
 // TODO: optimize
 // TODO: deadcards
 #[pqlfn]
-pub fn nut_hi(
-    ctx: &PQLFnContext,
-    player: PQLPlayer,
-    street: PQLStreet,
-) -> PQLBoolean {
+pub fn nut_hi(ctx: &PQLFnContext, player: PQLPlayer, street: PQLStreet) -> PQLBoolean {
     let p64 = ctx.get_c64_player(player);
     let b64 = ctx.get_c64_board(street);
     let known_cards = p64 | b64;

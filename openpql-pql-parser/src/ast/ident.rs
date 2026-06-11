@@ -57,10 +57,7 @@ mod tests {
 
     #[test]
     fn test_dbg() {
-        assert_eq!(
-            format!("{:?}", Ident::from(("content", (0, 1)))),
-            "content"
-        );
+        assert_eq!(format!("{:?}", Ident::from(("content", (0, 1)))), "content");
     }
 
     #[test]

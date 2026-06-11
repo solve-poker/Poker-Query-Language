@@ -190,8 +190,7 @@ mod tests {
     #[test]
     fn test_last_hand_filtered_by_dead() {
         let dead = c64!("Ad Ac");
-        let hands: Vec<_> =
-            HandN::<2>::iter_all::<false>().with_dead(dead).collect();
+        let hands: Vec<_> = HandN::<2>::iter_all::<false>().with_dead(dead).collect();
 
         let ad = Card::from_str("Ad").unwrap();
         let ac = Card::from_str("Ac").unwrap();

@@ -5,16 +5,7 @@ use crate::{Suit, card::Idx};
 /// Numeric index of a suit in the range 0-3.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
 #[derive(
-    Copy,
-    Clone,
-    PartialEq,
-    Eq,
-    Debug,
-    Ord,
-    PartialOrd,
-    Hash,
-    derive_more::Display,
-    Default,
+    Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, derive_more::Display, Default,
 )]
 pub struct SuitIdx(pub(crate) Idx);
 

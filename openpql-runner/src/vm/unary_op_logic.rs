@@ -21,10 +21,7 @@ impl VmUnaryOpLogic {
     }
 
     #[allow(clippy::unused_self)]
-    pub fn resolve_type(
-        self,
-        arg_type: PQLType,
-    ) -> Result<PQLType, PQLErrorKind> {
+    pub fn resolve_type(self, arg_type: PQLType) -> Result<PQLType, PQLErrorKind> {
         if arg_type == PQLType::BOOLEAN {
             Ok(PQLType::BOOLEAN)
         } else {

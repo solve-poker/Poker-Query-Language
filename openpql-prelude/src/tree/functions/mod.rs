@@ -33,21 +33,13 @@ pub fn current_round(history: &[AnnotatedAction]) -> &[AnnotatedAction] {
     inner(history, history)
 }
 
-fn filter_player_action<F>(
-    hero_id: PlayerIdx,
-    history: &[AnnotatedAction],
-    predicate: F,
-) -> bool
+fn filter_player_action<F>(hero_id: PlayerIdx, history: &[AnnotatedAction], predicate: F) -> bool
 where
     F: Fn(&AnnotatedActionKind) -> bool,
 {
     match history {
         [] => false,
-        [AnnotatedAction::Act(pid, kind, _), ..]
-            if *pid == hero_id && predicate(kind) =>
-        {
-            true
-        }
+        [AnnotatedAction::Act(pid, kind, _), ..] if *pid == hero_id && predicate(kind) => true,
         [_, tail @ ..] => filter_player_action(hero_id, tail, predicate),
     }
 }
@@ -59,9 +51,7 @@ where
 {
     match actions {
         [] => acc,
-        [head, tail @ ..] => {
-            filter_count(acc + T::from(predicate(head)), tail, predicate)
-        }
+        [head, tail @ ..] => filter_count(acc + T::from(predicate(head)), tail, predicate),
     }
 }
 
@@ -75,8 +65,7 @@ mod tests {
 
     #[test]
     fn test_current_round() {
-        let bet =
-            |i: PlayerIdx, b: Chip| (i, AnnotatedActionKind::Bet, b).into();
+        let bet = |i: PlayerIdx, b: Chip| (i, AnnotatedActionKind::Bet, b).into();
         assert_eq!(current_round(&[bet(0, 10)]), [bet(0, 10)]);
         assert_eq!(current_round(&[bet(0, 10), FLOP]), []);
         assert_eq!(

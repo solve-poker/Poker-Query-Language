@@ -35,9 +35,7 @@ pub const fn user_err<'input>(error: Error) -> LalrError<'input> {
 impl<'input> From<LalrError<'input>> for Error {
     fn from(err: LalrError<'input>) -> Self {
         match err {
-            ParseError::InvalidToken { location: l } => {
-                Self::InvalidToken((l, l + 1))
-            }
+            ParseError::InvalidToken { location: l } => Self::InvalidToken((l, l + 1)),
 
             ParseError::UnrecognizedEof {
                 location: l,

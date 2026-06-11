@@ -31,9 +31,7 @@ impl RunnerOutput {
     pub fn merge(&mut self, other: Self) {
         assert_eq!(self.aggregators.len(), other.aggregators.len());
 
-        for (agg, other_agg) in
-            self.aggregators.iter_mut().zip(other.aggregators)
-        {
+        for (agg, other_agg) in self.aggregators.iter_mut().zip(other.aggregators) {
             agg.merge(other_agg);
         }
 

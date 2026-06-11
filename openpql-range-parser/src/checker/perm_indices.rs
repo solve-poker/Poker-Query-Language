@@ -46,11 +46,7 @@ pub static PERM_BOARD_5: LazyLock<IdxPermutations> = LazyLock::new(|| {
 });
 
 #[inline]
-pub fn range_cond_indices(
-    n: usize,
-    r: usize,
-    board: bool,
-) -> &'static IdxPermutations {
+pub fn range_cond_indices(n: usize, r: usize, board: bool) -> &'static IdxPermutations {
     match (n, r, board) {
         (1, 1, false) => PERM11.as_ref(),
 

@@ -1,11 +1,7 @@
 use crate::{PQLBoard, PQLCard, PQLGame, PQLHandType, functions::hi_rating};
 
 /// Returns the best made hand type for the hand given the board.
-pub fn hand_type(
-    game: PQLGame,
-    hand: &[PQLCard],
-    board: PQLBoard,
-) -> PQLHandType {
+pub fn hand_type(game: PQLGame, hand: &[PQLCard], board: PQLBoard) -> PQLHandType {
     hi_rating(game, hand, board).into()
 }
 

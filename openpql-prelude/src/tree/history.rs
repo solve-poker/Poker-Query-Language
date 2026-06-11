@@ -221,8 +221,7 @@ mod tests {
 
     #[test]
     fn test_from_actions() {
-        let v =
-            vec![Action::Chance, Action::PlayerBet(10), Action::PlayerBet(20)];
+        let v = vec![Action::Chance, Action::PlayerBet(10), Action::PlayerBet(20)];
 
         assert_eq!(history!(c, 10, 20), History::from(v));
     }
@@ -243,8 +242,7 @@ mod tests {
     #[test]
     fn test_macro() {
         let expected = History::from(
-            [Action::Chance, Action::PlayerBet(10), Action::PlayerBet(20)]
-                .as_slice(),
+            [Action::Chance, Action::PlayerBet(10), Action::PlayerBet(20)].as_slice(),
         );
 
         assert_eq!(expected, history!(c, 10, 20));
@@ -253,8 +251,7 @@ mod tests {
     #[test]
     fn test_debug() {
         let history = History::from(
-            [Action::Chance, Action::PlayerBet(1), Action::PlayerBet(100)]
-                .as_slice(),
+            [Action::Chance, Action::PlayerBet(1), Action::PlayerBet(100)].as_slice(),
         );
 
         assert_eq!(format!("{history:?}"), "<C-1-100>");

@@ -47,17 +47,12 @@ pub const fn eval_omaha_noflush(player: Card64, board: Card64) -> HandRating {
         return ranking;
     }
 
-    HandRating::new_highcard(Rank16(
-        b1.retain_highest3().0 | p1.retain_highest2().0,
-    ))
+    HandRating::new_highcard(Rank16(b1.retain_highest3().0 | p1.retain_highest2().0))
 }
 
 /// Returns the flush or straight-flush rating of `player` against `board`, if any.
 #[inline]
-pub const fn eval_omaha_flush(
-    player: Card64,
-    board: Card64,
-) -> Option<HandRating> {
+pub const fn eval_omaha_flush(player: Card64, board: Card64) -> Option<HandRating> {
     if let Some((p, b)) = flush_ranks_omaha(player, board) {
         if let Some(hi) = eval_straight(p, b) {
             return Some(HandRating::new_straightflush(hi));
@@ -107,11 +102,7 @@ const fn max(
 
 // PAIR Case I: aax; yz
 #[inline]
-const fn eval_pair_1(
-    p1: Rank16,
-    b2: Rank16,
-    b1: Rank16,
-) -> Option<(Rank16, Rank16)> {
+const fn eval_pair_1(p1: Rank16, b2: Rank16, b1: Rank16) -> Option<(Rank16, Rank16)> {
     if b2.is_empty() {
         None
     } else {
@@ -145,12 +136,7 @@ const fn eval_pair_3(p2: Rank16, b1: Rank16) -> Option<(Rank16, Rank16)> {
 }
 
 #[inline]
-const fn eval_pair(
-    p2: Rank16,
-    p1: Rank16,
-    b2: Rank16,
-    b1: Rank16,
-) -> Option<HandRating> {
+const fn eval_pair(p2: Rank16, p1: Rank16, b2: Rank16, b1: Rank16) -> Option<HandRating> {
     if let Some((h, l)) = max(
         max(eval_pair_1(p1, b2, b1), eval_pair_2(p1, b1)),
         eval_pair_3(p2, b1),
@@ -163,11 +149,7 @@ const fn eval_pair(
 
 // TWOPAIR Case I: aak; bb
 #[inline]
-const fn eval_twopair_1(
-    p2: Rank16,
-    b2: Rank16,
-    b1: Rank16,
-) -> Option<(Rank16, Rank16)> {
+const fn eval_twopair_1(p2: Rank16, b2: Rank16, b1: Rank16) -> Option<(Rank16, Rank16)> {
     if b2.is_empty() || p2.is_empty() {
         None
     } else {
@@ -179,11 +161,7 @@ const fn eval_twopair_1(
 
 // TWOPAIR Case II: aab; bk
 #[inline]
-const fn eval_twopair_2(
-    p1: Rank16,
-    b2: Rank16,
-    b1: Rank16,
-) -> Option<(Rank16, Rank16)> {
+const fn eval_twopair_2(p1: Rank16, b2: Rank16, b1: Rank16) -> Option<(Rank16, Rank16)> {
     if let Some(pair) = intersect(b1, p1)
         && !b2.is_empty()
     {
@@ -209,12 +187,7 @@ const fn eval_twopair_3(p1: Rank16, b1: Rank16) -> Option<(Rank16, Rank16)> {
 }
 
 #[inline]
-const fn eval_twopair(
-    p2: Rank16,
-    p1: Rank16,
-    b2: Rank16,
-    b1: Rank16,
-) -> Option<HandRating> {
+const fn eval_twopair(p2: Rank16, p1: Rank16, b2: Rank16, b1: Rank16) -> Option<HandRating> {
     if let Some((h, l)) = max(
         max(eval_twopair_1(p2, b2, b1), eval_twopair_2(p1, b2, b1)),
         eval_twopair_3(p1, b1),
@@ -237,11 +210,7 @@ const fn eval_trips_1(p1: Rank16, b3: Rank16) -> Option<(Rank16, Rank16)> {
 
 // TRIPS Case II: aax; ay
 #[inline]
-const fn eval_trips_2(
-    p1: Rank16,
-    b2: Rank16,
-    b1: Rank16,
-) -> Option<(Rank16, Rank16)> {
+const fn eval_trips_2(p1: Rank16, b2: Rank16, b1: Rank16) -> Option<(Rank16, Rank16)> {
     match intersect(b2, p1) {
         Some(hi) => Some((hi, highest_from_each(b1.diff(hi), p1.diff(hi)))),
         None => None,
@@ -280,11 +249,7 @@ const fn eval_trips(
 }
 
 #[inline]
-const fn eval_straight_x(
-    mask: Rank16,
-    p1: Rank16,
-    b1: Rank16,
-) -> Option<Rank16> {
+const fn eval_straight_x(mask: Rank16, p1: Rank16, b1: Rank16) -> Option<Rank16> {
     if (mask.0 & (p1.0 | b1.0)) == mask.0
         && (mask.0 & p1.0).count_ones() >= 2
         && (mask.0 & b1.0).count_ones() >= 3
@@ -351,11 +316,7 @@ const fn eval_fullhouse_1(p2: Rank16, b3: Rank16) -> Option<(Rank16, Rank16)> {
 
 // FULLHOUSE Case II: abb; aa
 #[inline]
-const fn eval_fullhouse_2(
-    p2: Rank16,
-    b2: Rank16,
-    b1: Rank16,
-) -> Option<(Rank16, Rank16)> {
+const fn eval_fullhouse_2(p2: Rank16, b2: Rank16, b1: Rank16) -> Option<(Rank16, Rank16)> {
     if let Some(trips) = intersect(p2, b1) {
         let hi = trips.retain_highest();
         let lo = b2.diff(hi);
@@ -370,11 +331,7 @@ const fn eval_fullhouse_2(
 
 // FULLHOUSE Case III: abb; ab
 #[inline]
-const fn eval_fullhouse_3(
-    p1: Rank16,
-    b2: Rank16,
-    b1: Rank16,
-) -> Option<(Rank16, Rank16)> {
+const fn eval_fullhouse_3(p1: Rank16, b2: Rank16, b1: Rank16) -> Option<(Rank16, Rank16)> {
     if let Some(trips) = intersect(b2, p1) {
         let hi = trips.retain_highest();
 
@@ -406,11 +363,7 @@ const fn eval_fullhouse(
 
 // QUADS Case I: aak; aa
 #[inline]
-const fn eval_quads_1(
-    p2: Rank16,
-    b2: Rank16,
-    b1: Rank16,
-) -> Option<(Rank16, Rank16)> {
+const fn eval_quads_1(p2: Rank16, b2: Rank16, b1: Rank16) -> Option<(Rank16, Rank16)> {
     match intersect(p2, b2) {
         Some(quad) => {
             let hi = quad.retain_highest();

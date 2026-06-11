@@ -11,11 +11,7 @@ pub struct PQLFnContext<'vm> {
 impl PQLFnContext<'_> {
     /// Cached [`PQLGame::eval_rating`]; hits are shared across functions,
     /// trials and threads via [`VmCache`].
-    pub fn eval_current_rating(
-        &self,
-        player: PQLPlayer,
-        street: PQLStreet,
-    ) -> PQLHiRating {
+    pub fn eval_current_rating(&self, player: PQLPlayer, street: PQLStreet) -> PQLHiRating {
         self.cache.rating_or_insert_with(
             self.game,
             self.get_player_slice(player),
@@ -25,11 +21,7 @@ impl PQLFnContext<'_> {
 
     /// Cached rating for an arbitrary `player`/`board`, sharing hits via
     /// [`VmCache`].
-    pub fn eval_rating(
-        &self,
-        player: &[PQLCard],
-        board: PQLBoard,
-    ) -> PQLHiRating {
+    pub fn eval_rating(&self, player: &[PQLCard], board: PQLBoard) -> PQLHiRating {
         self.cache.rating_or_insert_with(self.game, player, board)
     }
 
@@ -41,17 +33,11 @@ impl PQLFnContext<'_> {
         Self::idx_board_start(self.n_players, self.n_holecards())
     }
 
-    pub const fn idx_board_start(
-        n_players: PQLPlayerCount,
-        n_holecards: PQLCardCount,
-    ) -> usize {
+    pub const fn idx_board_start(n_players: PQLPlayerCount, n_holecards: PQLCardCount) -> usize {
         (n_players * n_holecards) as usize
     }
 
-    pub const fn n_total_cards(
-        n_players: PQLPlayerCount,
-        n_holecards: PQLCardCount,
-    ) -> usize {
+    pub const fn n_total_cards(n_players: PQLPlayerCount, n_holecards: PQLCardCount) -> usize {
         Self::idx_board_start(n_players, n_holecards) + PQLBoard::N_RIVER
     }
 
@@ -148,10 +134,8 @@ pub mod tests {
         }
 
         pub fn from_cards(game: PQLGame, cards: Vec<PQLCard>) -> Self {
-            let n_players =
-                PQLCardCount::try_from(cards.len() - PQLBoard::N_RIVER)
-                    .unwrap()
-                    / game.player_cards_len();
+            let n_players = PQLCardCount::try_from(cards.len() - PQLBoard::N_RIVER).unwrap()
+                / game.player_cards_len();
 
             Self {
                 game,
@@ -165,10 +149,7 @@ pub mod tests {
     impl Arbitrary for TestPQLFnContext {
         fn arbitrary(g: &mut quickcheck::Gen) -> Self {
             const MAX_PLAYER: PQLPlayerCount = 10;
-            fn random_cards<const SD: bool>(
-                rng: &mut impl rand::Rng,
-                n: usize,
-            ) -> Vec<PQLCard> {
+            fn random_cards<const SD: bool>(rng: &mut impl rand::Rng, n: usize) -> Vec<PQLCard> {
                 PQLCard::all::<SD>()
                     .iter()
                     .copied()
@@ -182,8 +163,7 @@ pub mod tests {
             let rng = &mut rand::rng();
             let n_players = rng.random_range(1..=MAX_PLAYER);
 
-            let n_cards = (game.player_cards_len() * n_players) as usize
-                + PQLBoard::N_RIVER;
+            let n_cards = (game.player_cards_len() * n_players) as usize + PQLBoard::N_RIVER;
 
             let sampled_cards = match game {
                 PQLGame::ShortDeck => random_cards::<true>(rng, n_cards),

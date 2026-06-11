@@ -65,10 +65,7 @@ mod tests {
 
                 s.spawn(move || {
                     for _ in 0..100 {
-                        assert_eq!(
-                            cache.rating_or_insert_with(game, player, board),
-                            rating
-                        );
+                        assert_eq!(cache.rating_or_insert_with(game, player, board), rating);
                     }
                 });
             }

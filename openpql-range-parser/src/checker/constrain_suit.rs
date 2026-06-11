@@ -1,7 +1,4 @@
-use super::{
-    Array, Card, From, Idx, Suit4, VarCondition, VarConditionSuit,
-    ast::SuitConst,
-};
+use super::{Array, Card, From, Idx, Suit4, VarCondition, VarConditionSuit, ast::SuitConst};
 
 #[derive(PartialEq, Eq, Debug, Default, Clone)]
 pub enum ConstrainSuit<const N: usize>

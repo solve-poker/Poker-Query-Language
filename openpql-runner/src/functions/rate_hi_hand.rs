@@ -1,10 +1,7 @@
 use super::*;
 
 #[pqlfn]
-pub fn rate_hi_hand(
-    ctx: &PQLFnContext,
-    text: &PQLString,
-) -> Result<PQLHiRating, RuntimeError> {
+pub fn rate_hi_hand(ctx: &PQLFnContext, text: &PQLString) -> Result<PQLHiRating, RuntimeError> {
     let game = match ctx.game {
         PQLGame::Holdem | PQLGame::Omaha => PQLGame::Holdem,
         PQLGame::ShortDeck => PQLGame::ShortDeck,

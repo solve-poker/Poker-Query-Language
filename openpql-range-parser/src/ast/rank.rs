@@ -61,11 +61,7 @@ pub enum CardRank {
 }
 
 impl CardRank {
-    pub(crate) fn from_token(
-        is_shortdeck: bool,
-        c: char,
-        loc: LocInfo,
-    ) -> ResultE<'static, Self> {
+    pub(crate) fn from_token(is_shortdeck: bool, c: char, loc: LocInfo) -> ResultE<'static, Self> {
         if is_shortdeck {
             match c {
                 '2' | '3' | '4' | '5' => {

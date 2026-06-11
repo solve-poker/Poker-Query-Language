@@ -1,6 +1,5 @@
 use super::{
-    Array, Card, From, Idx, Rank16, RankDiff, VarCondition, VarConditionRank,
-    ast::RankConst,
+    Array, Card, From, Idx, Rank16, RankDiff, VarCondition, VarConditionRank, ast::RankConst,
 };
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]

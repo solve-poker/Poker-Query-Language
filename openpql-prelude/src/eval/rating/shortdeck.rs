@@ -1,14 +1,11 @@
 use super::{
-    eval_pair, eval_quads, eval_trips, eval_twopair, flush_ranks,
-    mk_straight_ranking, ranks_by_suit_count,
+    eval_pair, eval_quads, eval_trips, eval_twopair, flush_ranks, mk_straight_ranking,
+    ranks_by_suit_count,
 };
 use crate::{Card64, HandRating, Rank16};
 
 #[inline]
-pub(super) const fn eval_fullhouse_sd(
-    has3: Rank16,
-    has2: Rank16,
-) -> Option<HandRating> {
+pub(super) const fn eval_fullhouse_sd(has3: Rank16, has2: Rank16) -> Option<HandRating> {
     if !has3.is_empty() && has2.count() > 1 {
         let hi = has3.retain_highest();
 
@@ -19,9 +16,7 @@ pub(super) const fn eval_fullhouse_sd(
 }
 
 #[inline]
-const fn eval_straight_inner_sd<const FLUSH: bool>(
-    has1: Rank16,
-) -> Option<HandRating> {
+const fn eval_straight_inner_sd<const FLUSH: bool>(has1: Rank16) -> Option<HandRating> {
     if has1.0 & Rank16::STRAIGHT_TJQKA.0 == Rank16::STRAIGHT_TJQKA.0 {
         Some(mk_straight_ranking::<FLUSH>(Rank16::STRAIGHT_TJQKA))
     } else if has1.0 & Rank16::STRAIGHT_9TJQK.0 == Rank16::STRAIGHT_9TJQK.0 {

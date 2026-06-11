@@ -42,9 +42,7 @@ use crate::{
 /// [15, 0]:   000rrrrr rrrrrrrr  // r: bitmask of 5 ranks
 /// ```
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
-#[derive(
-    Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, derive_more::Debug,
-)]
+#[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, derive_more::Debug)]
 #[debug("{}", self)]
 pub struct HandRating(pub(crate) RatingInner);
 
@@ -127,11 +125,7 @@ impl HandRating {
     }
 
     pub(crate) const fn new_twopair(pairs: Rank16, kicker: Rank16) -> Self {
-        Self(
-            Self::MASK_TWOPAIR
-                | comb2(pairs) << OFFSET_RANK_IDX
-                | rank_idx(kicker),
-        )
+        Self(Self::MASK_TWOPAIR | comb2(pairs) << OFFSET_RANK_IDX | rank_idx(kicker))
     }
 
     pub(crate) fn parse_twopair(self) -> (Rank16, Rank16) {
@@ -192,11 +186,7 @@ impl HandRating {
     }
 
     pub(crate) const fn new_quad(quad: Rank16, kicker: Rank16) -> Self {
-        Self(
-            Self::MASK_QUADS
-                | rank_idx(quad) << OFFSET_RANK_IDX
-                | rank_idx(kicker),
-        )
+        Self(Self::MASK_QUADS | rank_idx(quad) << OFFSET_RANK_IDX | rank_idx(kicker))
     }
 
     pub(crate) const fn parse_quad(self) -> (Rank16, Rank16) {
@@ -218,10 +208,9 @@ impl fmt::Display for HandRating {
         let ht = view.hand_type;
 
         match ht {
-            HandType::HighCard
-            | HandType::Straight
-            | HandType::Flush
-            | HandType::StraightFlush => write!(f, "{ht}({})", view.high),
+            HandType::HighCard | HandType::Straight | HandType::Flush | HandType::StraightFlush => {
+                write!(f, "{ht}({})", view.high)
+            }
 
             HandType::Pair
             | HandType::TwoPair

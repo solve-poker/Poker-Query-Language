@@ -76,9 +76,7 @@ impl<'de> serde::Deserialize<'de> for Action {
 
         match Helper::deserialize(deserializer)? {
             Helper::Str(s) if is_chance_str(&s) => Ok(Self::Chance),
-            Helper::Str(s) => {
-                Err(Error::custom(format!("unknown action: {s}")))
-            }
+            Helper::Str(s) => Err(Error::custom(format!("unknown action: {s}"))),
             Helper::Num(v) => Ok(Self::PlayerBet(v)),
         }
     }
@@ -108,8 +106,7 @@ pub mod tests {
 
     #[test]
     fn test_debug() {
-        let actions =
-            [Action::Chance, Action::PlayerBet(1), Action::PlayerBet(100)];
+        let actions = [Action::Chance, Action::PlayerBet(1), Action::PlayerBet(100)];
         let expected = ["C", "1", "100"];
 
         for i in 0..actions.len() {
@@ -166,9 +163,6 @@ mod tests_serde {
 
     #[test]
     fn test_action_unknown_string_err() {
-        assert_de_tokens_error::<Action>(
-            &[Token::Str("bogus")],
-            "unknown action: bogus",
-        );
+        assert_de_tokens_error::<Action>(&[Token::Str("bogus")], "unknown action: bogus");
     }
 }

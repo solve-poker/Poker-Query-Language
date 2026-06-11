@@ -45,11 +45,7 @@ fn gen_cards(
 }
 
 impl VmSampledData {
-    pub fn new(
-        game: PQLGame,
-        n_players: PQLPlayerCount,
-        dead_cards: PQLCardSet,
-    ) -> Self {
+    pub fn new(game: PQLGame, n_players: PQLPlayerCount, dead_cards: PQLCardSet) -> Self {
         let card_gen = if game.is_shortdeck() {
             CardGen::new::<true>(dead_cards)
         } else {

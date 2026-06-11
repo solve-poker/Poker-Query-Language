@@ -18,8 +18,7 @@ mod tests {
     #[quickcheck]
     fn test_rainbow_board(board: PQLBoard) {
         let len = board.len();
-        let expected =
-            len > 0 && len < 5 && board_suit_count(board) as usize == len;
+        let expected = len > 0 && len < 5 && board_suit_count(board) as usize == len;
 
         assert_eq!(rainbow_board(board), expected);
     }

@@ -1,8 +1,6 @@
 use std::{fmt, hash::Hash};
 
-use crate::{
-    Card, Card64, CardCount, Flop, Suit, Suit4, card::util::const_cmp_opt,
-};
+use crate::{Card, Card64, CardCount, Flop, Suit, Suit4, card::util::const_cmp_opt};
 
 /// Builds a [`Board`] from a string of cards.
 #[macro_export]
@@ -14,17 +12,7 @@ macro_rules! board {
 
 /// Community cards across flop, turn, and river.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
-#[derive(
-    Copy,
-    Clone,
-    derive_more::Debug,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Hash,
-    Default,
-)]
+#[derive(Copy, Clone, derive_more::Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 #[debug("Board<{}>", self)]
 pub struct Board {
     /// Three flop cards, or `None` preflop.
@@ -83,11 +71,7 @@ impl Board {
     #[must_use]
     pub const fn len(&self) -> usize {
         match self.flop {
-            Some(_) => {
-                Self::N_FLOP
-                    + self.turn.is_some() as usize
-                    + self.river.is_some() as usize
-            }
+            Some(_) => Self::N_FLOP + self.turn.is_some() as usize + self.river.is_some() as usize,
             None => 0,
         }
     }
@@ -154,9 +138,7 @@ impl Board {
             _ => false,
         };
 
-        flop_eq
-            && card_eq(self.turn, other.turn)
-            && card_eq(self.river, other.river)
+        flop_eq && card_eq(self.turn, other.turn) && card_eq(self.river, other.river)
     }
 
     /// Const-context less-than, equivalent to [`PartialOrd::lt`].
@@ -195,9 +177,7 @@ impl Board {
     /// Returns the dealt cards packed into a [`Card64`] bitset.
     #[must_use]
     pub const fn to_card64(self) -> Card64 {
-        Card64(
-            self.to_c64_flop().0 | self.to_c64_turn().0 | self.to_c64_river().0,
-        )
+        Card64(self.to_c64_flop().0 | self.to_c64_turn().0 | self.to_c64_river().0)
     }
 
     /// Returns suits still able to make a flush by the river.
@@ -213,8 +193,7 @@ impl Board {
                 suits
             }
             (Some(flop), Some(turn), None) => {
-                let (s1, s2, s3, s4) =
-                    (flop.0[0].suit, flop.0[1].suit, flop.0[2].suit, turn.suit);
+                let (s1, s2, s3, s4) = (flop.0[0].suit, flop.0[1].suit, flop.0[2].suit, turn.suit);
                 let mut suits = Suit4(0);
 
                 if (s1.const_eq(s2)) || (s1.const_eq(s3)) || (s1.const_eq(s4)) {
@@ -245,23 +224,11 @@ impl Board {
                     river.suit,
                 );
 
-                if count(s1, s2) + count(s1, s3) + count(s1, s4) + count(s1, s5)
-                    >= N_OTHER
-                {
+                if count(s1, s2) + count(s1, s3) + count(s1, s4) + count(s1, s5) >= N_OTHER {
                     Suit4::from_suit(s1)
-                } else if count(s2, s1)
-                    + count(s2, s3)
-                    + count(s2, s4)
-                    + count(s2, s5)
-                    >= N_OTHER
-                {
+                } else if count(s2, s1) + count(s2, s3) + count(s2, s4) + count(s2, s5) >= N_OTHER {
                     Suit4::from_suit(s2)
-                } else if count(s3, s1)
-                    + count(s3, s2)
-                    + count(s3, s4)
-                    + count(s3, s5)
-                    >= N_OTHER
-                {
+                } else if count(s3, s1) + count(s3, s2) + count(s3, s4) + count(s3, s5) >= N_OTHER {
                     Suit4::from_suit(s3)
                 } else {
                     Suit4(0)
@@ -384,9 +351,7 @@ mod tests {
             board.flush_suits(),
             Suit::ARR_ALL
                 .into_iter()
-                .filter(|&suit| {
-                    cs.count_by_suit(suit) + n_future_cards >= N_FLUSH
-                })
+                .filter(|&suit| { cs.count_by_suit(suit) + n_future_cards >= N_FLUSH })
                 .collect()
         );
     }
@@ -463,10 +428,7 @@ mod tests {
     fn test_flush_suits_river(cs: CardN<5>) {
         let board = Board::from_slice(cs.as_slice());
         if board.to_card64().max_same_suit_count() >= 3 {
-            assert_eq!(
-                board.flush_suits(),
-                board.to_card64().most_frequent_suits()
-            );
+            assert_eq!(board.flush_suits(), board.to_card64().most_frequent_suits());
         } else {
             assert!(board.flush_suits().is_empty());
         }

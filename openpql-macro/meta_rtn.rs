@@ -43,22 +43,16 @@ impl RtnMetadata {
                 .segments
                 .last()
                 .and_then(|segment| match &segment.arguments {
-                    PathArguments::AngleBracketed(angle_args) => {
-                        angle_args.args.first()
-                    }
+                    PathArguments::AngleBracketed(angle_args) => angle_args.args.first(),
                     _ => None,
                 })
                 .and_then(|arg| match arg {
-                    GenericArgument::Type(Type::Path(inner)) => {
-                        Some(typepath_to_id(inner))
-                    }
+                    GenericArgument::Type(Type::Path(inner)) => Some(typepath_to_id(inner)),
                     _ => None,
                 })
         }
 
-        inner(ty_path).unwrap_or_else(|| {
-            panic!("{} not supported", ty_path.to_token_stream())
-        })
+        inner(ty_path).unwrap_or_else(|| panic!("{} not supported", ty_path.to_token_stream()))
     }
 }
 

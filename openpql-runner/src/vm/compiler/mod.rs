@@ -54,10 +54,7 @@ impl<'vm> CompilerData<'vm> {
     }
 }
 
-pub fn compile_selector(
-    vm: &mut Vm,
-    selector: &ast::Selector,
-) -> PQLResult<VmProgram> {
+pub fn compile_selector(vm: &mut Vm, selector: &ast::Selector) -> PQLResult<VmProgram> {
     let mut data = CompilerData::new(&vm.static_data);
 
     push_expr(&mut data, &selector.expr, selector.kind.into())?;
@@ -98,12 +95,8 @@ impl CompilerData<'_> {
 }
 
 #[cfg(test)]
-pub fn assert_expr_err<E>(
-    expected_type: PQLType,
-    src: &str,
-    err: E,
-    err_src: &str,
-) where
+pub fn assert_expr_err<E>(expected_type: PQLType, src: &str, err: E, err_src: &str)
+where
     PQLErrorKind: From<E>,
 {
     let expr = parse_expr(src).unwrap();
@@ -140,10 +133,7 @@ mod tests {
     }
 
     fn assert_ok(src: &str) {
-        assert!(
-            compile_selector(&mut Vm::default(), &parse_selector(src).unwrap())
-                .is_ok()
-        );
+        assert!(compile_selector(&mut Vm::default(), &parse_selector(src).unwrap()).is_ok());
     }
 
     #[test]

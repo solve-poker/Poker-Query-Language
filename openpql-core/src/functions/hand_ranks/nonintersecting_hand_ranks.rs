@@ -4,10 +4,7 @@ use crate::{
 };
 
 /// Returns the hand ranks that do not appear on the board (hand \ board).
-pub fn nonintersecting_hand_ranks(
-    hand: &[PQLCard],
-    board: PQLBoard,
-) -> PQLRankSet {
+pub fn nonintersecting_hand_ranks(hand: &[PQLCard], board: PQLBoard) -> PQLRankSet {
     hand_ranks(hand) & !board_ranks(board)
 }
 

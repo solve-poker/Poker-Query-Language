@@ -50,12 +50,8 @@ impl IsomorphicHand {
     #[must_use]
     pub fn from_slice_and_map(cards: &[Card], map: SuitMap) -> Self {
         match cards.len() {
-            2 => Self::from_arr(
-                IsomorphicHandN::<2>::from_slice_and_map(cards, map).0,
-            ),
-            4 => Self::from_arr(
-                IsomorphicHandN::<4>::from_slice_and_map(cards, map).0,
-            ),
+            2 => Self::from_arr(IsomorphicHandN::<2>::from_slice_and_map(cards, map).0),
+            4 => Self::from_arr(IsomorphicHandN::<4>::from_slice_and_map(cards, map).0),
             _ => unimplemented!(), // LCOV_EXCL_LINE
         }
     }
@@ -203,19 +199,14 @@ impl<'a, C> IntoIterator for &'a CardArray<C> {
 
 #[cfg(feature = "serde")]
 impl<C: Serialize> Serialize for CardArray<C> {
-    fn serialize<S: Serializer>(
-        &self,
-        serializer: S,
-    ) -> Result<S::Ok, S::Error> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         self.0.as_slice().serialize(serializer)
     }
 }
 
 #[cfg(feature = "serde")]
 impl<'de, C: Deserialize<'de>> Deserialize<'de> for CardArray<C> {
-    fn deserialize<D: Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<Self, D::Error> {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let cards = Vec::<C>::deserialize(deserializer)?;
         Ok(Self(SmallVec::from_vec(cards)))
     }
@@ -274,13 +265,11 @@ mod tests {
 
     #[test]
     fn conversions() {
-        let inner: Inner<IsomorphicCard> =
-            SmallVec::from_slice(&[isocard!("Ax")]);
+        let inner: Inner<IsomorphicCard> = SmallVec::from_slice(&[isocard!("Ax")]);
         let from_inner = IsomorphicHand::from(inner);
         assert_eq!(from_inner.as_slice(), &[isocard!("Ax")]);
 
-        let from_vec =
-            IsomorphicHand::from(vec![isocard!("Ax"), isocard!("Kx")]);
+        let from_vec = IsomorphicHand::from(vec![isocard!("Ax"), isocard!("Kx")]);
         assert_eq!(from_vec.len(), 2);
 
         let from_arr = IsomorphicHand::from([isocard!("Ax"), isocard!("Kx")]);

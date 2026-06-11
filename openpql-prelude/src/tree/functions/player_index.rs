@@ -3,8 +3,7 @@
 use std::iter;
 
 use crate::tree::{
-    AnnotatedAction, PlayerIdx, all_folded, current_round,
-    functions::filter_count, player_can_act,
+    AnnotatedAction, PlayerIdx, all_folded, current_round, functions::filter_count, player_can_act,
 };
 
 /// Returns the seat to the left of `i` in an `n`-seat table.
@@ -29,10 +28,7 @@ pub fn num_players(history: &[AnnotatedAction]) -> PlayerIdx {
 
 /// Returns the seat to the left of `hero_id`.
 #[must_use]
-pub fn index_next(
-    hero_id: PlayerIdx,
-    history: &[AnnotatedAction],
-) -> PlayerIdx {
+pub fn index_next(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> PlayerIdx {
     idx_next(num_players(history), hero_id)
 }
 
@@ -67,8 +63,7 @@ pub fn next_to_act(history: &[AnnotatedAction]) -> Option<PlayerIdx> {
         None
     } else {
         players_after(
-            last_acted(history)
-                .unwrap_or_else(|| idx_prev(num_players(history), 0)),
+            last_acted(history).unwrap_or_else(|| idx_prev(num_players(history), 0)),
             history,
         )
         .find(|cur| player_can_act(*cur, history))
@@ -103,11 +98,7 @@ mod tests {
                 break;
             }
 
-            assert_eq!(
-                next_to_act(&h),
-                action.player_idx(),
-                "{h:?} {action:?}"
-            );
+            assert_eq!(next_to_act(&h), action.player_idx(), "{h:?} {action:?}");
         }
     }
 
@@ -133,8 +124,7 @@ mod tests {
 
     #[test]
     fn test_next_to_act_none() {
-        let h =
-            actions!([100, 100, 100], 1/2 -> preflop -> btn fold -> sb fold);
+        let h = actions!([100, 100, 100], 1/2 -> preflop -> btn fold -> sb fold);
 
         assert!(next_to_act(&h).is_none());
     }

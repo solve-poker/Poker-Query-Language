@@ -1,6 +1,4 @@
-use crate::{
-    PQLBoard, PQLCard, PQLCardSet, PQLFraction, PQLGame, PQLPlayerCount,
-};
+use crate::{PQLBoard, PQLCard, PQLCardSet, PQLFraction, PQLGame, PQLPlayerCount};
 
 /// Returns the hero's exact share of the pot on the river.
 ///

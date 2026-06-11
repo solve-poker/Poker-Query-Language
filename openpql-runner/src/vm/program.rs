@@ -41,8 +41,7 @@ mod tests {
 
     #[test]
     fn test_err() {
-        let program =
-            VmProgram(vec![(VmInstruction::CastNum(PQLType::LONG), (0, 1))]);
+        let program = VmProgram(vec![(VmInstruction::CastNum(PQLType::LONG), (0, 1))]);
         let mut ctx = VmExecContext::default();
 
         assert_eq!(

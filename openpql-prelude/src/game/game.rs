@@ -50,11 +50,7 @@ impl Game {
 
     /// Returns the flop-hand category of `player` against `board` for this variant.
     #[must_use]
-    pub fn eval_flop_category(
-        self,
-        player: Card64,
-        board: Board,
-    ) -> FlopHandCategory {
+    pub fn eval_flop_category(self, player: Card64, board: Board) -> FlopHandCategory {
         match self {
             Self::Holdem | Self::ShortDeck => eval_flop_holdem(player, board),
             Self::Omaha => eval_flop_omaha(player, board),
@@ -142,13 +138,11 @@ mod tests {
     #[test]
     fn test_eval_rating() {
         assert_eq!(
-            Game::Omaha
-                .eval_rating(c64!("Ks Qh 8s 9h"), c64!("7h 7c 7d As Ah")),
+            Game::Omaha.eval_rating(c64!("Ks Qh 8s 9h"), c64!("7h 7c 7d As Ah")),
             mk_rating(HandType::Trips, "7", "KQ")
         );
         assert_eq!(
-            Game::ShortDeck
-                .eval_rating(c64!("Kh As Ah Ac Ad 6d 6c"), Card64::default()),
+            Game::ShortDeck.eval_rating(c64!("Kh As Ah Ac Ad 6d 6c"), Card64::default()),
             mk_rating(HandType::Quads, "A", "K")
         );
     }
@@ -161,8 +155,7 @@ mod tests {
         );
 
         assert_eq!(
-            Game::Omaha
-                .eval_flop_category(c64!("7c 8c 2s 3s"), board!("7s 8h Tc")),
+            Game::Omaha.eval_flop_category(c64!("7c 8c 2s 3s"), board!("7s 8h Tc")),
             FlopHandCategory::BottomTwo,
         );
     }

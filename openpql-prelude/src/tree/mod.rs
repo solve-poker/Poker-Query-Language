@@ -31,8 +31,7 @@ pub mod tests {
     use super::*;
     use crate::Street;
 
-    pub const PREFLOP: AnnotatedAction =
-        AnnotatedAction::Chance(Street::Preflop);
+    pub const PREFLOP: AnnotatedAction = AnnotatedAction::Chance(Street::Preflop);
     pub const FLOP: AnnotatedAction = AnnotatedAction::Chance(Street::Flop);
     pub const RIVR: AnnotatedAction = AnnotatedAction::Chance(Street::River);
 }

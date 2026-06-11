@@ -30,8 +30,8 @@ impl<const N: usize, const S: bool> From<CardN<N, S>> for Card64 {
 
 #[cfg_attr(coverage_nightly, coverage(off))]
 #[allow(clippy::fallible_impl_from)]
-impl<const X: usize, const Y: usize, const Z: usize, const S: bool>
-    From<CardN<Z, S>> for (CardN<X, S>, CardN<Y, S>)
+impl<const X: usize, const Y: usize, const Z: usize, const S: bool> From<CardN<Z, S>>
+    for (CardN<X, S>, CardN<Y, S>)
 {
     fn from(cards: CardN<Z, S>) -> Self {
         assert!(X + Y <= Z, "Not enough cards {Z} < {X} + {Y} = {}", X + Y);
@@ -60,9 +60,7 @@ pub mod tests {
     fn test_cards_n_destruct(cards: CardN<10>) -> TestResult {
         let (c3, c7): (CardN<3>, CardN<7>) = cards.clone().into();
 
-        TestResult::from_bool(
-            c3.as_slice() == &cards[..3] && c7.as_slice() == &cards[3..],
-        )
+        TestResult::from_bool(c3.as_slice() == &cards[..3] && c7.as_slice() == &cards[3..])
     }
 
     #[test]

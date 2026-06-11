@@ -8,16 +8,7 @@ use crate::{Idx, ParseError};
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "lowercase"))]
 #[derive(
-    Clone,
-    Copy,
-    Default,
-    Debug,
-    derive_more::Display,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Hash,
+    Clone, Copy, Default, Debug, derive_more::Display, PartialEq, Eq, PartialOrd, Ord, Hash,
 )]
 /// A suit label relabeled by flush relevance: `X`/`Y`/`Z` for candidates, `N` for irrelevant.
 pub enum FlushingSuit {

@@ -2,9 +2,7 @@
 #![cfg_attr(test, allow(clippy::needless_pass_by_value))]
 #![cfg_attr(test, allow(clippy::wildcard_imports))]
 
-use std::{
-    convert::From, marker::PhantomData, ops, string::ToString, sync::LazyLock,
-};
+use std::{convert::From, marker::PhantomData, ops, string::ToString, sync::LazyLock};
 
 use itertools::Itertools;
 use lalrpop_util::{ParseError, lalrpop_mod, lexer::Token};
@@ -39,10 +37,7 @@ pub type LocInfo = (Loc, Loc);
 type Expected = Vec<String>;
 
 /// Parses a range expression, respecting short-deck rules when requested.
-pub fn parse_expr(
-    is_shortdeck: bool,
-    src: &str,
-) -> Result<Box<ast::Expr>, Error> {
+pub fn parse_expr(is_shortdeck: bool, src: &str) -> Result<Box<ast::Expr>, Error> {
     Ok(parser::ExprParser::new().parse(is_shortdeck, src)?)
 }
 
@@ -89,10 +84,7 @@ pub mod tests {
         assert_eq!(range_card.to_string(), expected);
     }
 
-    pub(crate) fn assert_err<T: fmt::Debug + cmp::PartialEq>(
-        res: ResultE<'_, T>,
-        expected: Error,
-    ) {
+    pub(crate) fn assert_err<T: fmt::Debug + cmp::PartialEq>(res: ResultE<'_, T>, expected: Error) {
         assert_eq!(res, Err(expected.into()));
     }
 

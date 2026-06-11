@@ -20,9 +20,7 @@ use openpql_macro::*;
 pub use openpql_pql_parser::parse_pql;
 use openpql_pql_parser::{Error as SyntaxError, Spanned, *};
 use openpql_prelude::{CardGen, HandN, ParseError, PlayerIdx};
-use openpql_range_parser::{
-    BoardRangeChecker, Error as RangeError, RangeChecker,
-};
+use openpql_range_parser::{BoardRangeChecker, Error as RangeError, RangeChecker};
 use runner_output::*;
 
 mod error;
@@ -42,10 +40,7 @@ pub use runner::*;
 #[cfg(test)]
 pub use tests::*;
 pub use types::*;
-use vm::{
-    Vm, VmBinOpCmp, VmCache, VmExecContext, VmProgram, VmSampledData,
-    VmStackValue,
-};
+use vm::{Vm, VmBinOpCmp, VmCache, VmExecContext, VmProgram, VmSampledData, VmStackValue};
 
 type HeapIdx = usize;
 type FractionInner = i32;

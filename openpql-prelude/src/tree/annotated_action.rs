@@ -5,16 +5,7 @@ use crate::{
 
 /// A history entry carrying player, action kind, and chip context.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    derive_more::From,
-    derive_more::Debug,
-)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, derive_more::From, derive_more::Debug)]
 pub enum AnnotatedAction {
     /// Player joins the hand with a starting stack.
     #[from(skip)]
@@ -36,12 +27,7 @@ impl AnnotatedAction {
     //// TODO: allin post
     //// Players: [SB,BB,UTG,UTG+1,CO,BTN]; [BB,BTN/SB]
     #[must_use]
-    pub fn new_prefix(
-        stacks: &[Chip],
-        sb: Chip,
-        bb: Chip,
-        ante: Chip,
-    ) -> Vec<Self> {
+    pub fn new_prefix(stacks: &[Chip], sb: Chip, bb: Chip, ante: Chip) -> Vec<Self> {
         fn post_ante_non_blind(
             n: PlayerIdx,
             idx_bb: PlayerIdx,
@@ -159,9 +145,7 @@ mod tests {
         pub const fn player_idx(self) -> Option<PlayerIdx> {
             match self {
                 Self::Chance(_) => None,
-                Self::Post(idx, _)
-                | Self::Join(idx, _)
-                | Self::Act(idx, _, _) => Some(idx),
+                Self::Post(idx, _) | Self::Join(idx, _) | Self::Act(idx, _, _) => Some(idx),
             }
         }
     }

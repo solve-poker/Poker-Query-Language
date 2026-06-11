@@ -1,6 +1,5 @@
 use crate::{
-    Board, Card64, FlopHandCategory, HandType, eval::rating::eval_holdem,
-    rating::HandRatingView,
+    Board, Card64, FlopHandCategory, HandType, eval::rating::eval_holdem, rating::HandRatingView,
 };
 
 /// Returns the flop-hand category of a Hold'em hand against `board`.

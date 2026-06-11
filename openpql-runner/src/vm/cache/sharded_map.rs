@@ -43,12 +43,7 @@ impl<K: Hash + Eq, V: Copy> ShardedMap<K, V> {
 }
 
 /// Inserts into `map`, clearing it first when `max_len` is reached.
-fn insert_bounded<K: Hash + Eq, V>(
-    map: &mut FxHashMap<K, V>,
-    key: K,
-    value: V,
-    max_len: usize,
-) {
+fn insert_bounded<K: Hash + Eq, V>(map: &mut FxHashMap<K, V>, key: K, value: V, max_len: usize) {
     if map.len() >= max_len {
         map.clear();
     }

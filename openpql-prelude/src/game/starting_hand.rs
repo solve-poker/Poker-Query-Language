@@ -24,14 +24,11 @@ fn collect_hands<const SD: bool, const N: usize>() -> Vec<Vec<Card>> {
     }
 }
 
-static ALL_HANDS_SHORTDECK: LazyLock<Vec<Vec<Card>>> =
-    LazyLock::new(collect_hands::<true, N_SD>);
+static ALL_HANDS_SHORTDECK: LazyLock<Vec<Vec<Card>>> = LazyLock::new(collect_hands::<true, N_SD>);
 
-static ALL_HANDS_HOLDEM: LazyLock<Vec<Vec<Card>>> =
-    LazyLock::new(collect_hands::<false, N_HOLDEM>);
+static ALL_HANDS_HOLDEM: LazyLock<Vec<Vec<Card>>> = LazyLock::new(collect_hands::<false, N_HOLDEM>);
 
-static ALL_HANDS_OMAHA: LazyLock<Vec<Vec<Card>>> =
-    LazyLock::new(collect_hands::<false, N_OMAHA>);
+static ALL_HANDS_OMAHA: LazyLock<Vec<Vec<Card>>> = LazyLock::new(collect_hands::<false, N_OMAHA>);
 
 fn all_hands(game: Game) -> &'static [Vec<Card>] {
     match game {
@@ -46,11 +43,9 @@ fn iso_hands<const N: usize>(
     to_iso: impl Fn(&[Card]) -> IsomorphicHandN<N> + Sync,
 ) -> Vec<Vec<IsomorphicCard>> {
     #[cfg(feature = "rayon")]
-    let isos: Vec<IsomorphicHandN<N>> =
-        hands.par_iter().map(|h| to_iso(h)).collect();
+    let isos: Vec<IsomorphicHandN<N>> = hands.par_iter().map(|h| to_iso(h)).collect();
     #[cfg(not(feature = "rayon"))]
-    let isos: Vec<IsomorphicHandN<N>> =
-        hands.iter().map(|h| to_iso(h)).collect();
+    let isos: Vec<IsomorphicHandN<N>> = hands.iter().map(|h| to_iso(h)).collect();
 
     let mut seen = FxHashSet::default();
     isos.into_iter()
@@ -59,29 +54,26 @@ fn iso_hands<const N: usize>(
         .collect()
 }
 
-static ALL_HANDS_SHORTDECK_ISO: LazyLock<Vec<Vec<IsomorphicCard>>> =
-    LazyLock::new(|| {
-        iso_hands::<N_SD>(
-            &ALL_HANDS_SHORTDECK,
-            IsomorphicHandN::<N_SD>::from_slice_preflop,
-        )
-    });
+static ALL_HANDS_SHORTDECK_ISO: LazyLock<Vec<Vec<IsomorphicCard>>> = LazyLock::new(|| {
+    iso_hands::<N_SD>(
+        &ALL_HANDS_SHORTDECK,
+        IsomorphicHandN::<N_SD>::from_slice_preflop,
+    )
+});
 
-static ALL_HANDS_HOLDEM_ISO: LazyLock<Vec<Vec<IsomorphicCard>>> =
-    LazyLock::new(|| {
-        iso_hands::<N_HOLDEM>(
-            &ALL_HANDS_HOLDEM,
-            IsomorphicHandN::<N_HOLDEM>::from_slice_preflop,
-        )
-    });
+static ALL_HANDS_HOLDEM_ISO: LazyLock<Vec<Vec<IsomorphicCard>>> = LazyLock::new(|| {
+    iso_hands::<N_HOLDEM>(
+        &ALL_HANDS_HOLDEM,
+        IsomorphicHandN::<N_HOLDEM>::from_slice_preflop,
+    )
+});
 
-static ALL_HANDS_OMAHA_ISO: LazyLock<Vec<Vec<IsomorphicCard>>> =
-    LazyLock::new(|| {
-        iso_hands::<N_OMAHA>(
-            &ALL_HANDS_OMAHA,
-            IsomorphicHandN::<N_OMAHA>::from_slice_preflop,
-        )
-    });
+static ALL_HANDS_OMAHA_ISO: LazyLock<Vec<Vec<IsomorphicCard>>> = LazyLock::new(|| {
+    iso_hands::<N_OMAHA>(
+        &ALL_HANDS_OMAHA,
+        IsomorphicHandN::<N_OMAHA>::from_slice_preflop,
+    )
+});
 
 fn all_iso_hands(game: Game) -> &'static [Vec<IsomorphicCard>] {
     match game {

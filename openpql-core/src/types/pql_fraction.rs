@@ -3,9 +3,7 @@ use crate::PQLDouble;
 type FractionInner = i32;
 
 /// Exact rational number used for equity pot shares.
-#[derive(
-    Clone, Copy, derive_more::Debug, PartialEq, Eq, derive_more::Display,
-)]
+#[derive(Clone, Copy, derive_more::Debug, PartialEq, Eq, derive_more::Display)]
 #[display("{} / {}", self.num, self.den)]
 #[debug("{self}")]
 pub struct PQLFraction {

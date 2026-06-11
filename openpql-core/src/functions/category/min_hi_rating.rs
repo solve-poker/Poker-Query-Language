@@ -27,8 +27,7 @@ mod tests {
 
         let rating = hi_rating(game, other, board);
         TestResult::from_bool(
-            min_hi_rating(game, hand, board, rating)
-                == (hi_rating(game, hand, board) >= rating),
+            min_hi_rating(game, hand, board, rating) == (hi_rating(game, hand, board) >= rating),
         )
     }
 }

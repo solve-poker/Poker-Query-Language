@@ -1,6 +1,6 @@
 use super::{
-    Array, Card, Card64, ConstrainRank, ConstrainSuit, From, Idx, List,
-    ListElem, RangeCard, Rank16, RankDiff, Span, SpanElem, Term,
+    Array, Card, Card64, ConstrainRank, ConstrainSuit, From, Idx, List, ListElem, RangeCard,
+    Rank16, RankDiff, Span, SpanElem, Term,
 };
 
 #[derive(PartialEq, Eq, Debug, Default, Clone)]
@@ -49,13 +49,9 @@ where
             CC(r, s) => (ConstrainRank::from(r), ConstrainSuit::from(s)).into(),
             CA(r) => ConstrainRank::from(r).into(),
             AC(s) => ConstrainSuit::from(s).into(),
-            CV(r, sv) => {
-                (ConstrainRank::from(r), ConstrainSuit::from((t, sv, i))).into()
-            }
+            CV(r, sv) => (ConstrainRank::from(r), ConstrainSuit::from((t, sv, i))).into(),
 
-            VC(rv, s) => {
-                (ConstrainRank::from((t, rv, i)), ConstrainSuit::from(s)).into()
-            }
+            VC(rv, s) => (ConstrainRank::from((t, rv, i)), ConstrainSuit::from(s)).into(),
 
             VV(rv, sv) => (
                 ConstrainRank::from((t, rv, i)),
@@ -91,10 +87,7 @@ where
         let head = head(span);
 
         Self::from((
-            ConstrainRank::from(r16_from_depth(
-                head.rank() as u8,
-                span_depth(span),
-            )),
+            ConstrainRank::from(r16_from_depth(head.rank() as u8, span_depth(span))),
             ConstrainSuit::from(head.suit()),
         ))
     }
@@ -112,8 +105,7 @@ where
                 (
                     ConstrainRank::Diff(
                         prev_idx,
-                        elems[i - 1].rank() as RankDiff
-                            - elems[i].rank() as RankDiff,
+                        elems[i - 1].rank() as RankDiff - elems[i].rank() as RankDiff,
                         r16_from_depth(elems[i].rank() as u8, depth),
                     ),
                     ConstrainSuit::from(elems[i].suit()),
@@ -146,9 +138,7 @@ fn span_depth(s: &Span) -> RankDiff {
 
     match s {
         Span::Down(t) => -t.iter().map(|e| e.rank() as RankDiff).min().unwrap(),
-        Span::Up(b) => {
-            RANK_I8_A - b.iter().map(|e| e.rank() as RankDiff).max().unwrap()
-        }
+        Span::Up(b) => RANK_I8_A - b.iter().map(|e| e.rank() as RankDiff).max().unwrap(),
         Span::To(t, b) => b[0].rank() as RankDiff - t[0].rank() as RankDiff,
     }
 }

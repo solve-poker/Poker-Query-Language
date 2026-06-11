@@ -1,11 +1,7 @@
 use super::*;
 
 #[pqlfn(alias = "equity")]
-pub fn hvhequity(
-    ctx: &PQLFnContext,
-    hero: PQLPlayer,
-    street: PQLStreet,
-) -> PQLEquity {
+pub fn hvhequity(ctx: &PQLFnContext, hero: PQLPlayer, street: PQLStreet) -> PQLEquity {
     match street {
         PQLStreet::Preflop => unreachable!(),
         PQLStreet::Flop => flop_equity(ctx, hero),
@@ -84,9 +80,7 @@ pub fn flop_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
             let board = flop.with_turn(turn).with_river(river);
 
             let ratings: Vec<_> = PQLPlayer::iter(ctx.n_players)
-                .map(|player| {
-                    ctx.eval_rating(ctx.get_player_slice(player), board)
-                })
+                .map(|player| ctx.eval_rating(ctx.get_player_slice(player), board))
                 .collect();
 
             let max = *ratings.iter().max().unwrap();

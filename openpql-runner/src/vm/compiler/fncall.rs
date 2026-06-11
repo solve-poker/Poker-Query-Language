@@ -1,11 +1,7 @@
 use super::*;
 
-pub fn push_fncall(
-    data: &mut CompilerData,
-    fncall: &ast::FnCall,
-) -> PQLResult<PQLType> {
-    let function: &dyn PQLFn =
-        with_loc(&fncall.name, || fncall.name.inner.parse())?;
+pub fn push_fncall(data: &mut CompilerData, fncall: &ast::FnCall) -> PQLResult<PQLType> {
+    let function: &dyn PQLFn = with_loc(&fncall.name, || fncall.name.inner.parse())?;
 
     with_loc(fncall, || {
         validate_argument_count(&fncall.args, &function.arg_types())

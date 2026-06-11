@@ -1,17 +1,14 @@
 use crate::{
     Street,
     tree::{
-        AnnotatedAction, AnnotatedActionKind, Chip, PlayerIdx, current_round,
-        current_street, num_players,
+        AnnotatedAction, AnnotatedActionKind, Chip, PlayerIdx, current_round, current_street,
+        num_players,
     },
 };
 
 /// Returns a player's starting stack.
 #[must_use]
-pub fn player_initial_stack(
-    hero_id: PlayerIdx,
-    history: &[AnnotatedAction],
-) -> Chip {
+pub fn player_initial_stack(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> Chip {
     match history {
         [AnnotatedAction::Join(pid, stack), ..] if *pid == hero_id => *stack,
         [_, tail @ ..] => player_initial_stack(hero_id, tail),
@@ -21,29 +18,19 @@ pub fn player_initial_stack(
 
 /// Returns a player's stack after pot contributions.
 #[must_use]
-pub fn player_remaining_stack(
-    hero_id: PlayerIdx,
-    history: &[AnnotatedAction],
-) -> Chip {
+pub fn player_remaining_stack(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> Chip {
     player_initial_stack(hero_id, history) - pot_contribution(hero_id, history)
 }
 
 /// Returns the all-in amount: remaining stack plus current-round commitment.
 #[must_use]
-pub fn player_shove_amount(
-    hero_id: PlayerIdx,
-    history: &[AnnotatedAction],
-) -> Chip {
-    player_remaining_stack(hero_id, history)
-        + player_committed(hero_id, history)
+pub fn player_shove_amount(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> Chip {
+    player_remaining_stack(hero_id, history) + player_committed(hero_id, history)
 }
 
 /// Returns a player's total chips contributed across all rounds.
 #[must_use]
-pub fn pot_contribution(
-    hero_id: PlayerIdx,
-    history: &[AnnotatedAction],
-) -> Chip {
+pub fn pot_contribution(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> Chip {
     fn inner(
         current: Chip,
         previous: Chip,
@@ -52,16 +39,11 @@ pub fn pot_contribution(
     ) -> Chip {
         match history {
             [] => current + previous,
-            [AnnotatedAction::Chance(_), tail @ ..] => {
-                inner(0, current + previous, hero_id, tail)
-            }
+            [AnnotatedAction::Chance(_), tail @ ..] => inner(0, current + previous, hero_id, tail),
             [
-                AnnotatedAction::Act(pid, _, bet)
-                | AnnotatedAction::Post(pid, bet),
+                AnnotatedAction::Act(pid, _, bet) | AnnotatedAction::Post(pid, bet),
                 tail @ ..,
-            ] if *pid == hero_id => {
-                inner(current.max(*bet), previous, hero_id, tail)
-            }
+            ] if *pid == hero_id => inner(current.max(*bet), previous, hero_id, tail),
             [_, tail @ ..] => inner(current, previous, hero_id, tail),
         }
     }
@@ -71,10 +53,7 @@ pub fn pot_contribution(
 
 /// Returns a player's chips committed in the current round.
 #[must_use]
-pub fn player_committed(
-    hero_id: PlayerIdx,
-    history: &[AnnotatedAction],
-) -> Chip {
+pub fn player_committed(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> Chip {
     match history {
         [] | [.., AnnotatedAction::Chance(_)] => 0,
         [
@@ -121,8 +100,7 @@ pub fn minimum_raise(history: &[AnnotatedAction]) -> Chip {
                 init @ ..,
                 AnnotatedAction::Act(
                     _,
-                    AnnotatedActionKind::Raise
-                    | AnnotatedActionKind::ShoveRaise,
+                    AnnotatedActionKind::Raise | AnnotatedActionKind::ShoveRaise,
                     bet,
                 ),
             ] => inner(acc.max(bet.saturating_sub(current_bet(init))), init),
@@ -143,23 +121,19 @@ pub fn num_of_raises(history: &[AnnotatedAction]) -> usize {
     let blind = usize::from(current_street(history) == Some(Street::Preflop));
 
     blind
-        + super::filter_count(
-            0,
-            current_round(history),
-            &|a: &AnnotatedAction| {
-                matches!(
-                    a,
-                    AnnotatedAction::Act(
-                        _,
-                        AnnotatedActionKind::Bet
-                            | AnnotatedActionKind::Raise
-                            | AnnotatedActionKind::ShoveBet
-                            | AnnotatedActionKind::ShoveRaise,
-                        _,
-                    )
+        + super::filter_count(0, current_round(history), &|a: &AnnotatedAction| {
+            matches!(
+                a,
+                AnnotatedAction::Act(
+                    _,
+                    AnnotatedActionKind::Bet
+                        | AnnotatedActionKind::Raise
+                        | AnnotatedActionKind::ShoveBet
+                        | AnnotatedActionKind::ShoveRaise,
+                    _,
                 )
-            },
-        )
+            )
+        })
 }
 
 /// Player who made the last bet or raise of the round, if any.
@@ -187,11 +161,7 @@ fn aggressor(round: &[AnnotatedAction]) -> Option<PlayerIdx> {
 pub fn is_donk_bet(history: &[AnnotatedAction]) -> bool {
     let [
         init @ ..,
-        AnnotatedAction::Act(
-            pid,
-            AnnotatedActionKind::Bet | AnnotatedActionKind::ShoveBet,
-            _,
-        ),
+        AnnotatedAction::Act(pid, AnnotatedActionKind::Bet | AnnotatedActionKind::ShoveBet, _),
     ] = history
     else {
         return false;

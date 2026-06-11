@@ -1,7 +1,4 @@
-use crate::{
-    Card, FlushingSuit, IsomorphicCard, IsomorphicHandN,
-    card::equiv::IsomorphicTurnEv,
-};
+use crate::{Card, FlushingSuit, IsomorphicCard, IsomorphicHandN, card::equiv::IsomorphicTurnEv};
 
 const N_HOLDEM: usize = 2;
 const N_OMAHA: usize = 4;

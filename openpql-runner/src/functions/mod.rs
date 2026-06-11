@@ -111,10 +111,7 @@ pub use wins_hi::*;
 pub trait PQLFn: fmt::Debug + Sync {
     fn arg_types(&self) -> Vec<PQLType>;
     fn rtn_type(&self) -> PQLType;
-    fn execute(
-        &self,
-        ctx: &mut VmExecContext,
-    ) -> Result<VmStackValue, PQLErrorKind>;
+    fn execute(&self, ctx: &mut VmExecContext) -> Result<VmStackValue, PQLErrorKind>;
 }
 
 impl FromStr for &dyn PQLFn {

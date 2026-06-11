@@ -1,6 +1,4 @@
-use super::{
-    BinOp, FnCall, Ident, Loc, LocInfo, Num, Spanned, Str, UnaryOp, str,
-};
+use super::{BinOp, FnCall, Ident, Loc, LocInfo, Num, Spanned, Str, UnaryOp, str};
 
 /// Parsed expression tree.
 #[derive(Clone, PartialEq, derive_more::From, derive_more::Debug)]

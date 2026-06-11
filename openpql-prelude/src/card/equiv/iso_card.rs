@@ -95,19 +95,14 @@ impl FromStr for IsomorphicCard {
 
 #[cfg(feature = "serde")]
 impl serde::Serialize for IsomorphicCard {
-    fn serialize<S: serde::Serializer>(
-        &self,
-        serializer: S,
-    ) -> Result<S::Ok, S::Error> {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         serializer.collect_str(self)
     }
 }
 
 #[cfg(feature = "serde")]
 impl<'de> serde::Deserialize<'de> for IsomorphicCard {
-    fn deserialize<D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<Self, D::Error> {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         use std::fmt;
 
         use serde::de;
@@ -118,10 +113,7 @@ impl<'de> serde::Deserialize<'de> for IsomorphicCard {
             fn expecting(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
                 f.write_str("an isomorphic card string like \"Ah\"")
             }
-            fn visit_str<E: de::Error>(
-                self,
-                s: &str,
-            ) -> Result<Self::Value, E> {
+            fn visit_str<E: de::Error>(self, s: &str) -> Result<Self::Value, E> {
                 s.parse().map_err(E::custom)
             }
         }

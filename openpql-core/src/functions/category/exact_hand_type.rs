@@ -1,12 +1,7 @@
 use crate::{PQLBoard, PQLCard, PQLGame, PQLHandType, functions::hand_type};
 
 /// Returns `true` when the hand's made hand type matches `ht` exactly.
-pub fn exact_hand_type(
-    game: PQLGame,
-    hand: &[PQLCard],
-    board: PQLBoard,
-    ht: PQLHandType,
-) -> bool {
+pub fn exact_hand_type(game: PQLGame, hand: &[PQLCard], board: PQLBoard, ht: PQLHandType) -> bool {
     hand_type(game, hand, board) == ht
 }
 

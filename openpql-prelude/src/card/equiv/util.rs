@@ -19,18 +19,13 @@ pub const fn n_flush_suits(cards: &[IsomorphicCard]) -> CardCount {
 }
 
 #[inline]
-pub const fn place_card(
-    c: IsomorphicCard,
-    next: CardCount,
-) -> (Card, CardCount) {
+pub const fn place_card(c: IsomorphicCard, next: CardCount) -> (Card, CardCount) {
     const fn take(suit: FlushingSuit, next: CardCount) -> (Suit, CardCount) {
         match suit {
             FlushingSuit::X => (Suit::S, next),
             FlushingSuit::Y => (Suit::H, next),
             FlushingSuit::Z => (Suit::D, next),
-            FlushingSuit::N => {
-                (Suit::ARR_ALL[(next % Suit::N_SUITS) as usize], next + 1)
-            }
+            FlushingSuit::N => (Suit::ARR_ALL[(next % Suit::N_SUITS) as usize], next + 1),
         }
     }
 

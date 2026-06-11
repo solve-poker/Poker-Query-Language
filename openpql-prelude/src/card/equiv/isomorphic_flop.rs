@@ -1,8 +1,6 @@
 //! Suit-isomorphic canonical form of a flop.
 
-use crate::{
-    Board, Card, Flop, IsomorphicCard, Suit, SuitMap, card::util::sort3,
-};
+use crate::{Board, Card, Flop, IsomorphicCard, Suit, SuitMap, card::util::sort3};
 
 /// The suit appearing twice in a two-tone flop.
 type DoubleSuit = Suit;
@@ -61,21 +59,12 @@ impl IsomorphicFlop {
 
     /// Relabels three flop cards through `map`, then rank-sorts them.
     #[inline]
-    pub(super) const fn relabel(
-        f0: Card,
-        f1: Card,
-        f2: Card,
-        map: SuitMap,
-    ) -> Self {
+    pub(super) const fn relabel(f0: Card, f1: Card, f2: Card, map: SuitMap) -> Self {
         Self::sorted(map.iso_card(f0), map.iso_card(f1), map.iso_card(f2))
     }
 
     /// Sorts three rank-sorted relabeled cards, breaking rank ties by suit label.
-    const fn sorted(
-        a: IsomorphicCard,
-        b: IsomorphicCard,
-        c: IsomorphicCard,
-    ) -> Self {
+    const fn sorted(a: IsomorphicCard, b: IsomorphicCard, c: IsomorphicCard) -> Self {
         Self(sort3!(IsomorphicCard, a, b, c))
     }
 }

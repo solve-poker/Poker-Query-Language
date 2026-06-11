@@ -8,9 +8,7 @@ mod shortdeck;
 
 pub use holdem::eval_holdem;
 #[allow(unused_imports)]
-use holdem::{
-    eval_pair, eval_quads, eval_trips, eval_twopair, mk_straight_ranking,
-};
+use holdem::{eval_pair, eval_quads, eval_trips, eval_twopair, mk_straight_ranking};
 pub use omaha::eval_omaha;
 pub use shortdeck::eval_shortdeck;
 
@@ -104,10 +102,7 @@ const fn flush_ranks_omaha_by_suit(
 }
 
 #[inline]
-const fn flush_ranks_omaha(
-    player: Card64,
-    board: Card64,
-) -> Option<(Rank16, Rank16)> {
+const fn flush_ranks_omaha(player: Card64, board: Card64) -> Option<(Rank16, Rank16)> {
     // const fn over DRY...
 
     if let Some((p, b)) = flush_ranks_omaha_by_suit(player, board, Suit::S) {

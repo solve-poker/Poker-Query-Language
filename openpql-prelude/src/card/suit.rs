@@ -7,16 +7,7 @@ use crate::{CardCount, ParseError, card::Idx};
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "lowercase"))]
 #[derive(
-    Copy,
-    Clone,
-    PartialEq,
-    Eq,
-    Debug,
-    Ord,
-    PartialOrd,
-    Hash,
-    derive_more::Display,
-    Default,
+    Copy, Clone, PartialEq, Eq, Debug, Ord, PartialOrd, Hash, derive_more::Display, Default,
 )]
 pub enum Suit {
     /// Spades.
@@ -39,8 +30,7 @@ impl Suit {
     pub const N_SUITS: CardCount = 4;
 
     /// Every suit in enum order.
-    pub const ARR_ALL: [Self; Self::N_SUITS as usize] =
-        [Self::S, Self::H, Self::D, Self::C];
+    pub const ARR_ALL: [Self; Self::N_SUITS as usize] = [Self::S, Self::H, Self::D, Self::C];
 
     /// Display character per suit in enum order.
     pub const CHARS: [char; Self::N_SUITS as usize] = ['s', 'h', 'd', 'c'];

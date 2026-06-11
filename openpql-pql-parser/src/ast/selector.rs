@@ -18,11 +18,7 @@ fn _alias_to_str(alias: Option<&Ident>) -> String {
 
 impl<'i> Selector<'i> {
     /// Builds a selector, resolving `kind` against the supported aggregates.
-    pub fn new(
-        kind: &Ident<'i>,
-        expr: Expr<'i>,
-        alias: Option<Ident<'i>>,
-    ) -> ResultE<'i, Self> {
+    pub fn new(kind: &Ident<'i>, expr: Expr<'i>, alias: Option<Ident<'i>>) -> ResultE<'i, Self> {
         let kind = match kind.inner.to_ascii_lowercase().as_str() {
             "avg" => SelectorKind::Avg,
             "count" => SelectorKind::Count,

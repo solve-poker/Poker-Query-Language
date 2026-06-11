@@ -13,9 +13,7 @@ pub fn ties_hi(ctx: &PQLFnContext, player: PQLPlayer) -> PQLBoolean {
     for i in 0..ctx.n_players {
         let other = PQLPlayer::from(i);
 
-        if player != other
-            && max_rating == hi_rating(ctx, other, PQLStreet::River)
-        {
+        if player != other && max_rating == hi_rating(ctx, other, PQLStreet::River) {
             return true;
         }
     }

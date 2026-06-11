@@ -32,11 +32,7 @@ pub fn mark_as_implemented(ty: &syn::TypeBareFn) {
         .insert(FnMetadata::to_hash_key(ty));
 }
 
-pub fn register_match_arm(
-    fnname: &syn::Ident,
-    ty: &syn::TypeBareFn,
-    alias: Option<&str>,
-) {
+pub fn register_match_arm(fnname: &syn::Ident, ty: &syn::TypeBareFn, alias: Option<&str>) {
     let str_fnname = fnname.to_string().replace('_', "");
     let match_arm = quote! {
         #str_fnname => Ok(&(#fnname as #ty))

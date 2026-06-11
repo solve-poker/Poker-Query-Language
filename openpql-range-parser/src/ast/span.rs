@@ -1,6 +1,5 @@
 use super::{
-    Error, LalrError, Loc, RangeCard, RankConst, RankInt, ResultE, SuitConst,
-    TermElem, ToString,
+    Error, LalrError, Loc, RangeCard, RankConst, RankInt, ResultE, SuitConst, TermElem, ToString,
 };
 
 /// One card in a span endpoint.
@@ -73,11 +72,7 @@ fn to_str(elems: &[SpanElem]) -> String {
 }
 
 #[inline]
-fn to_span_elems<'i, T>(
-    l: Loc,
-    r: Loc,
-    cs: Vec<T>,
-) -> ResultE<'i, Vec<SpanElem>>
+fn to_span_elems<'i, T>(l: Loc, r: Loc, cs: Vec<T>) -> ResultE<'i, Vec<SpanElem>>
 where
     SpanElem: TryFrom<(Loc, Loc, T), Error = LalrError<'i>>,
 {
@@ -87,19 +82,9 @@ where
 }
 
 #[inline]
-fn ensure_same_format<'i>(
-    l: Loc,
-    r: Loc,
-    v1: &[SpanElem],
-    v2: &[SpanElem],
-) -> ResultE<'i, ()> {
+fn ensure_same_format<'i>(l: Loc, r: Loc, v1: &[SpanElem], v2: &[SpanElem]) -> ResultE<'i, ()> {
     #[inline]
-    const fn is_same_distance(
-        v1: &[SpanElem],
-        v2: &[SpanElem],
-        i: usize,
-        j: usize,
-    ) -> bool {
+    const fn is_same_distance(v1: &[SpanElem], v2: &[SpanElem], i: usize, j: usize) -> bool {
         v1[j].rank() as RankInt - v1[i].rank() as RankInt
             == v2[j].rank() as RankInt - v2[i].rank() as RankInt
     }
@@ -140,12 +125,7 @@ impl<'i> Span {
     }
 
     #[allow(clippy::needless_pass_by_value)]
-    pub(crate) fn spanto<T>(
-        l: Loc,
-        top: Vec<T>,
-        btm: Vec<T>,
-        r: Loc,
-    ) -> ResultE<'i, Self>
+    pub(crate) fn spanto<T>(l: Loc, top: Vec<T>, btm: Vec<T>, r: Loc) -> ResultE<'i, Self>
     where
         SpanElem: TryFrom<(Loc, Loc, T), Error = LalrError<'i>>,
     {

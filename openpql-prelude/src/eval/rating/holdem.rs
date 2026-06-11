@@ -2,10 +2,7 @@ use super::{flush_ranks, ranks_by_suit_count};
 use crate::{Card64, HandRating, Rank16};
 
 #[inline]
-pub(super) const fn eval_quads(
-    has4: Rank16,
-    has1: Rank16,
-) -> Option<HandRating> {
+pub(super) const fn eval_quads(has4: Rank16, has1: Rank16) -> Option<HandRating> {
     if has4.is_empty() {
         None
     } else {
@@ -14,10 +11,7 @@ pub(super) const fn eval_quads(
 }
 
 #[inline]
-pub(super) const fn eval_fullhouse(
-    has3: Rank16,
-    has2: Rank16,
-) -> Option<HandRating> {
+pub(super) const fn eval_fullhouse(has3: Rank16, has2: Rank16) -> Option<HandRating> {
     if !has3.is_empty() && has2.count() > 1 {
         let hi = has3.retain_highest();
 
@@ -28,10 +22,7 @@ pub(super) const fn eval_fullhouse(
 }
 
 #[inline]
-pub(super) const fn eval_trips(
-    has3: Rank16,
-    has1: Rank16,
-) -> Option<HandRating> {
+pub(super) const fn eval_trips(has3: Rank16, has1: Rank16) -> Option<HandRating> {
     if has3.is_empty() {
         None
     } else {
@@ -42,10 +33,7 @@ pub(super) const fn eval_trips(
 }
 
 #[inline]
-pub(super) const fn eval_twopair(
-    has2: Rank16,
-    has1: Rank16,
-) -> Option<HandRating> {
+pub(super) const fn eval_twopair(has2: Rank16, has1: Rank16) -> Option<HandRating> {
     if has2.count() > 1 {
         let hi = has2.retain_highest2();
 
@@ -56,10 +44,7 @@ pub(super) const fn eval_twopair(
 }
 
 #[inline]
-pub(super) const fn eval_pair(
-    has2: Rank16,
-    has1: Rank16,
-) -> Option<HandRating> {
+pub(super) const fn eval_pair(has2: Rank16, has1: Rank16) -> Option<HandRating> {
     if has2.is_empty() {
         None
     } else {
@@ -70,9 +55,7 @@ pub(super) const fn eval_pair(
 }
 
 #[inline]
-pub(super) const fn mk_straight_ranking<const FLUSH: bool>(
-    has1: Rank16,
-) -> HandRating {
+pub(super) const fn mk_straight_ranking<const FLUSH: bool>(has1: Rank16) -> HandRating {
     if FLUSH {
         HandRating::new_straightflush(has1)
     } else {
@@ -81,9 +64,7 @@ pub(super) const fn mk_straight_ranking<const FLUSH: bool>(
 }
 
 #[inline]
-const fn eval_straight_inner<const FLUSH: bool>(
-    has1: Rank16,
-) -> Option<HandRating> {
+const fn eval_straight_inner<const FLUSH: bool>(has1: Rank16) -> Option<HandRating> {
     if has1.0 & Rank16::STRAIGHT_TJQKA.0 == Rank16::STRAIGHT_TJQKA.0 {
         Some(mk_straight_ranking::<FLUSH>(Rank16::STRAIGHT_TJQKA))
     } else if has1.0 & Rank16::STRAIGHT_9TJQK.0 == Rank16::STRAIGHT_9TJQK.0 {

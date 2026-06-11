@@ -12,10 +12,7 @@ impl VmUnaryOp {
         }
     }
 
-    pub(crate) fn resolve_type(
-        self,
-        arg_type: PQLType,
-    ) -> Result<PQLType, PQLErrorKind> {
+    pub(crate) fn resolve_type(self, arg_type: PQLType) -> Result<PQLType, PQLErrorKind> {
         match self {
             Self::Logic(op) => op.resolve_type(arg_type),
         }

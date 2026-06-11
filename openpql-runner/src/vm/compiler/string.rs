@@ -1,9 +1,6 @@
 use super::*;
 
-fn resolve_range<'vm, T>(
-    game: PQLGame,
-    string: &'vm ast::Str,
-) -> PQLResult<VmHeapValue>
+fn resolve_range<'vm, T>(game: PQLGame, string: &'vm ast::Str) -> PQLResult<VmHeapValue>
 where
     T: TryFrom<(PQLGame, &'vm str)>,
     VmHeapValue: From<T>,
@@ -47,12 +44,7 @@ mod tests {
     use super::*;
     use crate::*;
 
-    fn assert_str(
-        type_hint: PQLType,
-        src: &str,
-        expected: VmHeapValue,
-        expected_type: PQLType,
-    ) {
+    fn assert_str(type_hint: PQLType, src: &str, expected: VmHeapValue, expected_type: PQLType) {
         let expr = parse_str(src).unwrap();
 
         let mut data = CompilerData::default();
@@ -96,9 +88,7 @@ mod tests {
         assert_str(
             PQLType::BOARDRANGE,
             "'AA'",
-            VmHeapValue::BoardRange(
-                (PQLGame::default(), "AA").try_into().unwrap(),
-            ),
+            VmHeapValue::BoardRange((PQLGame::default(), "AA").try_into().unwrap()),
             PQLType::BOARDRANGE,
         );
     }

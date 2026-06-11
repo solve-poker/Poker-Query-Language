@@ -36,8 +36,7 @@ mod tests {
     #[quickcheck]
     fn test_flushing_board(board: PQLBoard) {
         let cs = PQLCardSet::from(board);
-        let expected =
-            PQLSuit::ARR_ALL.iter().any(|&s| cs.count_by_suit(s) >= 3);
+        let expected = PQLSuit::ARR_ALL.iter().any(|&s| cs.count_by_suit(s) >= 3);
 
         assert_eq!(flushing_board(board), expected);
     }

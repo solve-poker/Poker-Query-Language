@@ -1,11 +1,8 @@
 use super::{Array, Card, Error, Expr, Idx, parse_expr};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Checker<
-    const N: usize = 2,
-    const B: bool = false,
-    const SD: bool = false,
-> where
+pub struct Checker<const N: usize = 2, const B: bool = false, const SD: bool = false>
+where
     [Idx; N]: Array<Item = Idx>,
 {
     expr: Expr<N, B>,
@@ -27,8 +24,7 @@ where
     }
 }
 
-impl<const N: usize, const B: bool, const SD: bool> Default
-    for Checker<N, B, SD>
+impl<const N: usize, const B: bool, const SD: bool> Default for Checker<N, B, SD>
 where
     [Idx; N]: Array<Item = Idx>,
 {
@@ -92,11 +88,7 @@ mod tests {
         assert_checker::<4, false>("AKQB", &["As Ks Qs 2s"], &["As Ks Qs Qh"]);
         assert_checker::<4, false>("AKBB", &["As Ks Qs Qh"], &["As Ks Qs Jh"]);
         assert_checker::<4, false>("RRRO", &["As Ah Ad Kc"], &["As Ah Ad Ac"]);
-        assert_checker::<4, false>(
-            "[A,K][4-]2sB",
-            &["As 3s 2s Ah", "As 3s 2s 3h"],
-            &[],
-        );
+        assert_checker::<4, false>("[A,K][4-]2sB", &["As 3s 2s Ah", "As 3s 2s 3h"], &[]);
     }
 
     #[test]
@@ -122,28 +114,16 @@ mod tests {
     fn test_var() {
         assert_checker::<2, false>("AxRs", &["Ah Ks"], &["As Kh"]);
         assert_checker::<2, false>("RxOy", &["Ah Ks"], &["As Ah", "As Ks"]);
-        assert_checker::<5, true>(
-            "2xRsOyzN",
-            &["2h 3s 4d 5c 6s"],
-            &["2h 3s 4h 5c 6s"],
-        );
+        assert_checker::<5, true>("2xRsOyzN", &["2h 3s 4d 5c 6s"], &["2h 3s 4h 5c 6s"]);
     }
 
     #[test]
     fn test_span() {
         assert_checker::<2, false>("AKs-", &["As Ks", "3h"], &["As Kh"]);
         assert_checker::<2, false>("22+", &["As Ah"], &["As Kh"]);
-        assert_checker::<4, false>(
-            "AKQT-",
-            &["As Ks", "Qs Th", "3h"],
-            &["2s 3s 4s"],
-        );
+        assert_checker::<4, false>("AKQT-", &["As Ks", "Qs Th", "3h"], &["2s 3s 4s"]);
         assert_checker::<2, false>("AK-JT", &["Qs Jh"], &["Ts 9h"]);
-        assert_checker::<2, false>(
-            "KK+",
-            &["As Ah", "Ks Kh"],
-            &["As Kh", "Qs Qh"],
-        );
+        assert_checker::<2, false>("KK+", &["As Ah", "Ks Kh"], &["As Kh", "Qs Qh"]);
     }
 
     #[test]
@@ -177,21 +157,13 @@ mod tests {
 
     #[test]
     fn test_list() {
-        assert_checker::<2, false>(
-            "[2c,A,s]Td",
-            &["Td 2c", "Td Ah", "Td Ks"],
-            &["Td 2d"],
-        );
+        assert_checker::<2, false>("[2c,A,s]Td", &["Td 2c", "Td Ah", "Td Ks"], &["Td 2d"]);
         assert_checker::<4, false>(
             "[2c,A,s]Td9d8d",
             &["Td9d8d 2c", "Td9d8d Ah", "Td9d8d Ks"],
             &["Td9d8d 2d"],
         );
-        assert_checker::<4, false>(
-            "[s][h][d][c]",
-            &["2s 2h 3d 3c"],
-            &["2s 2h 3c 3c"],
-        );
+        assert_checker::<4, false>("[s][h][d][c]", &["2s 2h 3d 3c"], &["2s 2h 3c 3c"]);
     }
 
     #[test]
@@ -206,11 +178,7 @@ mod tests {
             &["Js Jh 2d 2c 3s", "Js 2h Jd 2c 3s"],
             &["Js 2h 2s Jc Jd"],
         );
-        assert_checker::<5, true>(
-            "222[2]s",
-            &["2s2h2d2c 3s"],
-            &["2s2h2d2c 3h"],
-        );
+        assert_checker::<5, true>("222[2]s", &["2s2h2d2c 3s"], &["2s2h2d2c 3h"]);
     }
 
     #[quickcheck]

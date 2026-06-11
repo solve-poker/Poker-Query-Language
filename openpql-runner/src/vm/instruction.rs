@@ -30,24 +30,15 @@ impl VmInstruction {
     }
 }
 
-fn cast_num(
-    value: VmStackValue,
-    kind: PQLType,
-) -> Result<VmStackValue, PQLErrorKind> {
+fn cast_num(value: VmStackValue, kind: PQLType) -> Result<VmStackValue, PQLErrorKind> {
     match (kind, value) {
-        (PQLType::CARDCOUNT, VmStackValue::Long(v)) => {
-            PQLCardCount::try_from(v).map_or_else(
-                |_| {
-                    Err(RuntimeError::ValueRetrievalFailed(PQLType::CARDCOUNT)
-                        .into())
-                },
-                |count| Ok(count.into()),
-            )
+        (PQLType::CARDCOUNT, VmStackValue::Long(v)) => PQLCardCount::try_from(v).map_or_else(
+            |_| Err(RuntimeError::ValueRetrievalFailed(PQLType::CARDCOUNT).into()),
+            |count| Ok(count.into()),
+        ),
+        (PQLType::CARDCOUNT, VmStackValue::Frac(_) | VmStackValue::Double(_)) => {
+            Err(RuntimeError::ValueRetrievalFailed(PQLType::CARDCOUNT).into())
         }
-        (
-            PQLType::CARDCOUNT,
-            VmStackValue::Frac(_) | VmStackValue::Double(_),
-        ) => Err(RuntimeError::ValueRetrievalFailed(PQLType::CARDCOUNT).into()),
         _ => Err(InternalError::UnexpectedTypeCast.into()),
     }
 }
@@ -102,10 +93,7 @@ pub mod tests {
             PQLType::BOOLEAN
         }
 
-        fn execute(
-            &self,
-            ctx: &mut VmExecContext,
-        ) -> Result<VmStackValue, PQLErrorKind> {
+        fn execute(&self, ctx: &mut VmExecContext) -> Result<VmStackValue, PQLErrorKind> {
             let arg = ctx.stack.downcast_pop::<PQLStreet>();
 
             Ok(self(arg, ()).into())

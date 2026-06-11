@@ -1,6 +1,5 @@
 use super::{
-    Entry, Error, FxHashMap, Ident, Loc, LocInfo, ResultE, Spanned, Str,
-    String, fmt, user_err,
+    Entry, Error, FxHashMap, Ident, Loc, LocInfo, ResultE, Spanned, Str, String, fmt, user_err,
 };
 
 /// Parsed `from` clause, indexed by lowercased key.

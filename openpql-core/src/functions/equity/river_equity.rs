@@ -1,6 +1,5 @@
 use crate::{
-    PQLBoard, PQLCard, PQLEquity, PQLGame, PQLPlayerCount,
-    functions::fractional_river_equity,
+    PQLBoard, PQLCard, PQLEquity, PQLGame, PQLPlayerCount, functions::fractional_river_equity,
 };
 
 /// Returns the hero's river equity as a `PQLEquity` in `[0.0, 1.0]`.

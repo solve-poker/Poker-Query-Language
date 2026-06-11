@@ -142,9 +142,7 @@ impl<'de, const N: usize> Deserialize<'de> for HandN<N> {
                 }
 
                 if i != N {
-                    return Err(de::Error::custom(format!(
-                        "expected {N} cards, got {i}",
-                    )));
+                    return Err(de::Error::custom(format!("expected {N} cards, got {i}")));
                 }
 
                 Ok(HandN(array))
@@ -174,10 +172,7 @@ impl<C: Context, const N: usize> Writable<C> for HandN<N>
 where
     Card: Writable<C>,
 {
-    fn write_to<W: Writer<C> + ?Sized>(
-        &self,
-        writer: &mut W,
-    ) -> Result<(), C::Error> {
+    fn write_to<W: Writer<C> + ?Sized>(&self, writer: &mut W) -> Result<(), C::Error> {
         for card in &self.0 {
             writer.write_value(card)?;
         }

@@ -1,9 +1,8 @@
 //! Boolean predicates over player and action state.
 
 use crate::tree::{
-    AnnotatedAction, AnnotatedActionKind, PlayerIdx, current_bet,
-    current_round, functions::filter_player_action, minimum_raise, num_players,
-    player_committed,
+    AnnotatedAction, AnnotatedActionKind, PlayerIdx, current_bet, current_round,
+    functions::filter_player_action, minimum_raise, num_players, player_committed,
 };
 
 /// Returns `true` if at most one player remains unfolded.
@@ -62,13 +61,9 @@ pub fn player_can_act(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
 
 /// Returns `true` if a player is allowed to raise this round.
 #[must_use]
-pub fn player_can_raise(
-    hero_id: PlayerIdx,
-    history: &[AnnotatedAction],
-) -> bool {
+pub fn player_can_raise(hero_id: PlayerIdx, history: &[AnnotatedAction]) -> bool {
     !player_acted(hero_id, current_round(history))
-        || current_bet(history)
-            .saturating_sub(player_committed(hero_id, history))
+        || current_bet(history).saturating_sub(player_committed(hero_id, history))
             >= minimum_raise(history)
 }
 

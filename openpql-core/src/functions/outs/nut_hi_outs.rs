@@ -5,11 +5,7 @@ use crate::{PQLBoard, PQLCard, PQLCardCount, PQLCardSet, PQLGame};
 /// Counts the unseen cards that would give the hand an unbeatable high hand.
 // TODO: optimize
 #[expect(clippy::cast_possible_truncation, reason = "num of cards < u8::MAX")]
-pub fn nut_hi_outs(
-    game: PQLGame,
-    hand: &[PQLCard],
-    board: PQLBoard,
-) -> PQLCardCount {
+pub fn nut_hi_outs(game: PQLGame, hand: &[PQLCard], board: PQLBoard) -> PQLCardCount {
     let p = PQLCardSet::from(hand);
     let b = PQLCardSet::from(board);
     let known = p | b;
@@ -29,12 +25,7 @@ pub fn nut_hi_outs(
         .count() as PQLCardCount
 }
 
-fn is_nut_hi(
-    game: PQLGame,
-    p: PQLCardSet,
-    b: PQLCardSet,
-    known: PQLCardSet,
-) -> bool {
+fn is_nut_hi(game: PQLGame, p: PQLCardSet, b: PQLCardSet, known: PQLCardSet) -> bool {
     let player_rating = game.eval_rating(p, b);
 
     let check = |opp: PQLCardSet| -> bool {
@@ -45,15 +36,9 @@ fn is_nut_hi(
     };
 
     match game {
-        PQLGame::Holdem => {
-            HandN::<2>::iter_all::<false>().all(|h| check(h.into()))
-        }
-        PQLGame::ShortDeck => {
-            HandN::<2>::iter_all::<true>().all(|h| check(h.into()))
-        }
-        PQLGame::Omaha => {
-            HandN::<4>::iter_all::<false>().all(|h| check(h.into()))
-        }
+        PQLGame::Holdem => HandN::<2>::iter_all::<false>().all(|h| check(h.into())),
+        PQLGame::ShortDeck => HandN::<2>::iter_all::<true>().all(|h| check(h.into())),
+        PQLGame::Omaha => HandN::<4>::iter_all::<false>().all(|h| check(h.into())),
     }
 }
 

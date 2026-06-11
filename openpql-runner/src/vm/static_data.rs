@@ -37,10 +37,7 @@ impl VmStaticData {
         )
     }
 
-    fn get_board(
-        game: PQLGame,
-        fc: &ast::FromClause<'_>,
-    ) -> PQLResult<PQLBoardRange> {
+    fn get_board(game: PQLGame, fc: &ast::FromClause<'_>) -> PQLResult<PQLBoardRange> {
         fc.get_board_range().map_or_else(
             || Ok((game, "*").try_into().unwrap()),
             |e| with_loc(e, || (game, e.inner).try_into()),
@@ -98,11 +95,7 @@ impl TryFrom<&ast::FromClause<'_>> for VmStaticData {
         let n_players = if n_usize <= 10 {
             PQLPlayerCount::try_from(n_usize).unwrap()
         } else {
-            return Err((
-                expr.loc,
-                PQLErrorKind::ExceededMaximumPlayers(n_usize),
-            )
-                .into());
+            return Err((expr.loc, PQLErrorKind::ExceededMaximumPlayers(n_usize)).into());
         };
 
         Ok(Self {
@@ -128,17 +121,13 @@ pub mod tests {
     #[test]
     fn test_game() {
         assert_eq!(
-            VmStaticData::get_game(
-                &parse_from_clause("from game='  HOLDEM '").unwrap()
-            ),
+            VmStaticData::get_game(&parse_from_clause("from game='  HOLDEM '").unwrap()),
             Ok(PQLGame::Holdem),
             "should trim and ignore case"
         );
 
         assert_eq!(
-            VmStaticData::get_game(
-                &parse_from_clause("from key='val'").unwrap()
-            ),
+            VmStaticData::get_game(&parse_from_clause("from key='val'").unwrap()),
             Ok(PQLGame::Holdem),
             "should default to holdem"
         );
@@ -148,8 +137,7 @@ pub mod tests {
     fn test_board_default(cards: CardN<5>) {
         let fc = &parse_from_clause("from game='holdem'").unwrap();
         let board_range = VmStaticData::get_board(PQLGame::Holdem, fc).unwrap();
-        let board_range_sd =
-            VmStaticData::get_board(PQLGame::ShortDeck, fc).unwrap();
+        let board_range_sd = VmStaticData::get_board(PQLGame::ShortDeck, fc).unwrap();
 
         if cards.as_slice().iter().all(|c| c.rank >= PQLRank::R6) {
             assert!(board_range_sd.is_satisfied(cards.as_slice()));
@@ -160,8 +148,7 @@ pub mod tests {
 
     #[test]
     fn test_board() {
-        let fc =
-            &parse_from_clause("from game='holdem', board='AKQJT'").unwrap();
+        let fc = &parse_from_clause("from game='holdem', board='AKQJT'").unwrap();
         let board_range = VmStaticData::get_board(PQLGame::Holdem, fc).unwrap();
 
         assert!(board_range.is_satisfied(&cards!("As Ks Qs Js Ts")));
@@ -172,11 +159,9 @@ pub mod tests {
     #[test]
     fn test_players() {
         let game = PQLGame::Holdem;
-        let res = VmStaticData::get_players(
-            game,
-            &parse_from_clause("from p1='AA', p2='KK'").unwrap(),
-        )
-        .unwrap();
+        let res =
+            VmStaticData::get_players(game, &parse_from_clause("from p1='AA', p2='KK'").unwrap())
+                .unwrap();
 
         assert!(res.0.contains(&"p1".into()));
         assert!(res.0.contains(&"p2".into()));
@@ -185,8 +170,7 @@ pub mod tests {
         assert!(
             res.1
                 .iter()
-                .all(|range| range.src_eq(&ranges[0])
-                    || range.src_eq(&ranges[1]))
+                .all(|range| range.src_eq(&ranges[0]) || range.src_eq(&ranges[1]))
         );
     }
 
@@ -205,23 +189,17 @@ pub mod tests {
         assert_invalid("from dead='BS'");
 
         assert_eq!(
-            VmStaticData::get_deadcard(
-                &parse_from_clause("from dead='AA'").unwrap(),
-            ),
+            VmStaticData::get_deadcard(&parse_from_clause("from dead='AA'").unwrap(),),
             Err(((10, 14), PQLErrorKind::InvalidDeadcards).into())
         );
 
         assert_eq!(
-            VmStaticData::get_deadcard(
-                &parse_from_clause("from game='holdem'").unwrap(),
-            ),
+            VmStaticData::get_deadcard(&parse_from_clause("from game='holdem'").unwrap(),),
             Ok(PQLCardSet::default())
         );
 
         assert_eq!(
-            VmStaticData::get_deadcard(
-                &parse_from_clause("from dead='As aH'").unwrap(),
-            ),
+            VmStaticData::get_deadcard(&parse_from_clause("from dead='As aH'").unwrap(),),
             Ok(c64!("As Ah"))
         );
     }

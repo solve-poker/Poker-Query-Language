@@ -30,8 +30,7 @@ macro_rules! sort4 {
 
 macro_rules! sort5 {
     ($T:ty, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {{
-        let (mut a, mut b, mut c, mut d, mut e): ($T, $T, $T, $T, $T) =
-            ($a, $b, $c, $d, $e);
+        let (mut a, mut b, mut c, mut d, mut e): ($T, $T, $T, $T, $T) = ($a, $b, $c, $d, $e);
         $crate::card::util::cas!(a, b);
         $crate::card::util::cas!(d, e);
         $crate::card::util::cas!(c, e);

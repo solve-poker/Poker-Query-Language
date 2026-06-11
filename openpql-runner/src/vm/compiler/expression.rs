@@ -87,8 +87,7 @@ mod tests {
         assert!(
             data.prog
                 .iter()
-                .any(|(ins, _)| *ins
-                    == VmInstruction::CastNum(PQLType::CARDCOUNT))
+                .any(|(ins, _)| *ins == VmInstruction::CastNum(PQLType::CARDCOUNT))
         );
     }
 }

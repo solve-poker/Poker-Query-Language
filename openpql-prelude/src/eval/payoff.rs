@@ -10,11 +10,7 @@ type Utility = f64;
 #[allow(clippy::missing_panics_doc)]
 #[allow(clippy::cast_possible_truncation)]
 #[must_use]
-pub fn calculate_payoffs(
-    pot: &[Chip],
-    ratings: &[HandRating],
-    active: &[bool],
-) -> Vec<Utility> {
+pub fn calculate_payoffs(pot: &[Chip], ratings: &[HandRating], active: &[bool]) -> Vec<Utility> {
     let mut remain: Vec<_> = pot.to_vec();
     let n = remain.len();
     let mut payoffs = vec![0.0; n];
@@ -41,11 +37,9 @@ pub fn calculate_payoffs(
             .collect();
         let winners_count = winners.len();
 
-        let pot_size: Chip =
-            remain.iter().map(|&chips| chips.min(min_bet)).sum();
+        let pot_size: Chip = remain.iter().map(|&chips| chips.min(min_bet)).sum();
 
-        let share = Utility::from(pot_size)
-            / Utility::from(winners_count as PlayerCount);
+        let share = Utility::from(pot_size) / Utility::from(winners_count as PlayerCount);
         for i in winners {
             payoffs[i] += share;
         }
@@ -83,8 +77,7 @@ mod tests {
     fn test_calculate_payoffs() {
         let pot = [30, 90, 30, 50, 90];
         let ratings = [2, 2, 3, 3, 1].map(to_rating);
-        let res =
-            calculate_payoffs(&pot, &ratings, &[true, true, true, true, true]);
+        let res = calculate_payoffs(&pot, &ratings, &[true, true, true, true, true]);
         assert_fvec_eq(&res, &[-30.0, -10.0, 45.0, 85.0, -90.0]);
 
         let pot = [20, 20];

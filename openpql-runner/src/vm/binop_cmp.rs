@@ -33,11 +33,7 @@ fn compare_flop_cat(
 }
 
 #[inline]
-fn compare_handtype(
-    game: PQLGame,
-    lhs: PQLHandType,
-    rhs: PQLHandType,
-) -> cmp::Ordering {
+fn compare_handtype(game: PQLGame, lhs: PQLHandType, rhs: PQLHandType) -> cmp::Ordering {
     if game.is_shortdeck() {
         lhs.compare::<true>(rhs)
     } else {
@@ -94,10 +90,7 @@ impl VmBinOpCmp {
         let same = lhs_type == rhs_type;
         let lhs_cmp = matches!(
             lhs_type,
-            PQLType::FLOPHANDCATEGORY
-                | PQLType::HANDTYPE
-                | PQLType::HIRATING
-                | PQLType::RANK
+            PQLType::FLOPHANDCATEGORY | PQLType::HANDTYPE | PQLType::HIRATING | PQLType::RANK
         );
 
         if match self {
@@ -118,19 +111,13 @@ impl VmBinOpCmp {
         lhs: VmStackValue,
         rhs: VmStackValue,
     ) -> Result<Option<cmp::Ordering>, InternalError> {
-        use VmStackValue::{
-            Count, Double, FlopCategory, Frac, HandType, Long, Rank, Rating,
-        };
+        use VmStackValue::{Count, Double, FlopCategory, Frac, HandType, Long, Rank, Rating};
 
         match (lhs, rhs) {
             (Rank(lhs), Rank(rhs)) => Ok(Some(lhs.cmp(&rhs))),
             (Rating(lhs), Rating(rhs)) => Ok(Some(lhs.cmp(&rhs))),
-            (HandType(lhs), HandType(rhs)) => {
-                Ok(Some(compare_handtype(game, lhs, rhs)))
-            }
-            (FlopCategory(lhs), FlopCategory(rhs)) => {
-                Ok(Some(compare_flop_cat(game, lhs, rhs)))
-            }
+            (HandType(lhs), HandType(rhs)) => Ok(Some(compare_handtype(game, lhs, rhs))),
+            (FlopCategory(lhs), FlopCategory(rhs)) => Ok(Some(compare_flop_cat(game, lhs, rhs))),
             _ => compare_num(lhs, rhs),
         }
     }

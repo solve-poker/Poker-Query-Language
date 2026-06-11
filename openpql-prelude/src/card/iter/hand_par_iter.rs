@@ -1,9 +1,7 @@
 use std::{mem::MaybeUninit, ops, ptr};
 
 use rayon::{
-    iter::plumbing::{
-        Consumer, Producer, ProducerCallback, UnindexedConsumer, bridge,
-    },
+    iter::plumbing::{Consumer, Producer, ProducerCallback, UnindexedConsumer, bridge},
     prelude::*,
 };
 
@@ -53,9 +51,7 @@ impl<const SD: bool, const N: usize> ParallelIterator for HandParIter<SD, N> {
     }
 }
 
-impl<const SD: bool, const N: usize> IndexedParallelIterator
-    for HandParIter<SD, N>
-{
+impl<const SD: bool, const N: usize> IndexedParallelIterator for HandParIter<SD, N> {
     fn drive<C>(self, consumer: C) -> C::Result
     where
         C: Consumer<Self::Item>,
@@ -136,8 +132,7 @@ impl NcrCache {
                     triangle[idx] = 1; // C(n, n) = 1
                 } else {
                     let prev_row = (n - 1) * n / 2;
-                    triangle[idx] =
-                        triangle[prev_row + k - 1] + triangle[prev_row + k];
+                    triangle[idx] = triangle[prev_row + k - 1] + triangle[prev_row + k];
                 }
             }
         }
@@ -200,8 +195,7 @@ fn unrank_combination_with_cards<const N: usize>(
     n: usize,
     cache: &NcrCache,
 ) -> HandN<N> {
-    let mut result: [MaybeUninit<Card>; N] =
-        unsafe { MaybeUninit::uninit().assume_init() };
+    let mut result: [MaybeUninit<Card>; N] = unsafe { MaybeUninit::uninit().assume_init() };
 
     // Use combinatorial number system with binary search to find the combination
     let mut x = n - 1;

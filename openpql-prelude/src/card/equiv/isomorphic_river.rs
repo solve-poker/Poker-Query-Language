@@ -1,8 +1,7 @@
 //! Suit-isomorphic canonical form of a complete five-card board.
 
 use crate::{
-    Board, Card, Flop, IsomorphicCard, SuitMap,
-    card::equiv::isomorphic_turn::IsomorphicTurn,
+    Board, Card, Flop, IsomorphicCard, SuitMap, card::equiv::isomorphic_turn::IsomorphicTurn,
 };
 
 /// Canonical suit-isomorphic representative of a complete board.
@@ -19,11 +18,7 @@ pub(super) struct IsomorphicRiver {
 impl IsomorphicRiver {
     /// Canonical representative of a complete board and the [`SuitMap`] that produced it.
     #[inline]
-    pub(super) const fn from_river(
-        flop: Flop,
-        turn: Card,
-        river: Card,
-    ) -> (Self, SuitMap) {
+    pub(super) const fn from_river(flop: Flop, turn: Card, river: Card) -> (Self, SuitMap) {
         let (turn, map) = IsomorphicTurn::from_turn(flop, turn);
 
         (
@@ -56,12 +51,7 @@ mod tests {
     fn from_str(s: &str) -> IsomorphicRiver {
         let b = board!(s);
 
-        IsomorphicRiver::from_river(
-            b.flop.unwrap(),
-            b.turn.unwrap(),
-            b.river.unwrap(),
-        )
-        .0
+        IsomorphicRiver::from_river(b.flop.unwrap(), b.turn.unwrap(), b.river.unwrap()).0
     }
 
     fn assert_iso_river(s: &str) {
@@ -81,9 +71,7 @@ mod tests {
                     if flop.contains_card(river) || river == turn {
                         continue;
                     }
-                    set.insert(
-                        IsomorphicRiver::from_river(flop, turn, river).0,
-                    );
+                    set.insert(IsomorphicRiver::from_river(flop, turn, river).0);
                 }
             }
         }
@@ -147,12 +135,7 @@ mod tests {
 
         assert_eq!(
             IsomorphicRiver::from_river(flop, turn, river).0,
-            IsomorphicRiver::from_river(
-                permuted_flop,
-                remap(turn),
-                remap(river)
-            )
-            .0,
+            IsomorphicRiver::from_river(permuted_flop, remap(turn), remap(river)).0,
         );
     }
 }

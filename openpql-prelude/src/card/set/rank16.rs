@@ -179,8 +179,7 @@ impl Rank16 {
     pub const fn max_rank(self) -> Option<Rank> {
         const N_ZEROS_R2: Idx = 15;
 
-        RankIdx(N_ZEROS_R2 - (Self::ALL.0 & self.0).leading_zeros() as Idx)
-            .to_rank()
+        RankIdx(N_ZEROS_R2 - (Self::ALL.0 & self.0).leading_zeros() as Idx).to_rank()
     }
 
     /// Returns the 1-indexed `n`-th highest rank, or `None` when absent.

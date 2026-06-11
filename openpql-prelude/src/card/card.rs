@@ -32,17 +32,7 @@ macro_rules! cards {
 
 /// Playing card with a rank and suit.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    derive_more::Display,
-    Hash,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-)]
+#[derive(Clone, Copy, Debug, derive_more::Display, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[display("{rank}{suit}")]
 pub struct Card {
     /// Card rank.
@@ -270,10 +260,9 @@ impl<'de> Deserialize<'de> for Card {
             {
                 use crate::CardIdx;
 
-                CardIdx(value.cast_signed()).to_card().map_or_else(
-                    || Err(E::custom("invalid card")),
-                    |card| Ok(card),
-                )
+                CardIdx(value.cast_signed())
+                    .to_card()
+                    .map_or_else(|| Err(E::custom("invalid card")), |card| Ok(card))
             }
 
             fn visit_str<E>(self, text: &str) -> Result<Self::Value, E>
@@ -379,10 +368,7 @@ mod tests_serde {
 
     #[test]
     fn test_card_invalid() {
-        assert_de_tokens_error::<Compact<Card>>(
-            &[Token::I8(-1)],
-            "invalid card",
-        );
+        assert_de_tokens_error::<Compact<Card>>(&[Token::I8(-1)], "invalid card");
     }
 
     #[test]
