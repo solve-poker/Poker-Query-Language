@@ -35,6 +35,14 @@ rand.workspace = true
 rustc-hash.workspace = true
 smallvec.workspace = true
 
+# rand needs getrandom's js backend on wasm32-unknown-unknown; enabling it
+# here keeps wasm consumers from having to opt in themselves
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+getrandom = { workspace = true, features = ["wasm_js"] }
+
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+
 [dev-dependencies]
 quickcheck.workspace = true
 quickcheck_macros.workspace = true

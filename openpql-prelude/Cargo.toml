@@ -33,6 +33,11 @@ serde = { workspace = true, optional = true }
 smallvec = { workspace = true, features = ["const_new"] }
 speedy = { workspace = true, optional = true }
 
+# rand needs getrandom's js backend on wasm32-unknown-unknown; enabling it
+# here keeps wasm consumers from having to opt in themselves
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+getrandom = { workspace = true, optional = true, features = ["wasm_js"] }
+
 [dev-dependencies]
 approx.workspace = true
 criterion.workspace = true
@@ -46,7 +51,7 @@ serde_test.workspace = true
 [features]
 default = ["rand"]
 quickcheck = ["dep:quickcheck", "fastrand"]
-rand = ["dep:rand"]
+rand = ["dep:rand", "dep:getrandom"]
 rayon = ["dep:rayon"]
 serde = ["dep:serde"]
 speedy = ["dep:speedy"]

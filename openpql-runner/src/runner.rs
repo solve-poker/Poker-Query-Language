@@ -77,10 +77,26 @@ impl PQLRunner {
             .map(|s| vm::compile_selector(&mut vm, s))
             .collect::<PQLResult<Vec<_>>>()?;
 
-        let n_threads = n_threads
-            .or_else(|| thread::available_parallelism().map(usize::from).ok())
-            .unwrap_or(1)
-            .clamp(1, n_trails.max(1));
+        // wasm has no threads: spawning panics at runtime, so clamp to 1
+        // and take the direct path below
+        let n_threads = if cfg!(target_family = "wasm") {
+            1
+        } else {
+            n_threads
+                .or_else(|| thread::available_parallelism().map(usize::from).ok())
+                .unwrap_or(1)
+                .clamp(1, n_trails.max(1))
+        };
+
+        if n_threads == 1 {
+            return run_trials(
+                vm,
+                n_trails,
+                where_program.as_ref(),
+                &programs,
+                &stmt.selectors,
+            );
+        }
 
         let outputs = thread::scope(|scope| {
             let vm = &vm;

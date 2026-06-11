@@ -32,6 +32,31 @@ jobs:
       - name: Run clippy
         run: cargo clippy --all-targets --tests --benches --all-features
 
+  wasm:
+    name: Check (wasm32-unknown-unknown)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Toolchain is pinned via rust-toolchain.toml; keep in sync
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2026-06-10
+          targets: wasm32-unknown-unknown
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Check wasm target
+        run: cargo check --target wasm32-unknown-unknown -p openpql-runner -p openpql-pql-parser -p openpql-range-parser -p openpql-prelude --features openpql-prelude/serde
+
+      - name: Install wasm-pack
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack
+
+      - name: Run wasm runtime test
+        run: wasm-pack test --node openpql-runner --test wasm
+
   test:
     name: Test (${{ matrix.toolchain }})
     runs-on: ubuntu-latest
