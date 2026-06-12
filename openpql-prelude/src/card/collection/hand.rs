@@ -52,6 +52,7 @@ impl IsomorphicHand {
         match cards.len() {
             2 => Self::from_arr(IsomorphicHandN::<2>::from_slice_and_map(cards, map).0),
             4 => Self::from_arr(IsomorphicHandN::<4>::from_slice_and_map(cards, map).0),
+            5 => Self::from_arr(IsomorphicHandN::<5>::from_slice_and_map(cards, map).0),
             _ => unimplemented!(), // LCOV_EXCL_LINE
         }
     }

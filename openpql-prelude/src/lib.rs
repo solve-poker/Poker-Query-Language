@@ -20,7 +20,10 @@ pub use card::{
     MAX_HOLECARDS, Rank, Rank16, RankIdx, Suit, Suit4, SuitIdx, SuitMap,
 };
 pub use error::ParseError;
-pub use eval::calculate_payoffs;
+pub use eval::{
+    calculate_payoffs,
+    rating::{eval_holdem, eval_omaha, eval_omaha5, eval_shortdeck},
+};
 pub use game::{Game, Player, PlayerIdx, Street};
 pub use rating::{FlopHandCategory, HandRating, HandType};
 #[cfg(feature = "rand")]

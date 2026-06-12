@@ -9,7 +9,7 @@ mod shortdeck;
 pub use holdem::eval_holdem;
 #[allow(unused_imports)]
 use holdem::{eval_pair, eval_quads, eval_trips, eval_twopair, mk_straight_ranking};
-pub use omaha::eval_omaha;
+pub use omaha::{eval_omaha, eval_omaha5};
 pub use shortdeck::eval_shortdeck;
 
 const N_FLUSH: u32 = 5;

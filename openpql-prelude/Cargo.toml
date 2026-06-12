@@ -61,5 +61,5 @@ full = ["quickcheck", "rand", "rayon", "serde", "speedy"]
 workspace = true
 
 [[bench]]
-name = "omaha"
+name = "rating"
 harness = false

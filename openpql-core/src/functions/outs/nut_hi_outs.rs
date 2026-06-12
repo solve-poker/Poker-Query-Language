@@ -39,6 +39,7 @@ fn is_nut_hi(game: PQLGame, p: PQLCardSet, b: PQLCardSet, known: PQLCardSet) -> 
         PQLGame::Holdem => HandN::<2>::iter_all::<false>().all(|h| check(h.into())),
         PQLGame::ShortDeck => HandN::<2>::iter_all::<true>().all(|h| check(h.into())),
         PQLGame::Omaha => HandN::<4>::iter_all::<false>().all(|h| check(h.into())),
+        PQLGame::Omaha5 => HandN::<5>::iter_all::<false>().all(|h| check(h.into())),
     }
 }
 

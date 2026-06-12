@@ -24,7 +24,7 @@ mod tests {
     use super::*;
 
     #[quickcheck]
-    fn test_min_hand_type(game: PQLGame, cards: CardN<9>) -> TestResult {
+    fn test_min_hand_type(game: PQLGame, cards: CardN<10>) -> TestResult {
         let n = game.player_cards_len() as usize;
         let hand = &cards.as_ref()[..n];
         let board = PQLBoard::from(&cards.as_ref()[n..n + 5]);

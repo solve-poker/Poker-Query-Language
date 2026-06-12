@@ -4,7 +4,7 @@ use crate::{
     Board, Card64, CardCount, FlopHandCategory, HandRating, ParseError,
     eval::{
         flop::{eval_flop_holdem, eval_flop_omaha},
-        rating::{eval_holdem, eval_omaha, eval_shortdeck},
+        rating::{eval_holdem, eval_omaha, eval_omaha5, eval_shortdeck},
     },
 };
 
@@ -18,6 +18,8 @@ pub enum Game {
     Holdem,
     /// Pot-Limit Omaha.
     Omaha,
+    /// 5-Card Omaha (Big O / PLO5).
+    Omaha5,
     /// Short Deck (6+) Hold'em.
     ShortDeck,
 }
@@ -29,6 +31,7 @@ impl Game {
         match self {
             Self::Holdem | Self::ShortDeck => 2,
             Self::Omaha => 4,
+            Self::Omaha5 => 5,
         }
     }
 
@@ -45,6 +48,7 @@ impl Game {
             Self::Holdem => eval_holdem(player | board),
             Self::ShortDeck => eval_shortdeck(player | board),
             Self::Omaha => eval_omaha(player, board),
+            Self::Omaha5 => eval_omaha5(player, board),
         }
     }
 
@@ -53,7 +57,7 @@ impl Game {
     pub fn eval_flop_category(self, player: Card64, board: Board) -> FlopHandCategory {
         match self {
             Self::Holdem | Self::ShortDeck => eval_flop_holdem(player, board),
-            Self::Omaha => eval_flop_omaha(player, board),
+            Self::Omaha | Self::Omaha5 => eval_flop_omaha(player, board),
         }
     }
 }
@@ -65,6 +69,7 @@ impl FromStr for Game {
         match s.to_ascii_lowercase().trim() {
             "holdem" => Ok(Self::Holdem),
             "omaha" => Ok(Self::Omaha),
+            "omaha5" => Ok(Self::Omaha5),
             "shortdeck" => Ok(Self::ShortDeck),
             _ => Err(ParseError::InvalidGame(s.into())),
         }
@@ -78,11 +83,11 @@ impl quickcheck::Arbitrary for Game {
         #[allow(unused)]
         const fn completeness_check(e: Game) {
             match e {
-                Game::Holdem | Game::Omaha | Game::ShortDeck => (),
+                Game::Holdem | Game::Omaha | Game::Omaha5 | Game::ShortDeck => (),
             }
         }
 
-        *g.choose(&[Self::Holdem, Self::Omaha, Self::ShortDeck])
+        *g.choose(&[Self::Holdem, Self::Omaha, Self::Omaha5, Self::ShortDeck])
             .unwrap()
     }
 }
@@ -97,6 +102,7 @@ mod tests {
     fn test_player_cards_len() {
         assert_eq!(2, Game::Holdem.player_cards_len());
         assert_eq!(4, Game::Omaha.player_cards_len());
+        assert_eq!(5, Game::Omaha5.player_cards_len());
         assert_eq!(2, Game::ShortDeck.player_cards_len());
     }
 
@@ -104,6 +110,7 @@ mod tests {
     fn test_is_shortdeck() {
         assert!(!Game::Holdem.is_shortdeck());
         assert!(!Game::Omaha.is_shortdeck());
+        assert!(!Game::Omaha5.is_shortdeck());
         assert!(Game::ShortDeck.is_shortdeck());
     }
 
@@ -112,6 +119,7 @@ mod tests {
         assert_eq!(Ok(Game::Holdem), " HoldEM ".parse());
 
         assert_eq!(Ok(Game::Omaha), "omaha".parse());
+        assert_eq!(Ok(Game::Omaha5), "omaha5".parse());
         assert_eq!(Ok(Game::ShortDeck), "shortdeck".parse());
 
         assert_eq!(
@@ -139,6 +147,10 @@ mod tests {
     fn test_eval_rating() {
         assert_eq!(
             Game::Omaha.eval_rating(c64!("Ks Qh 8s 9h"), c64!("7h 7c 7d As Ah")),
+            mk_rating(HandType::Trips, "7", "KQ")
+        );
+        assert_eq!(
+            Game::Omaha5.eval_rating(c64!("Ks Qh 8s 9h 2c"), c64!("7h 7c 7d As Ah")),
             mk_rating(HandType::Trips, "7", "KQ")
         );
         assert_eq!(
@@ -189,6 +201,14 @@ mod tests_serde {
             &[Token::UnitVariant {
                 name: "Game",
                 variant: "Omaha",
+            }],
+        );
+
+        assert_tokens(
+            &Game::Omaha5,
+            &[Token::UnitVariant {
+                name: "Game",
+                variant: "Omaha5",
             }],
         );
     }

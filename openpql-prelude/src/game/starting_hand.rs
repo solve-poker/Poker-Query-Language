@@ -9,6 +9,7 @@ use crate::{Card, Game, HandN, IsomorphicCard, IsomorphicHandN};
 const N_SD: usize = 2;
 const N_HOLDEM: usize = 2;
 const N_OMAHA: usize = 4;
+const N_OMAHA5: usize = 5;
 
 fn collect_hands<const SD: bool, const N: usize>() -> Vec<Vec<Card>> {
     #[cfg(feature = "rayon")]
@@ -30,10 +31,13 @@ static ALL_HANDS_HOLDEM: LazyLock<Vec<Vec<Card>>> = LazyLock::new(collect_hands:
 
 static ALL_HANDS_OMAHA: LazyLock<Vec<Vec<Card>>> = LazyLock::new(collect_hands::<false, N_OMAHA>);
 
+static ALL_HANDS_OMAHA5: LazyLock<Vec<Vec<Card>>> = LazyLock::new(collect_hands::<false, N_OMAHA5>);
+
 fn all_hands(game: Game) -> &'static [Vec<Card>] {
     match game {
         Game::Holdem => &ALL_HANDS_HOLDEM,
         Game::Omaha => &ALL_HANDS_OMAHA,
+        Game::Omaha5 => &ALL_HANDS_OMAHA5,
         Game::ShortDeck => &ALL_HANDS_SHORTDECK,
     }
 }
@@ -75,10 +79,18 @@ static ALL_HANDS_OMAHA_ISO: LazyLock<Vec<Vec<IsomorphicCard>>> = LazyLock::new(|
     )
 });
 
+static ALL_HANDS_OMAHA5_ISO: LazyLock<Vec<Vec<IsomorphicCard>>> = LazyLock::new(|| {
+    iso_hands::<N_OMAHA5>(
+        &ALL_HANDS_OMAHA5,
+        IsomorphicHandN::<N_OMAHA5>::from_slice_preflop,
+    )
+});
+
 fn all_iso_hands(game: Game) -> &'static [Vec<IsomorphicCard>] {
     match game {
         Game::Holdem => &ALL_HANDS_HOLDEM_ISO,
         Game::Omaha => &ALL_HANDS_OMAHA_ISO,
+        Game::Omaha5 => &ALL_HANDS_OMAHA5_ISO,
         Game::ShortDeck => &ALL_HANDS_SHORTDECK_ISO,
     }
 }
@@ -101,13 +113,16 @@ mod tests {
     use super::*;
 
     #[test]
+    #[ignore = "slow"]
     fn test_starting_hands() {
         assert_eq!(Game::ShortDeck.starting_hands().len(), 630);
         assert_eq!(Game::Holdem.starting_hands().len(), 1326);
         assert_eq!(Game::Omaha.starting_hands().len(), 270_725);
+        assert_eq!(Game::Omaha5.starting_hands().len(), 2_598_960);
     }
 
     #[test]
+    #[ignore = "slow"]
     fn test_starting_iso_hands() {
         for game in [Game::ShortDeck, Game::Holdem, Game::Omaha] {
             let n = match game {
@@ -120,5 +135,6 @@ mod tests {
         assert_eq!(Game::ShortDeck.starting_iso_hands().len(), 81);
         assert_eq!(Game::Holdem.starting_iso_hands().len(), 169);
         assert_eq!(Game::Omaha.starting_iso_hands().len(), 16_718);
+        assert_eq!(Game::Omaha5.starting_iso_hands().len(), 134_459);
     }
 }

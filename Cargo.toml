@@ -26,7 +26,7 @@ panic = "abort"
 
 [workspace.dependencies]
 approx = "0.5.1"
-bitflags = "2.12.1"
+bitflags = "2.13.0"
 clap = { version = "4.6.1", features = ["derive"] }
 criterion = "0.8.2"
 derive_more = { version = "2", features = ["full"] }
@@ -44,13 +44,13 @@ quickcheck = { version = "1.1.0", features = [] }
 quickcheck_macros = "1.2.0"
 rand = "0.10.1"
 rayon = "1.12.0"
-regex = "1.12.3"
+regex = "1.12.4"
 rustc-hash = "2.1.2"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_test = "1.0.177"
-smallvec = "1.15.1"
+smallvec = "1.15.2"
 speedy = "0.8.7"
-wasm-bindgen-test = "0.3.54"
+wasm-bindgen-test = "0.3.73"
 
 [workspace.lints.clippy]
 absolute_paths = { level = "warn", priority = 10 }

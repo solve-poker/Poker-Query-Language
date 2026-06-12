@@ -22,6 +22,16 @@ pub static PERM43: LazyLock<IdxPermutations> =
     LazyLock::new(|| (0..4).permutations(3).collect_vec());
 pub static PERM44: LazyLock<IdxPermutations> =
     LazyLock::new(|| (0..4).permutations(4).collect_vec());
+pub static PERM51: LazyLock<IdxPermutations> =
+    LazyLock::new(|| (0..5).permutations(1).collect_vec());
+pub static PERM52: LazyLock<IdxPermutations> =
+    LazyLock::new(|| (0..5).permutations(2).collect_vec());
+pub static PERM53: LazyLock<IdxPermutations> =
+    LazyLock::new(|| (0..5).permutations(3).collect_vec());
+pub static PERM54: LazyLock<IdxPermutations> =
+    LazyLock::new(|| (0..5).permutations(4).collect_vec());
+pub static PERM55: LazyLock<IdxPermutations> =
+    LazyLock::new(|| (0..5).permutations(5).collect_vec());
 
 pub static PERM_BOARD_4: LazyLock<IdxPermutations> = LazyLock::new(|| {
     vec![
@@ -62,6 +72,12 @@ pub fn range_cond_indices(n: usize, r: usize, board: bool) -> &'static IdxPermut
         (4, 3, false) => PERM43.as_ref(),
         (4, 4, false) => PERM44.as_ref(),
 
+        (5, 1, false) => PERM51.as_ref(),
+        (5, 2, false) => PERM52.as_ref(),
+        (5, 3, false) => PERM53.as_ref(),
+        (5, 4, false) => PERM54.as_ref(),
+        (5, 5, false) => PERM55.as_ref(),
+
         (5, 4, true) => PERM_BOARD_4.as_ref(),
         (5, 5, true) => PERM_BOARD_5.as_ref(),
 
@@ -86,6 +102,11 @@ mod tests {
         assert_eq!(indices(4, 2, false).len(), 12);
         assert_eq!(indices(4, 3, false).len(), 24);
         assert_eq!(indices(4, 4, false).len(), 24);
+        assert_eq!(*indices(5, 1, false), [[0], [1], [2], [3], [4]]);
+        assert_eq!(indices(5, 2, false).len(), 20);
+        assert_eq!(indices(5, 3, false).len(), 60);
+        assert_eq!(indices(5, 4, false).len(), 120);
+        assert_eq!(indices(5, 5, false).len(), 120);
     }
 
     #[test]
@@ -119,8 +140,8 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "not implemented: n=5; r=1; board: false")]
+    #[should_panic(expected = "not implemented: n=6; r=1; board: false")]
     fn test_unimpl() {
-        let _ = indices(5, 1, false);
+        let _ = indices(6, 1, false);
     }
 }

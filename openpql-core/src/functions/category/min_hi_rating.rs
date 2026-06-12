@@ -19,7 +19,7 @@ mod tests {
     use super::*;
 
     #[quickcheck]
-    fn test_min_hi_rating(game: PQLGame, cards: CardN<13>) -> TestResult {
+    fn test_min_hi_rating(game: PQLGame, cards: CardN<15>) -> TestResult {
         let n = game.player_cards_len() as usize;
         let hand = &cards.as_ref()[..n];
         let other = &cards.as_ref()[n..2 * n];

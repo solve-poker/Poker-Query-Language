@@ -47,6 +47,7 @@ mod nth_rank;
 mod nut_hi;
 mod nut_hi_for_hand_type;
 mod nut_hi_outs;
+mod omaha5;
 mod overpair;
 mod paired_board;
 mod pocket_pair;

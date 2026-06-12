@@ -1,7 +1,11 @@
-use crate::{Card, FlushingSuit, IsomorphicCard, IsomorphicHandN, card::equiv::IsomorphicTurnEv};
+use crate::{
+    Card, FlushingSuit, IsomorphicCard, IsomorphicHandN,
+    card::equiv::{IsomorphicTurnEv, isomorphic_omaha5::iso_hand5_preflop},
+};
 
 const N_HOLDEM: usize = 2;
 const N_OMAHA: usize = 4;
+const N_OMAHA5: usize = 5;
 
 impl IsomorphicHandN<N_HOLDEM> {
     #[must_use]
@@ -33,10 +37,22 @@ impl IsomorphicHandN<N_OMAHA> {
     #[must_use]
     pub const fn from_slice_preflop(cards: &[Card]) -> Self {
         debug_assert!(
-            cards.len() >= N_OMAHA,
+            cards.len() >= N_OMAHA, // LCOV_EXCL_LINE
             "not enough cards for IsomorphicHandN<4>"
         );
 
         Self(IsomorphicTurnEv::from_cards(cards).0.0)
+    }
+}
+
+impl IsomorphicHandN<N_OMAHA5> {
+    #[must_use]
+    pub const fn from_slice_preflop(cards: &[Card]) -> Self {
+        debug_assert!(
+            cards.len() >= N_OMAHA5, // LCOV_EXCL_LINE
+            "not enough cards for IsomorphicHandN<5>"
+        );
+
+        iso_hand5_preflop(cards)
     }
 }

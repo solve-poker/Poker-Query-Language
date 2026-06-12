@@ -64,6 +64,11 @@ impl TryFrom<(PQLGame, &str)> for PQLRange {
                 src,
                 game,
             )),
+            PQLGame::Omaha5 => Ok(create_range(
+                RangeChecker::<5, false>::from_src(src)?,
+                src,
+                game,
+            )),
             PQLGame::ShortDeck => Ok(create_range(
                 RangeChecker::<2, true>::from_src(src)?,
                 src,

@@ -8,6 +8,7 @@ mod iso_hand_n_preflop;
 mod iso_river_ev;
 mod iso_turn_ev;
 mod isomorphic_flop;
+mod isomorphic_omaha5;
 mod isomorphic_river;
 mod isomorphic_turn;
 mod suit;
