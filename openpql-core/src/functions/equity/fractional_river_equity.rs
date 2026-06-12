@@ -1,3 +1,5 @@
+use openpql_prelude::PerPlayer;
+
 use crate::{PQLBoard, PQLCard, PQLCardSet, PQLFraction, PQLGame, PQLPlayerCount};
 
 /// Returns the hero's exact share of the pot on the river.
@@ -36,7 +38,7 @@ pub fn fractional_river_equity(
 
     let b = PQLCardSet::from(board);
 
-    let ratings: Vec<_> = player_cards
+    let ratings: PerPlayer<_> = player_cards
         .chunks_exact(n_cards)
         .map(|h| game.eval_rating(PQLCardSet::from(h), b))
         .collect();

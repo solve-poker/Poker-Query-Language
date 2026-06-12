@@ -5,5 +5,5 @@ mod starting_hand;
 mod street;
 
 pub use game::Game;
-pub use player::{Player, PlayerIdx};
+pub use player::{MAX_PLAYERS, PerPlayer, Player, PlayerIdx};
 pub use street::Street;

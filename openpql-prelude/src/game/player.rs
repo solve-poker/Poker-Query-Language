@@ -1,5 +1,13 @@
+use smallvec::SmallVec;
+
 /// Numeric index identifying a player.
 pub type PlayerIdx = u8;
+
+/// Maximum number of players in a game.
+pub const MAX_PLAYERS: PlayerIdx = 10;
+
+/// Per-seat values stored inline, bounded by [`MAX_PLAYERS`].
+pub type PerPlayer<T> = SmallVec<[T; MAX_PLAYERS as usize]>;
 
 /// Player identified by a zero-based index.
 #[cfg_attr(feature = "speedy", derive(speedy::Readable, speedy::Writable))] // LCOV_EXCL_LINE

@@ -1,6 +1,8 @@
 // TODO refactor this file
 
-use crate::HandRating;
+use smallvec::smallvec;
+
+use crate::{HandRating, PerPlayer};
 
 type PlayerCount = u8;
 type Chip = u16;
@@ -10,13 +12,17 @@ type Utility = f64;
 #[allow(clippy::missing_panics_doc)]
 #[allow(clippy::cast_possible_truncation)]
 #[must_use]
-pub fn calculate_payoffs(pot: &[Chip], ratings: &[HandRating], active: &[bool]) -> Vec<Utility> {
-    let mut remain: Vec<_> = pot.to_vec();
+pub fn calculate_payoffs(
+    pot: &[Chip],
+    ratings: &[HandRating],
+    active: &[bool],
+) -> PerPlayer<Utility> {
+    let mut remain = PerPlayer::from_slice(pot);
     let n = remain.len();
-    let mut payoffs = vec![0.0; n];
+    let mut payoffs: PerPlayer<Utility> = smallvec![0.0; n];
 
     while remain.iter().any(|&chips| chips > 0) {
-        let eligible: Vec<usize> = remain
+        let eligible: PerPlayer<usize> = remain
             .iter()
             .enumerate()
             .filter(|&(i, &chips)| active[i] && chips > 0)
@@ -31,7 +37,7 @@ pub fn calculate_payoffs(pot: &[Chip], ratings: &[HandRating], active: &[bool]) 
 
         let max_strength = eligible.iter().map(|&i| ratings[i]).max().unwrap();
 
-        let winners: Vec<usize> = eligible
+        let winners: PerPlayer<usize> = eligible
             .into_iter()
             .filter(|&i| ratings[i] == max_strength)
             .collect();

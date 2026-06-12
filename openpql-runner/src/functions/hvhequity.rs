@@ -20,7 +20,8 @@ pub fn turn_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
         PQLCard::all::<false>()
     };
 
-    let mut res: Vec<PQLFraction> = vec![];
+    let mut sum = 0.0;
+    let mut count = 0.0;
 
     let player_cards = ctx.get_c64_players();
 
@@ -31,25 +32,22 @@ pub fn turn_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
 
         let board = turn.with_river(river);
 
-        let ratings: Vec<_> = PQLPlayer::iter(ctx.n_players)
+        let ratings: PerPlayer<_> = PQLPlayer::iter(ctx.n_players)
             .map(|player| ctx.eval_rating(ctx.get_player_slice(player), board))
             .collect();
 
         let max = *ratings.iter().max().unwrap();
 
+        count += 1.0;
+
         if ratings[usize::from(hero)] == max {
             let n_winners = ratings.iter().filter(|&r| *r == max).count();
 
-            res.push(PQLFraction::new(
-                1,
-                FractionInner::try_from(n_winners).unwrap(),
-            ));
-        } else {
-            res.push(PQLFraction::zero());
+            sum += PQLFraction::new(1, FractionInner::try_from(n_winners).unwrap()).to_double();
         }
     }
 
-    avg(&res)
+    sum / count
 }
 
 // TODO: tmp; optimize
@@ -61,7 +59,8 @@ pub fn flop_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
     ) -> PQLEquity {
         let flop = ctx.get_board(PQLStreet::Flop);
 
-        let mut res: Vec<PQLFraction> = vec![];
+        let mut sum = 0.0;
+        let mut count = 0.0;
 
         let player_cards = ctx.get_c64_players();
 
@@ -79,25 +78,22 @@ pub fn flop_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
 
             let board = flop.with_turn(turn).with_river(river);
 
-            let ratings: Vec<_> = PQLPlayer::iter(ctx.n_players)
+            let ratings: PerPlayer<_> = PQLPlayer::iter(ctx.n_players)
                 .map(|player| ctx.eval_rating(ctx.get_player_slice(player), board))
                 .collect();
 
             let max = *ratings.iter().max().unwrap();
 
+            count += 1.0;
+
             if ratings[usize::from(hero)] == max {
                 let n_winners = ratings.iter().filter(|&r| *r == max).count();
 
-                res.push(PQLFraction::new(
-                    1,
-                    FractionInner::try_from(n_winners).unwrap(),
-                ));
-            } else {
-                res.push(PQLFraction::zero());
+                sum += PQLFraction::new(1, FractionInner::try_from(n_winners).unwrap()).to_double();
             }
         }
 
-        avg(&res)
+        sum / count
     }
 
     if ctx.game.is_shortdeck() {
@@ -105,16 +101,4 @@ pub fn flop_equity(ctx: &PQLFnContext, hero: PQLPlayer) -> PQLEquity {
     } else {
         inner(ctx, hero, HandN::<2>::iter_all::<false>())
     }
-}
-
-fn avg(vs: &[PQLFraction]) -> PQLEquity {
-    let mut sum = 0.0;
-    let mut count = 0.0;
-
-    for v in vs {
-        sum += v.to_double();
-        count += 1.0;
-    }
-
-    sum / count
 }

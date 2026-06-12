@@ -24,7 +24,7 @@ pub use eval::{
     calculate_payoffs,
     rating::{eval_holdem, eval_omaha, eval_omaha5, eval_shortdeck},
 };
-pub use game::{Game, Player, PlayerIdx, Street};
+pub use game::{Game, MAX_PLAYERS, PerPlayer, Player, PlayerIdx, Street};
 pub use rating::{FlopHandCategory, HandRating, HandType};
 #[cfg(feature = "rand")]
 pub use rng::CardGen;
